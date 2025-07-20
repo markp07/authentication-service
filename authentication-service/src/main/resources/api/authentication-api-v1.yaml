@@ -1,0 +1,253 @@
+openapi: 3.0.3
+info:
+  title: Auth API
+  version: 1.0.0
+  description: JWT-based Authentication API for Spring Boot backend.
+
+tags:
+  - name: login
+    description: Endpoints for user login
+  - name: manage-password
+    description: Endpoints for password change and reset
+  - name: manage-2fa
+    description: Endpoints for managing two-factor authentication (2FA)
+
+servers:
+  - url: https://your-backend.com
+
+paths:
+  /auth/login:
+    post:
+      operationId: login
+      summary: Login and receive access/refresh tokens
+      tags:
+        - login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful, tokens set in HttpOnly cookies
+        '401':
+          description: Invalid credentials
+        '400':
+          description: Bad request
+
+  /auth/refresh:
+    post:
+      operationId: refresh
+      summary: Refresh access token using refresh token cookie
+      tags:
+        - login
+      x-spring-method-parameter:
+        - type: jakarta.servlet.http.HttpServletRequest
+          name: request
+        - type: jakarta.servlet.http.HttpServletResponse
+          name: response
+      responses:
+        '200':
+          description: Access token refreshed and set in HttpOnly cookie
+        '401':
+          description: Invalid or expired refresh token
+  /auth/logout:
+    post:
+      operationId: logout
+      summary: Clear access and refresh tokens
+      tags:
+        - login
+      responses:
+        '200':
+          description: Tokens cleared (cookies deleted)
+  /auth/register:
+    post:
+      operationId: register
+      summary: Register a new user
+      tags:
+        - login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User registered successfully
+        '400':
+          description: Invalid registration data
+  /auth/password/change:
+    post:
+      operationId: changePassword
+      summary: Change password for authenticated user
+      tags:
+        - manage-password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+        required: true
+      responses:
+        '200':
+          description: Password changed
+        '401':
+          description: Not authenticated
+        '403':
+          description: Old password incorrect
+  /auth/password/forgot:
+    post:
+      operationId: forgotPassword
+      summary: Initiate password reset (sends email)
+      tags:
+        - manage-password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+        required: true
+      responses:
+        '200':
+          description: Password reset email sent (or silently ignored)
+  /auth/password/reset:
+    post:
+      operationId: resetPassword
+      summary: Reset password using reset token
+      tags:
+        - manage-password
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+        required: true
+      responses:
+        '200':
+          description: Password reset successful
+        '400':
+          description: Invalid or expired token
+  /auth/2fa/setup:
+    post:
+      operationId: setup2FA
+      summary: Start 2FA setup (generates secret and QR code URL)
+      tags:
+        - manage-2fa
+      responses:
+        '200':
+          description: TOTP secret and QR code returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TOTPSetupResponse'
+  /auth/2fa/confirm:
+    post:
+      operationId: enable2FA
+      summary: Enable 2FA for user
+      tags:
+        - manage-2fa
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TOTPCode'
+        required: true
+      responses:
+        '200':
+          description: 2FA enabled for user
+  /auth/2fa/verify:
+    post:
+      operationId: verify2FA
+      summary: Complete login using TOTP code after password check
+      tags:
+        - manage-2fa
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TOTPVerifyRequest'
+        required: true
+      responses:
+        '200':
+          description: Login successful (tokens set)
+        '401':
+          description: Invalid or missing code
+
+components:
+  schemas:
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+      required:
+        - email
+        - password
+    ChangePasswordRequest:
+      type: object
+      properties:
+        oldPassword:
+          type: string
+        newPassword:
+          type: string
+      required: [ oldPassword, newPassword ]
+    ForgotPasswordRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+      required: [ email ]
+    ResetPasswordRequest:
+      type: object
+      properties:
+        resetToken:
+          type: string
+        newPassword:
+          type: string
+      required: [ resetToken, newPassword ]
+    TOTPSetupResponse:
+      type: object
+      properties:
+        qrCodeUrl:
+          type: string
+          description: otpauth:// URI for TOTP app
+        secret:
+          type: string
+          description: Base32 TOTP secret
+    TOTPCode:
+      type: object
+      properties:
+        code:
+          type: string
+          pattern: '^\d{6}$'
+      required: [ code ]
+    TOTPVerifyRequest:
+      type: object
+      properties:
+        email:
+          type: string
+        code:
+          type: string
+      required: [ email, code ]
+    RegisterRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+        userName:
+          type: string
+      required:
+        - email
+        - password
+        - userName

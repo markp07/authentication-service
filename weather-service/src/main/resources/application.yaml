@@ -1,0 +1,19 @@
+# Set the base path for the API
+server:
+  port: 12001
+  servlet:
+    context-path: /
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+spring:
+  cache:
+    type: redis
+  data:
+    redis:
+      host: redis
+      port: 12005

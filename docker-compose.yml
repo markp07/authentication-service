@@ -1,0 +1,70 @@
+services:
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - '12005:6379'
+    command: [ "redis-server", "--bind", "0.0.0.0" ]
+    hostname: cache
+    volumes:
+      - cache:/data
+
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: authentication_service
+      POSTGRES_USER: authentication_service
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - '12004:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: mark@markpost.nl
+      PGADMIN_DEFAULT_PASSWORD: ${PG_ADMIN_DEFAULT_PASSWORD}
+    ports:
+      - '12003:80'
+    depends_on:
+      - postgres
+
+#  authentication-service:
+#    image: authentication-service:latest
+#    build:
+#      context: ./
+#      dockerfile: authentication-service/Dockerfile
+#    depends_on:
+#      - redis
+#      - postgres
+#    ports:
+#      - '12001:12001'
+#    volumes:
+#      - /data/authentication_service
+#    links:
+#      - postgres
+#
+#  weather-service:
+#    image: weather-service:latest
+#    build:
+#      context: ./
+#      dockerfile: weather-server/Dockerfile
+#    depends_on:
+#      - redis
+#      - postgres
+#    ports:
+#      - '12002:12002'
+#    volumes:
+#      - /data/weather_service
+#    links:
+#      - redis
+
+volumes:
+  cache:
+    driver: local
+  postgres_data:
+    driver: local
+  pgadmin-data:
