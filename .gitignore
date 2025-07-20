@@ -23,6 +23,18 @@
 hs_err_pid*
 replay_pid*
 
+# Ignore IDE and build output
+.idea/
+target/
+**/target/
+*.iml
+*.ipr
+*.iws
+out/
+
 # Ignore RSA key files
 *.pem
 src/main/resources/keys/*.pem
+**/keys/*.pem
+**/keys/private_key.pem
+**/keys/public_key.pem
