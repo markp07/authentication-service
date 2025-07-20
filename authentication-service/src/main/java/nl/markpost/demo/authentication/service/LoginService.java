@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.authentication.api.v1.model.LoginRequest;
 import nl.markpost.demo.authentication.api.v1.model.RegisterRequest;
 import nl.markpost.demo.authentication.model.User;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LoginService {
 
   private final UserRepository userRepository;
@@ -47,6 +49,7 @@ public class LoginService {
 
   public ResponseEntity<Void> login(LoginRequest loginRequest, HttpServletResponse response) {
     User user = userRepository.findByEmail(loginRequest.getEmail());
+    log.info("Password matches: {} {} {} {}", loginRequest.getPassword(), passwordEncoder.encode(loginRequest.getPassword()),user.getPassword(), passwordEncoder.matches(loginRequest.getPassword(), user.getPassword()));
     if (user == null || !passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
       return ResponseEntity.status(401).build();
     }

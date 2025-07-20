@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1")
 @RequiredArgsConstructor
 public class Manage2faController implements Manage2faApi {
-    @Autowired
-    private Manage2faService manage2faService;
+
+    private final Manage2faService manage2faService;
 
     @Override
     public ResponseEntity<TOTPSetupResponse> setup2FA() {

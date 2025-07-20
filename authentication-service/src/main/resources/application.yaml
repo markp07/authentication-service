@@ -10,6 +10,10 @@ management:
       exposure:
         include: '*'
 
+jwt:
+  private-key: classpath:keys/private_key.pem
+  public-key: classpath:keys/public_key.pem
+
 spring:
   datasource:
     url: jdbc:postgresql://postgres:12004/authentication_service?useUnicode=true&characterEncoding=UTF-8
@@ -25,10 +29,18 @@ spring:
         connection:
           useUnicode: true
           characterEncoding: UTF-8
-
-jwt:
-  private-key: classpath:keys/private_key.pem
-  public-key: classpath:keys/public_key.pem
+  mail:
+    host: smtp.example.com
+    port: 587
+    username: your_smtp_username
+    password: your_smtp_password
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 security:
   excluded-paths:
@@ -36,6 +48,13 @@ security:
     - /v1/auth/login
     - /v1/auth/password/forgot
     - /v1/auth/password/reset
+
+email:
+  from: "no-reply@example.com"
+  subject:
+    reset-password: "Password Reset Request"
+  body:
+    reset-password: "Hi {userName},\nTo reset your password, use the following token: {resetToken}\nRegards,\nAuthentication Demo Service"
 
 ---
 # Local environment profile

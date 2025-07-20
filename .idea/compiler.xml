@@ -3,7 +3,7 @@
   <component name="CompilerConfiguration">
     <annotationProcessing>
       <profile default="true" name="Default" enabled="true" />
-      <profile name="Annotation profile for weather" enabled="true">
+      <profile name="Annotation profile for Demo Authentication Parent" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -18,15 +18,18 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.38/lombok-1.18.38.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok-mapstruct-binding/0.2.0/lombok-mapstruct-binding-0.2.0.jar" />
         </processorPath>
-        <module name="weather" />
-        <module name="authentication" />
+        <module name="authentication-service" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="authentication" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="authentication" options="-parameters" />
-      <module name="weather" options="-parameters -Amapstruct.defaultComponentModel=spring" />
+      <module name="authentication" options="" />
+      <module name="authentication-service" options="-parameters -Amapstruct.defaultComponentModel=spring" />
+      <module name="weather-service" options="-parameters -Amapstruct.defaultComponentModel=spring" />
     </option>
   </component>
 </project>

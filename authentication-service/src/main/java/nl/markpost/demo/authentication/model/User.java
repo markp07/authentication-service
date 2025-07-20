@@ -53,13 +53,15 @@ public class User implements UserDetails {
   @Column(name = "role", nullable = false)
   private Set<String> roles;
 
+  @Column(name = "reset_token")
+  private String resetToken;
+
   @CreationTimestamp
   private LocalDateTime createdAt;
 
   @UpdateTimestamp
   private LocalDateTime updatedAt;
 
-  // UserDetails implementation
   @Override
   public Set<SimpleGrantedAuthority> getAuthorities() {
     return roles == null ? Set.of() : roles.stream().map(SimpleGrantedAuthority::new)

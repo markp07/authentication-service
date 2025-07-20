@@ -25,10 +25,10 @@ public class JwtKeyProvider {
   @Getter
   private PublicKey publicKey;
 
-  @Value("${jwt.private-key}")
+  @Value("${jwt.private-key:}")
   private String privateKeyPath;
 
-  @Value("${jwt.public-key}")
+  @Value("${jwt.public-key:}")
   private String publicKeyPath;
 
   @PostConstruct

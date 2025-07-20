@@ -7,5 +7,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // Custom query methods can be defined here if needed
     // For example, to find a user by username:
     User findByEmail(String email);
+    User findByResetToken(String resetToken);
 
 }
