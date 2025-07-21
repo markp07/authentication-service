@@ -10,6 +10,7 @@ public class CookieUtil {
     cookie.setSecure(true);
     cookie.setPath("/");
     cookie.setMaxAge(maxAge);
+    cookie.setDomain("localhost");
     return cookie;
   }
 

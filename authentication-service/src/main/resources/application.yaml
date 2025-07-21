@@ -48,13 +48,14 @@ security:
     - /v1/auth/login
     - /v1/auth/password/forgot
     - /v1/auth/password/reset
+    - /v1/public-key
 
 email:
   from: "no-reply@example.com"
   subject:
     reset-password: "Password Reset Request"
   body:
-    reset-password: "Hi {userName},\nTo reset your password, use the following token: {resetToken}\nRegards,\nAuthentication Demo Service"
+    reset-password: "Hi {userName},\nTo reset your password, use the following link: http://localhost:3000/?token={resetToken}\nRegards,\nAuthentication Demo Service"
 
 ---
 # Local environment profile

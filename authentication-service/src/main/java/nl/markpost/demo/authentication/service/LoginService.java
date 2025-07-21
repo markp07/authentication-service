@@ -49,7 +49,6 @@ public class LoginService {
 
   public ResponseEntity<Void> login(LoginRequest loginRequest, HttpServletResponse response) {
     User user = userRepository.findByEmail(loginRequest.getEmail());
-    log.info("Password matches: {} {} {} {}", loginRequest.getPassword(), passwordEncoder.encode(loginRequest.getPassword()),user.getPassword(), passwordEncoder.matches(loginRequest.getPassword(), user.getPassword()));
     if (user == null || !passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
       return ResponseEntity.status(401).build();
     }

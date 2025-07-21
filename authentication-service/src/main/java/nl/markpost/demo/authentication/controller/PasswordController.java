@@ -1,5 +1,7 @@
 package nl.markpost.demo.authentication.controller;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.authentication.api.v1.controller.ManagePasswordApi;
 import nl.markpost.demo.authentication.api.v1.model.ChangePasswordRequest;
 import nl.markpost.demo.authentication.api.v1.model.ForgotPasswordRequest;
@@ -14,17 +16,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/v1")
+@RequiredArgsConstructor
+@Slf4j
 public class PasswordController implements ManagePasswordApi {
 
   private final PasswordService passwordService;
 
-  public PasswordController(PasswordService passwordService) {
-    this.passwordService = passwordService;
-  }
-
   @Override
   public ResponseEntity<Void> changePassword(ChangePasswordRequest changePasswordRequest) {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    log.info("Change password request for user: {}", user.getEmail());
     //TODO: validate old password == current password
     //TODO: validate new password strength
     //TODO: logout user if password change is successful
@@ -36,6 +37,7 @@ public class PasswordController implements ManagePasswordApi {
   @Override
   public ResponseEntity<Void> forgotPassword(ForgotPasswordRequest forgotPasswordRequest) {
     String email = forgotPasswordRequest.getEmail();
+    log.info("Forgot password request for email: {}", email);
     boolean success = passwordService.forgotPassword(email);
     //TODO: implement exception handling and proper response
     return success ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
@@ -43,6 +45,7 @@ public class PasswordController implements ManagePasswordApi {
 
   @Override
   public ResponseEntity<Void> resetPassword(@RequestBody ResetPasswordRequest request) {
+    log.info("Reset password request");
     boolean success = passwordService.resetPassword(request.getResetToken(),
         request.getNewPassword());
     //TODO: implement exception handling and proper response
