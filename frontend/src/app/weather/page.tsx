@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { IconSun, IconCloud, IconCloudFog, IconCloudRain, IconCloudSnow, IconSunrise, IconSunset } from "@tabler/icons-react";
 
 interface WeatherData {
   latitude: number;
@@ -9,16 +10,57 @@ interface WeatherData {
   elevation: number;
   current: {
     time: string;
+    weatherCode: string;
     temperature: number;
     windSpeed: number;
-    relativeHumidity: number;
   };
-  hourly: Array<{
+  daily: Array<{
     time: string;
-    temperature: number;
-    windSpeed: number;
-    relativeHumidity: number;
+    sunRise: string;
+    sunSet: string;
+    weatherCode: string;
+    temperatureMin: number;
+    temperatureMax: number;
+    precipitation: number;
   }>;
+}
+
+const weatherCodeMap: Record<string, { label: string; icon: JSX.Element }> = {
+  CLEAR_SKY: { label: "Clear sky", icon: <IconSun className="text-yellow-400" size={32} /> },
+  MAINLY_CLEAR: { label: "Mainly clear", icon: <IconCloud className="text-blue-400" size={32} /> },
+  PARTLY_CLOUDY: { label: "Partly cloudy", icon: <IconCloud className="text-blue-400" size={32} /> },
+  OVERCAST: { label: "Overcast", icon: <IconCloud className="text-blue-400" size={32} /> },
+  FOG: { label: "Fog", icon: <IconCloudFog className="text-gray-400" size={32} /> },
+  DEPOSITING_RIME_FOG: { label: "Depositing rime fog", icon: <IconCloudFog className="text-gray-400" size={32} /> },
+  DRIZZLE_LIGHT: { label: "Drizzle", icon: <IconCloudRain className="text-blue-400" size={32} /> },
+  DRIZZLE_MODERATE: { label: "Drizzle", icon: <IconCloudRain className="text-blue-400" size={32} /> },
+  DRIZZLE_DENSE: { label: "Drizzle", icon: <IconCloudRain className="text-blue-400" size={32} /> },
+  FREEZING_DRIZZLE_LIGHT: { label: "Freezing Drizzle: Light", icon: <IconCloudRain className="text-blue-200" size={32} /> },
+  FREEZING_DRIZZLE_DENSE: { label: "Freezing Drizzle: Dense", icon: <IconCloudRain className="text-blue-200" size={32} /> },
+  RAIN_SLIGHT: { label: "Rain", icon: <IconCloudRain className="text-blue-600" size={32} /> },
+  RAIN_MODERATE: { label: "Rain", icon: <IconCloudRain className="text-blue-600" size={32} /> },
+  RAIN_HEAVY: { label: "Rain", icon: <IconCloudRain className="text-blue-600" size={32} /> },
+  FREEZING_RAIN_LIGHT: { label: "Freezing Rain: Light", icon: <IconCloudRain className="text-blue-200" size={32} /> },
+  FREEZING_RAIN_HEAVY: { label: "Freezing Rain: Heavy", icon: <IconCloudRain className="text-blue-200" size={32} /> },
+  SNOW_SLIGHT: { label: "Snow fall: Slight", icon: <IconCloudSnow className="text-blue-200" size={32} /> },
+  SNOW_MODERATE: { label: "Snow fall: Moderate", icon: <IconCloudSnow className="text-blue-200" size={32} /> },
+  SNOW_HEAVY: { label: "Snow fall: Heavy", icon: <IconCloudSnow className="text-blue-200" size={32} /> },
+  SNOW_GRAINS: { label: "Snow grains", icon: <IconCloudSnow className="text-blue-200" size={32} /> },
+  RAIN_SHOWERS_SLIGHT: { label: "Rain showers: Slight", icon: <IconCloudRain className="text-blue-400" size={32} /> },
+  RAIN_SHOWERS_MODERATE: { label: "Rain showers: Moderate", icon: <IconCloudRain className="text-blue-400" size={32} /> },
+  RAIN_SHOWERS_VIOLENT: { label: "Rain showers: Violent", icon: <IconCloudRain className="text-blue-400" size={32} /> },
+  SNOW_SHOWERS_SLIGHT: { label: "Snow showers: Slight", icon: <IconCloudSnow className="text-blue-400" size={32} /> },
+  SNOW_SHOWERS_HEAVY: { label: "Snow showers: Heavy", icon: <IconCloudSnow className="text-blue-400" size={32} /> },
+  THUNDERSTORM_SLIGHT_MODERATE: { label: "Thunderstorm: Slight or moderate", icon: <IconCloud className="text-yellow-600" size={32} /> },
+  THUNDERSTORM_SLIGHT_HAIL: { label: "Thunderstorm with slight hail", icon: <IconCloudSnow className="text-blue-400" size={32} /> },
+  THUNDERSTORM_HEAVY_HAIL: { label: "Thunderstorm with heavy hail", icon: <IconCloudSnow className="text-blue-400" size={32} /> },
+};
+
+function getWeatherIcon(code: string) {
+  return weatherCodeMap[code]?.icon || <IconSun size={32} />;
+}
+function getWeatherLabel(code: string) {
+  return weatherCodeMap[code]?.label || code;
 }
 
 export default function WeatherPage() {
@@ -95,33 +137,42 @@ export default function WeatherPage() {
         {error && <p className="text-red-600 text-center">{error}</p>}
         {weather && (
           <div>
-            <div className="mb-6 text-center">
+            <div className="mb-6 text-center flex flex-col items-center">
               <div className="text-lg font-semibold">Current Weather</div>
+              <div className="mb-2 text-blue-700 dark:text-blue-200 font-bold text-xl flex items-center justify-center gap-2">
+                {getWeatherIcon(weather.current.weatherCode)}
+                {getWeatherLabel(weather.current.weatherCode)}
+              </div>
               <div>Location: {weather.latitude.toFixed(4)}, {weather.longitude.toFixed(4)}</div>
               <div>Temperature: <span className="font-bold">{weather.current.temperature}°C</span></div>
               <div>Wind Speed: {weather.current.windSpeed} km/h</div>
-              <div>Humidity: {weather.current.relativeHumidity}%</div>
               <div>Time: {new Date(weather.current.time).toLocaleString()}</div>
             </div>
             <div>
-              <div className="text-lg font-semibold mb-2">Hourly Forecast</div>
+              <div className="text-lg font-semibold mb-2">Daily Forecast</div>
               <div className="overflow-x-auto">
                 <table className="min-w-full text-sm">
-                  <thead>
-                    <tr className="bg-blue-200 dark:bg-gray-800">
-                      <th className="px-2 py-1">Time</th>
-                      <th className="px-2 py-1">Temp (°C)</th>
-                      <th className="px-2 py-1">Wind (km/h)</th>
-                      <th className="px-2 py-1">Humidity (%)</th>
-                    </tr>
-                  </thead>
                   <tbody>
-                    {weather.hourly.map((h, i) => (
+                    {weather.daily.map((d, i) => (
                       <tr key={i} className={i % 2 === 0 ? "bg-blue-50 dark:bg-gray-900" : "bg-white dark:bg-gray-800"}>
-                        <td className="px-2 py-1">{new Date(h.time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</td>
-                        <td className="px-2 py-1">{h.temperature}</td>
-                        <td className="px-2 py-1">{h.windSpeed}</td>
-                        <td className="px-2 py-1">{h.relativeHumidity}</td>
+                        <td className="px-2 py-1 whitespace-nowrap text-center">
+                          {new Date(d.time).toLocaleDateString("en-GB", { weekday: "short" })}
+                          <br />
+                          {new Date(d.time).toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit" })}
+                        </td>
+                        <td className="px-2 py-1 items-center text-center">
+                          {getWeatherIcon(d.weatherCode)}
+                        </td>
+                        <td className="px-2 py-1 text-center">
+                          <span className="font-bold">{d.temperatureMin}°C</span> / <span className="font-bold">{d.temperatureMax}°C</span>
+                        </td>
+                        <td className="px-2 py-1 text-center">
+                          {d.precipitation.toFixed(1)}mm
+                        </td>
+                        <td className="px-2 py-1 text-center">
+                          <IconSunrise className="text-black" size={20} /> {new Date(d.sunRise).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} <br/>
+                          <IconSunset className="text-black" size={20} /> {new Date(d.sunSet).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                        </td>
                       </tr>
                     ))}
                   </tbody>

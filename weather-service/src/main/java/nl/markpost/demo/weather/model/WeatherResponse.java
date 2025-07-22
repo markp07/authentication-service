@@ -25,4 +25,6 @@ public class WeatherResponse {
     private CurrentResponse current;
     private Map<String, String> hourly_units;
     private HourlyResponse hourly;
+    private Map<String, String> daily_units;
+    private DailyResponse daily;
 }

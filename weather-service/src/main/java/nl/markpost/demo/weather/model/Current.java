@@ -17,11 +17,10 @@ public class Current {
 
     private LocalDateTime time;
 
+    private WeatherCode weatherCode;
+
     private double temperature;
 
     private double windSpeed;
 
-    private int relativeHumidity;
-
 }
-

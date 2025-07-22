@@ -15,7 +15,6 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring", uses = CurrentMapper.class)
 public interface WeatherMapper {
-    WeatherMapper INSTANCE = Mappers.getMapper(WeatherMapper.class);
 
     @Mappings({
         @Mapping(source = "latitude", target = "latitude"),
@@ -23,7 +22,7 @@ public interface WeatherMapper {
         @Mapping(source = "timezone", target = "timezone"),
         @Mapping(source = "elevation", target = "elevation"),
         @Mapping(source = "current", target = "current"),
-        @Mapping(source = "hourly", target = "hourly")
+        @Mapping(target = "daily", expression = "java(toDailyList(response.getDaily()))")
     })
     Weather toWeather(WeatherResponse response);
 
@@ -32,23 +31,37 @@ public interface WeatherMapper {
         return LocalDateTime.parse(value, DateTimeFormatter.ISO_DATE_TIME);
     }
 
-    default List<Hourly> toHourlyList(HourlyResponse hourly) {
-        if (hourly == null) {
-            return null;
-        }
-        List<String> times = hourly.getTime();
-        List<Double> temps = hourly.getTemperature_2m();
-        List<Integer> hums = hourly.getRelative_humidity_2m();
-        List<Double> winds = hourly.getWind_speed_10m();
-        List<Hourly> result = new ArrayList<>();
+    default List<nl.markpost.demo.weather.model.Daily> toDailyList(nl.markpost.demo.weather.model.DailyResponse daily) {
+        if (daily == null) return null;
+        List<String> times = daily.getTime();
+        List<Integer> codes = daily.getWeather_code();
+        List<Double> tempMax = daily.getTemperature_2m_max();
+        List<Double> tempMin = daily.getTemperature_2m_min();
+        List<String> sunRises = daily.getSunrise();
+        List<String> sunSets = daily.getSunset();
+        List<Double> precips = daily.getPrecipitation_sum();
+        List<nl.markpost.demo.weather.model.Daily> result = new ArrayList<>();
         int size = times != null ? times.size() : 0;
         for (int i = 0; i < size; i++) {
-            LocalDateTime time = i < times.size() ? mapTime(times.get(i)) : null;
-            double temp = temps != null && i < temps.size() ? temps.get(i) : 0.0;
-            int hum = hums != null && i < hums.size() ? hums.get(i) : 0;
-            double wind = winds != null && i < winds.size() ? winds.get(i) : 0.0;
-            result.add(new Hourly(time, temp, wind, hum));
+            LocalDateTime time = i < times.size() ? mapDate(times.get(i)) : null;
+            LocalDateTime sunRise = sunRises != null && i < sunRises.size() ? mapDateTime(sunRises.get(i)) : null;
+            LocalDateTime sunSet = sunSets != null && i < sunSets.size() ? mapDateTime(sunSets.get(i)) : null;
+            nl.markpost.demo.weather.model.WeatherCode weatherCode = codes != null && i < codes.size() ? nl.markpost.demo.weather.model.WeatherCode.fromCode(codes.get(i)) : nl.markpost.demo.weather.model.WeatherCode.CLEAR_SKY;
+            double temperatureMin = tempMin != null && i < tempMin.size() ? tempMin.get(i) : 0.0;
+            double temperatureMax = tempMax != null && i < tempMax.size() ? tempMax.get(i) : 0.0;
+            int precipitation = precips != null && i < precips.size() ? (int)Math.round(precips.get(i)) : 0;
+            result.add(new nl.markpost.demo.weather.model.Daily(time, sunRise, sunSet, weatherCode, temperatureMin, temperatureMax, precipitation));
         }
         return result;
+    }
+
+    default LocalDateTime mapDate(String value) {
+        if (value == null) return null;
+        return LocalDateTime.parse(value + "T00:00:00");
+    }
+
+    default LocalDateTime mapDateTime(String value) {
+        if (value == null) return null;
+        return LocalDateTime.parse(value);
     }
 }

@@ -57,6 +57,9 @@ email:
   body:
     reset-password: "Hi {userName},\nTo reset your password, use the following link: http://localhost:3000/?token={resetToken}\nRegards,\nAuthentication Demo Service"
 
+cookie:
+  secure: true
+
 ---
 # Local environment profile
 spring:
@@ -72,3 +75,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+
+cookie:
+  secure: false

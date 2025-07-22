@@ -9,9 +9,8 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface CurrentMapper {
     @Mapping(source = "time", target = "time")
+    @Mapping(target = "weatherCode", expression = "java(nl.markpost.demo.weather.model.WeatherCode.fromCode(current.getWeather_code()))")
     @Mapping(source = "temperature_2m", target = "temperature")
-    @Mapping(source = "relative_humidity_2m", target = "relativeHumidity")
     @Mapping(source = "wind_speed_10m", target = "windSpeed")
     Current toCurrent(CurrentResponse current);
 }
-

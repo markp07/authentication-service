@@ -20,7 +20,7 @@ public class Weather {
 
   private Current current;
 
-  private List<Hourly> hourly;
+  private List<Daily> daily;
 
 }
 

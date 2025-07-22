@@ -16,5 +16,7 @@ public class CurrentResponse {
     private double temperature_2m;
     Integer relative_humidity_2m;
     private double wind_speed_10m;
+    private double precipitation;
+    private int weather_code;
 }
 
