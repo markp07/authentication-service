@@ -15,6 +15,12 @@
 	<description>Authentication demo project</description>
 
 	<dependencies>
+		<dependency>
+			<groupId>nl.markpost.demo</groupId>
+			<artifactId>common</artifactId>
+			<version>${revision}</version>
+		</dependency>
+
 		<!-- Spring Boot dependencies -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

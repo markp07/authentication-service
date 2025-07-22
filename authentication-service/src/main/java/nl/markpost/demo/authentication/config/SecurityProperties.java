@@ -1,20 +1,18 @@
 package nl.markpost.demo.authentication.config;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
+@Setter
+@Getter
 @Configuration
 @ConfigurationProperties(prefix = "security")
 public class SecurityProperties {
+
     private List<String> excludedPaths;
 
-    public List<String> getExcludedPaths() {
-        return excludedPaths;
-    }
-
-    public void setExcludedPaths(List<String> excludedPaths) {
-        this.excludedPaths = excludedPaths;
-    }
 }
 

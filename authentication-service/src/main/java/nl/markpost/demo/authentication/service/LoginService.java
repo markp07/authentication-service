@@ -17,6 +17,7 @@ import nl.markpost.demo.authentication.model.User;
 import nl.markpost.demo.authentication.repository.UserRepository;
 import nl.markpost.demo.authentication.security.JwtService;
 import nl.markpost.demo.authentication.util.CookieUtil;
+import nl.markpost.demo.common.exception.UnauthorizedException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,7 @@ public class LoginService {
   public ResponseEntity<Void> login(LoginRequest loginRequest, HttpServletResponse response) {
     User user = userRepository.findByEmail(loginRequest.getEmail());
     if (user == null || !passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-      return ResponseEntity.status(401).build();
+      throw new UnauthorizedException();
     }
     String accessToken = jwtService.generateAccessToken(user);
     String refreshToken = jwtService.generateRefreshToken(user);
@@ -76,12 +77,12 @@ public class LoginService {
       }
     }
     if (refreshToken == null) {
-      return ResponseEntity.status(401).build();
+      throw new UnauthorizedException();
     }
     String emailFromToken = jwtService.getEmailFromToken(refreshToken);
     User user = userRepository.findByEmail(emailFromToken);
     if (user == null) {
-      return ResponseEntity.status(401).build();
+      throw new UnauthorizedException();
     }
     String accessToken = jwtService.generateAccessToken(user);
     response.addCookie(CookieUtil.buildCookie(ACCESS_TOKEN, accessToken, DAYS_7));

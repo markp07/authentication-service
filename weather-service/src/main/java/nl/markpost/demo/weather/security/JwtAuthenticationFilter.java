@@ -18,6 +18,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.concurrent.atomic.AtomicReference;
+import nl.markpost.demo.common.exception.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -47,9 +48,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       }
     }
     if (token == null) {
-      response.setStatus(HttpStatus.UNAUTHORIZED.value());
-      response.getWriter().write("Missing access_token cookie");
-      return;
+      throw new UnauthorizedException();
+//      response.setStatus(HttpStatus.UNAUTHORIZED.value());
+//      response.getWriter().write("Missing access_token cookie");
+//      return;
     }
     try {
       PublicKey publicKey = getPublicKey();
@@ -62,8 +64,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       request.setAttribute("jwtClaims", claims);
       filterChain.doFilter(request, response);
     } catch (Exception e) {
-      response.setStatus(HttpStatus.UNAUTHORIZED.value());
-      response.getWriter().write("Invalid or expired access_token");
+      throw new UnauthorizedException();
+//      response.setStatus(HttpStatus.UNAUTHORIZED.value());
+//      response.getWriter().write("Invalid or expired access_token");
     }
   }
 
@@ -81,7 +84,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         .build();
     HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
     if (response.statusCode() != 200) {
-      throw new IOException("Failed to fetch public key");
+      throw new IOException("Failed to fetch public key"); //TODO: handle this more gracefully
     }
     String pem = response.body();
     String publicKeyPEM = pem.replace("-----BEGIN PUBLIC KEY-----", "")
