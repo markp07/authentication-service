@@ -1,6 +1,10 @@
 package nl.markpost.demo.weather.model;
 
+import lombok.Getter;
+
+@Getter
 public enum WeatherCode {
+
     CLEAR_SKY(0),
     MAINLY_CLEAR(1),
     PARTLY_CLOUDY(2),
@@ -36,58 +40,27 @@ public enum WeatherCode {
         this.code = code;
     }
 
-    public int getCode() {
-        return code;
-    }
-
-    public static WeatherCode fromCode(int code) {
+  public static WeatherCode fromCode(int code) {
         for (WeatherCode wc : values()) {
             if (wc.code == code) {
                 return wc;
             }
         }
         // fallback for grouped codes
-        switch (code) {
-            case 1:
-            case 2:
-            case 3:
-                return MAINLY_CLEAR;
-            case 45:
-            case 48:
-                return FOG;
-            case 51:
-            case 53:
-            case 55:
-                return DRIZZLE_LIGHT;
-            case 56:
-            case 57:
-                return FREEZING_DRIZZLE_LIGHT;
-            case 61:
-            case 63:
-            case 65:
-                return RAIN_SLIGHT;
-            case 66:
-            case 67:
-                return FREEZING_RAIN_LIGHT;
-            case 71:
-            case 73:
-            case 75:
-                return SNOW_SLIGHT;
-            case 80:
-            case 81:
-            case 82:
-                return RAIN_SHOWERS_SLIGHT;
-            case 85:
-            case 86:
-                return SNOW_SHOWERS_SLIGHT;
-            case 95:
-                return THUNDERSTORM_SLIGHT_MODERATE;
-            case 96:
-            case 99:
-                return THUNDERSTORM_SLIGHT_HAIL;
-            default:
-                return CLEAR_SKY;
-        }
+      return switch (code) {
+        case 1, 2, 3 -> MAINLY_CLEAR;
+        case 45, 48 -> FOG;
+        case 51, 53, 55 -> DRIZZLE_LIGHT;
+        case 56, 57 -> FREEZING_DRIZZLE_LIGHT;
+        case 61, 63, 65 -> RAIN_SLIGHT;
+        case 66, 67 -> FREEZING_RAIN_LIGHT;
+        case 71, 73, 75 -> SNOW_SLIGHT;
+        case 80, 81, 82 -> RAIN_SHOWERS_SLIGHT;
+        case 85, 86 -> SNOW_SHOWERS_SLIGHT;
+        case 95 -> THUNDERSTORM_SLIGHT_MODERATE;
+        case 96, 99 -> THUNDERSTORM_SLIGHT_HAIL;
+        default -> CLEAR_SKY;
+      };
     }
 }
 

@@ -1,10 +1,9 @@
 package nl.markpost.demo.weather.service;
 
 import lombok.RequiredArgsConstructor;
-import nl.markpost.demo.weather.clients.OpenMeteoClient;
+import nl.markpost.demo.weather.client.OpenMeteoClient;
 import nl.markpost.demo.weather.mapper.WeatherMapper;
 import nl.markpost.demo.weather.model.Weather;
-import nl.markpost.demo.weather.model.WeatherResponse;
 import org.springframework.stereotype.Service;
 
 /**

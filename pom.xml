@@ -17,7 +17,7 @@
   </modules>
 
   <properties>
-    <revision>2.19.4</revision>
+    <revision>1.0.0</revision>
     <java.version>21</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- Dependency versions -->
@@ -118,7 +118,7 @@
               <include>**/*Test.java</include>
             </includes>
             <testFailureIgnore>false</testFailureIgnore>
-            <argLine>-Xmx1024m -Duser.timezone=UTC</argLine>
+            <argLine>@{surefireArgLine} -Xmx1024m -Duser.timezone=UTC</argLine>
             <printSummary>false</printSummary>
             <redirectTestOutputToFile>true</redirectTestOutputToFile>
             <forkCount>3</forkCount>

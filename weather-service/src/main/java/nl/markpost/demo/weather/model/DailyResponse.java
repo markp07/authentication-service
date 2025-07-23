@@ -13,12 +13,20 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DailyResponse {
+
     private List<String> time;
+
     private List<Integer> weather_code;
+
     private List<Double> temperature_2m_max;
+
     private List<Double> temperature_2m_min;
+
     private List<String> sunrise;
+
     private List<String> sunset;
+
     private List<Double> precipitation_sum;
+
 }
 

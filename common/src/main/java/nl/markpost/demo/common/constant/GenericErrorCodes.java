@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum GenericErrorCodes {
+
   BAD_REQUEST("BAD_REQUEST", "Bad request", HttpStatus.BAD_REQUEST),
   NOT_FOUND("NOT_FOUND", "Not found", HttpStatus.NOT_FOUND),
   FORBIDDEN("FORBIDDEN", "Forbidden", HttpStatus.FORBIDDEN),

@@ -1,5 +1,6 @@
 package nl.markpost.demo.weather.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.weather.model.Weather;
 import nl.markpost.demo.weather.model.WeatherResponse;
@@ -16,15 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/weather")
 public class WeatherController {
 
     private final WeatherService weatherService;
-
-    @Autowired
-    public WeatherController(WeatherService weatherService) {
-        this.weatherService = weatherService;
-    }
 
     /**
      * Retrieves weather data for the given coordinates.

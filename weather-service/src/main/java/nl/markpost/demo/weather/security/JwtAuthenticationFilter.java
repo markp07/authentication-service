@@ -19,11 +19,23 @@ import java.time.Duration;
 import java.util.Base64;
 import java.util.concurrent.atomic.AtomicReference;
 import nl.markpost.demo.common.exception.UnauthorizedException;
-import org.springframework.http.HttpStatus;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+//TODO: CLeanup, refactor and revisit logic
+
+/**
+ * Servlet filter for authenticating requests using JWT access tokens.
+ * <p>
+ * - Extracts the access_token from cookies.
+ * - Validates the JWT using the public key from the authentication service.
+ * - Caches the public key for efficiency.
+ * - Allows CORS preflight (OPTIONS) requests to pass through.
+ * </p>
+ */
 @Component
+@Profile("!ut")
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private static final String AUTH_SERVICE_PUBLIC_KEY_URL = "http://localhost:12002/v1/public-key";
@@ -31,51 +43,66 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-      FilterChain filterChain)
-      throws ServletException, IOException {
-    // Allow CORS preflight requests to pass through without authentication
-    if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+      FilterChain filterChain) throws ServletException, IOException {
+    if (isPreflightRequest(request)) {
       filterChain.doFilter(request, response);
       return;
     }
-    String token = null;
-    if (request.getCookies() != null) {
-      for (Cookie cookie : request.getCookies()) {
-        if ("access_token".equals(cookie.getName())) {
-          token = cookie.getValue();
-          break;
-        }
-      }
-    }
-    if (token == null) {
+    String accessToken = extractAccessToken(request);
+    if (accessToken == null) {
       throw new UnauthorizedException();
-//      response.setStatus(HttpStatus.UNAUTHORIZED.value());
-//      response.getWriter().write("Missing access_token cookie");
-//      return;
     }
     try {
-      PublicKey publicKey = getPublicKey();
+      PublicKey publicKey = getOrFetchPublicKey();
       Claims claims = Jwts.parserBuilder()
           .setSigningKey(publicKey)
           .build()
-          .parseClaimsJws(token)
+          .parseClaimsJws(accessToken)
           .getBody();
-      // Optionally, set claims as request attribute for downstream use
       request.setAttribute("jwtClaims", claims);
       filterChain.doFilter(request, response);
     } catch (Exception e) {
       throw new UnauthorizedException();
-//      response.setStatus(HttpStatus.UNAUTHORIZED.value());
-//      response.getWriter().write("Invalid or expired access_token");
     }
   }
 
-  private PublicKey getPublicKey() throws Exception {
+  /**
+   * Checks if the request is a CORS preflight (OPTIONS) request.
+   */
+  boolean isPreflightRequest(HttpServletRequest request) {
+    return "OPTIONS".equalsIgnoreCase(request.getMethod());
+  }
+
+  /**
+   * Extracts the access_token from cookies.
+   */
+  String extractAccessToken(HttpServletRequest request) {
+    if (request.getCookies() == null) return null;
+    for (Cookie cookie : request.getCookies()) {
+      if ("access_token".equals(cookie.getName())) {
+        return cookie.getValue();
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Gets the cached public key or fetches it from the authentication service if not cached.
+   */
+  PublicKey getOrFetchPublicKey() throws Exception {
     PublicKey key = cachedPublicKey.get();
     if (key != null) {
       return key;
     }
-    // Fetch public key from authentication service
+    PublicKey fetchedKey = fetchPublicKeyFromAuthService();
+    cachedPublicKey.set(fetchedKey);
+    return fetchedKey;
+  }
+
+  /**
+   * Fetches the public key from the authentication service.
+   */
+  PublicKey fetchPublicKeyFromAuthService() throws Exception {
     HttpClient client = HttpClient.newHttpClient();
     HttpRequest request = HttpRequest.newBuilder()
         .uri(URI.create(AUTH_SERVICE_PUBLIC_KEY_URL))
@@ -84,7 +111,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         .build();
     HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
     if (response.statusCode() != 200) {
-      throw new IOException("Failed to fetch public key"); //TODO: handle this more gracefully
+      throw new IOException("Failed to fetch public key");
     }
     String pem = response.body();
     String publicKeyPEM = pem.replace("-----BEGIN PUBLIC KEY-----", "")
@@ -92,8 +119,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         .replaceAll("\\s", "");
     byte[] encoded = Base64.getDecoder().decode(publicKeyPEM);
     X509EncodedKeySpec keySpec = new X509EncodedKeySpec(encoded);
-    PublicKey publicKey = KeyFactory.getInstance("RSA").generatePublic(keySpec);
-    cachedPublicKey.set(publicKey);
-    return publicKey;
+    return KeyFactory.getInstance("RSA").generatePublic(keySpec);
   }
 }

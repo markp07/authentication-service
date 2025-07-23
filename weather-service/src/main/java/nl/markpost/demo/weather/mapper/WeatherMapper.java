@@ -4,64 +4,81 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import nl.markpost.demo.weather.model.Hourly;
-import nl.markpost.demo.weather.model.HourlyResponse;
+import nl.markpost.demo.weather.model.Daily;
+import nl.markpost.demo.weather.model.DailyResponse;
 import nl.markpost.demo.weather.model.Weather;
 import nl.markpost.demo.weather.model.WeatherResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
-import org.mapstruct.factory.Mappers;
 
+/**
+ * Mapper interface for converting WeatherResponse to Weather model. This mapper uses MapStruct to
+ * automatically generate the implementation.
+ */
 @Mapper(componentModel = "spring", uses = CurrentMapper.class)
 public interface WeatherMapper {
 
-    @Mappings({
-        @Mapping(source = "latitude", target = "latitude"),
-        @Mapping(source = "longitude", target = "longitude"),
-        @Mapping(source = "timezone", target = "timezone"),
-        @Mapping(source = "elevation", target = "elevation"),
-        @Mapping(source = "current", target = "current"),
-        @Mapping(target = "daily", expression = "java(toDailyList(response.getDaily()))")
-    })
-    Weather toWeather(WeatherResponse response);
+  /**
+   * Maps a WeatherResponse object to a Weather model.
+   */
+  @Mappings({
+      @Mapping(source = "latitude", target = "latitude"),
+      @Mapping(source = "longitude", target = "longitude"),
+      @Mapping(source = "timezone", target = "timezone"),
+      @Mapping(source = "elevation", target = "elevation"),
+      @Mapping(source = "current", target = "current"),
+      @Mapping(target = "daily", expression = "java(toDailyList(response.getDaily()))")
+  })
+  Weather toWeather(WeatherResponse response);
 
-    default LocalDateTime mapTime(String value) {
-        if (value == null) return null;
-        return LocalDateTime.parse(value, DateTimeFormatter.ISO_DATE_TIME);
+  /**
+   * Maps a date or date-time string to a LocalDateTime object.
+   * Accepts either ISO date (e.g., "2023-10-01") or ISO date-time (e.g., "2023-10-01T12:00:00").
+   * If only a date is provided, time is set to midnight.
+   *
+   * @param value the date or date-time string in ISO format
+   * @return the LocalDateTime object representing the specified date and time
+   */
+  default LocalDateTime mapToLocalDateTime(String value) {
+    if (value == null) {
+      return null;
     }
+    if (value.length() == 10) { // e.g. "2023-10-01"
+      return LocalDateTime.parse(value + "T00:00:00");
+    }
+    return LocalDateTime.parse(value);
+  }
 
-    default List<nl.markpost.demo.weather.model.Daily> toDailyList(nl.markpost.demo.weather.model.DailyResponse daily) {
-        if (daily == null) return null;
-        List<String> times = daily.getTime();
-        List<Integer> codes = daily.getWeather_code();
-        List<Double> tempMax = daily.getTemperature_2m_max();
-        List<Double> tempMin = daily.getTemperature_2m_min();
-        List<String> sunRises = daily.getSunrise();
-        List<String> sunSets = daily.getSunset();
-        List<Double> precips = daily.getPrecipitation_sum();
-        List<nl.markpost.demo.weather.model.Daily> result = new ArrayList<>();
-        int size = times != null ? times.size() : 0;
-        for (int i = 0; i < size; i++) {
-            LocalDateTime time = i < times.size() ? mapDate(times.get(i)) : null;
-            LocalDateTime sunRise = sunRises != null && i < sunRises.size() ? mapDateTime(sunRises.get(i)) : null;
-            LocalDateTime sunSet = sunSets != null && i < sunSets.size() ? mapDateTime(sunSets.get(i)) : null;
-            nl.markpost.demo.weather.model.WeatherCode weatherCode = codes != null && i < codes.size() ? nl.markpost.demo.weather.model.WeatherCode.fromCode(codes.get(i)) : nl.markpost.demo.weather.model.WeatherCode.CLEAR_SKY;
-            double temperatureMin = tempMin != null && i < tempMin.size() ? tempMin.get(i) : 0.0;
-            double temperatureMax = tempMax != null && i < tempMax.size() ? tempMax.get(i) : 0.0;
-            int precipitation = precips != null && i < precips.size() ? (int)Math.round(precips.get(i)) : 0;
-            result.add(new nl.markpost.demo.weather.model.Daily(time, sunRise, sunSet, weatherCode, temperatureMin, temperatureMax, precipitation));
-        }
-        return result;
+  /**
+   * Converts a DailyResponse object to a List of Daily models.
+   *
+   * @param daily the DailyResponse object to convert
+   * @return the converted List of Daily models
+   */
+  default List<Daily> toDailyList(DailyResponse daily) {
+    if (daily == null) {
+      return null;
     }
-
-    default LocalDateTime mapDate(String value) {
-        if (value == null) return null;
-        return LocalDateTime.parse(value + "T00:00:00");
+    List<String> times = daily.getTime();
+    List<Integer> codes = daily.getWeather_code();
+    List<Double> tempMax = daily.getTemperature_2m_max();
+    List<Double> tempMin = daily.getTemperature_2m_min();
+    List<String> sunRises = daily.getSunrise();
+    List<String> sunSets = daily.getSunset();
+    List<Double> precips = daily.getPrecipitation_sum();
+    List<nl.markpost.demo.weather.model.Daily> result = new ArrayList<>();
+    int size = times != null ? times.size() : 0;
+    for (int i = 0; i < size; i++) {
+      LocalDateTime time = i < times.size() ? mapToLocalDateTime(times.get(i)) : null;
+      LocalDateTime sunRise = sunRises != null && i < sunRises.size() ? mapToLocalDateTime(sunRises.get(i)) : null;
+      LocalDateTime sunSet = sunSets != null && i < sunSets.size() ? mapToLocalDateTime(sunSets.get(i)) : null;
+      nl.markpost.demo.weather.model.WeatherCode weatherCode = codes != null && i < codes.size() ? nl.markpost.demo.weather.model.WeatherCode.fromCode(codes.get(i)) : nl.markpost.demo.weather.model.WeatherCode.CLEAR_SKY;
+      double temperatureMin = tempMin != null && i < tempMin.size() ? tempMin.get(i) : 0.0;
+      double temperatureMax = tempMax != null && i < tempMax.size() ? tempMax.get(i) : 0.0;
+      int precipitation = precips != null && i < precips.size() ? (int) Math.round(precips.get(i)) : 0;
+      result.add(new nl.markpost.demo.weather.model.Daily(time, sunRise, sunSet, weatherCode, temperatureMin, temperatureMax, precipitation));
     }
-
-    default LocalDateTime mapDateTime(String value) {
-        if (value == null) return null;
-        return LocalDateTime.parse(value);
-    }
+    return result;
+  }
 }

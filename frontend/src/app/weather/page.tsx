@@ -1,7 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { IconSun, IconCloud, IconCloudFog, IconCloudRain, IconCloudSnow, IconSunrise, IconSunset } from "@tabler/icons-react";
+import { IconSun, IconCloud, IconCloudFog, IconCloudRain, IconCloudSnow, IconLogout, IconUser, IconSunrise, IconSunset } from "@tabler/icons-react";
+import Link from "next/link";
 
 interface WeatherData {
   latitude: number;
@@ -135,6 +136,20 @@ export default function WeatherPage() {
         <h1 className="text-3xl font-bold mb-6 text-blue-700 dark:text-blue-200 text-center">Weather</h1>
         {loading && <p className="text-center">Loading weather data...</p>}
         {error && <p className="text-red-600 text-center">{error}</p>}
+        <div className="flex justify-end gap-4 mb-4">
+          <button
+            className="flex items-center gap-2 px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700 transition"
+            onClick={async () => {
+              await fetch("http://localhost:12002/v1/auth/logout", { method: "POST", credentials: "include" });
+              window.location.href = "/";
+            }}
+          >
+            <IconLogout size={20} /> Logout
+          </button>
+          <Link href="/profile" className="flex items-center gap-2 px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition">
+            <IconUser size={20} /> Profile
+          </Link>
+        </div>
         {weather && (
           <div>
             <div className="mb-6 text-center flex flex-col items-center">
