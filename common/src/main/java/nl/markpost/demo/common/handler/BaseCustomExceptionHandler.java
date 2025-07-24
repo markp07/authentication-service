@@ -7,11 +7,13 @@ import java.time.ZoneOffset;
 import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.common.constant.GenericErrorCodes;
 import nl.markpost.demo.common.exception.GenericException;
+import nl.markpost.demo.common.exception.NotFoundException;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import nl.markpost.demo.common.model.Error;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /**
  * Base exception handler for custom and generic exceptions.
@@ -54,6 +56,11 @@ public class BaseCustomExceptionHandler {
     log.error("An error occurred", e);
     return ResponseEntity.internalServerError()
         .body(createError(GenericErrorCodes.INTERNAL_SERVER_ERROR));
+  }
+
+  @ExceptionHandler(NoResourceFoundException.class)
+  ResponseEntity<Error> handleNoResourceFoundException(Exception e) {
+    return handleGenericExceptionException(new NotFoundException(e.getMessage()));
   }
 
   /**

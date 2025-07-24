@@ -15,7 +15,6 @@ import nl.markpost.demo.authentication.api.v1.model.LoginRequest;
 import nl.markpost.demo.authentication.api.v1.model.RegisterRequest;
 import nl.markpost.demo.authentication.model.User;
 import nl.markpost.demo.authentication.repository.UserRepository;
-import nl.markpost.demo.authentication.security.JwtService;
 import nl.markpost.demo.authentication.util.CookieUtil;
 import nl.markpost.demo.common.exception.UnauthorizedException;
 import org.springframework.http.ResponseEntity;

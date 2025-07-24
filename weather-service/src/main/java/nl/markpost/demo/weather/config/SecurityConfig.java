@@ -1,6 +1,7 @@
 package nl.markpost.demo.weather.config;
 
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,14 +14,11 @@ import org.springframework.web.filter.CorsFilter;
  * Security configuration for the weather service.
  */
 @Configuration
+@Slf4j
 public class SecurityConfig {
 
-  /**
-   * List of allowed origin patterns for CORS, configurable via application.yml.
-   * Defaults to an empty list if not set.
-   */
   @Value("${weather.cors.allowed-origin-patterns:}")
-  private final List<String> allowedOriginPatterns = List.of();
+  private String[] allowedOriginPatterns;
 
   /**
    * Creates a CORS filter bean for local development.
@@ -30,9 +28,10 @@ public class SecurityConfig {
   @Bean
   @Profile("local")
   public CorsFilter corsFilter() {
+    log.info("CORS filter initialized with allowed origin patterns: {}", List.of(allowedOriginPatterns));
     CorsConfiguration config = new CorsConfiguration();
     config.setAllowCredentials(true);
-    config.setAllowedOriginPatterns(allowedOriginPatterns);
+    config.setAllowedOriginPatterns(allowedOriginPatterns != null ? List.of(allowedOriginPatterns) : List.of());
     config.setAllowedHeaders(List.of("*"));
     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

@@ -1,22 +1,19 @@
-package nl.markpost.demo.authentication.security;
+package nl.markpost.demo.authentication.service;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import nl.markpost.demo.authentication.security.JwtKeyProvider;
 import java.util.Date;
 import nl.markpost.demo.authentication.constant.Constants;
 import nl.markpost.demo.authentication.model.User;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
 
   private final JwtKeyProvider keyProvider;
-
-  @Autowired
-  public JwtService(JwtKeyProvider keyProvider) {
-    this.keyProvider = keyProvider;
-  }
 
   public String generateAccessToken(User user) {
     long minutes15 = Constants.MINUTES_15 * 1000;

@@ -26,12 +26,8 @@ public class PasswordController implements ManagePasswordApi {
   public ResponseEntity<Void> changePassword(ChangePasswordRequest changePasswordRequest) {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info("Change password request for user: {}", user.getEmail());
-    //TODO: validate old password == current password
-    //TODO: validate new password strength
-    //TODO: logout user if password change is successful
-    boolean success = passwordService.changePassword(user, changePasswordRequest.getNewPassword());
-    //TODO: implement exception handling and proper response
-    return success ? ResponseEntity.ok().build() : ResponseEntity.badRequest().build();
+    passwordService.changePassword(user, changePasswordRequest);
+    return ResponseEntity.ok().build();
   }
 
   @Override

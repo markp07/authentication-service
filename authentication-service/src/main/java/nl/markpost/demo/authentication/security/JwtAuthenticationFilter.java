@@ -1,9 +1,19 @@
 package nl.markpost.demo.authentication.security;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.security.PublicKey;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import nl.markpost.demo.authentication.service.JwtService;
+import nl.markpost.demo.common.exception.UnauthorizedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,62 +21,85 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
-import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
 
 @Component
+@Slf4j
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
-    private final UserDetailsService userDetailsService;
-    private final List<String> excludedPaths;
+  private final JwtService jwtService;
 
-    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService, List<String> excludedPaths) {
-        this.jwtService = jwtService;
-        this.userDetailsService = userDetailsService;
-        this.excludedPaths = excludedPaths;
+  private final UserDetailsService userDetailsService;
+
+  @Value("${security.excluded-paths}")
+  private String[] excludedPaths;
+
+  private final JwtKeyProvider keyProvider;
+
+  @Override
+  protected void doFilterInternal(HttpServletRequest request,
+      HttpServletResponse response,
+      FilterChain filterChain) throws ServletException, IOException {
+    String path = request.getRequestURI();
+    // Ignore authentication for these endpoints
+    if (excludedPaths != null && List.of(excludedPaths).contains(path) || isPreflightRequest(request)) {
+      filterChain.doFilter(request, response);
+      return;
     }
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
-        String path = request.getRequestURI();
-        // Ignore authentication for these endpoints
-        if (excludedPaths.contains(path)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        String email = null;
-        String jwt = null;
-        boolean cookieFound = false;
-
-        // Check for access_token cookie
-        if (request.getCookies() != null) {
-            for (jakarta.servlet.http.Cookie cookie : request.getCookies()) {
-                if ("access_token".equals(cookie.getName())) {
-                    jwt = cookie.getValue();
-                    email = jwtService.getEmailFromToken(jwt);
-                    cookieFound = true;
-                    break;
-                }
-            }
-        }
-
-        if (!cookieFound) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
-        }
-
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-            UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-        }
-        filterChain.doFilter(request, response);
+    String accessToken = extractAccessToken(request);
+    if (accessToken == null) {
+      log.info("No access token found in request");
+      throw new UnauthorizedException();
     }
+
+    try {
+      PublicKey publicKey = keyProvider.getPublicKey();
+      Claims claims = Jwts.parserBuilder()
+          .setSigningKey(publicKey)
+          .build()
+          .parseClaimsJws(accessToken)
+          .getBody();
+      request.setAttribute("jwtClaims", claims);
+      String email = claims.getSubject();
+
+      if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+        UsernamePasswordAuthenticationToken authToken =
+            new UsernamePasswordAuthenticationToken(userDetails, null,
+                userDetails.getAuthorities());
+        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authToken);
+      }
+
+      filterChain.doFilter(request, response);
+    } catch (Exception e) {
+      log.info("JWT validation failed: {}", e.getMessage());
+      throw new UnauthorizedException();
+    }
+  }
+
+
+  /**
+   * Checks if the request is a CORS preflight (OPTIONS) request.
+   */
+  boolean isPreflightRequest(HttpServletRequest request) {
+    return "OPTIONS".equalsIgnoreCase(request.getMethod());
+  }
+
+  /**
+   * Extracts the access_token from cookies.
+   */
+  String extractAccessToken(HttpServletRequest request) {
+    if (request.getCookies() == null) {
+      return null;
+    }
+    for (Cookie cookie : request.getCookies()) {
+      if ("access_token".equals(cookie.getName())) {
+        return cookie.getValue();
+      }
+    }
+    return null;
+  }
 }

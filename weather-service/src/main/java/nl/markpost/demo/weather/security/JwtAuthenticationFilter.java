@@ -18,6 +18,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.time.Duration;
 import java.util.Base64;
 import java.util.concurrent.atomic.AtomicReference;
+import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.common.exception.UnauthorizedException;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -36,6 +37,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
  */
 @Component
 @Profile("!ut")
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private static final String AUTH_SERVICE_PUBLIC_KEY_URL = "http://localhost:12002/v1/public-key";
@@ -50,6 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
     String accessToken = extractAccessToken(request);
     if (accessToken == null) {
+      log.info("No access token found in request");
       throw new UnauthorizedException();
     }
     try {
@@ -60,8 +63,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           .parseClaimsJws(accessToken)
           .getBody();
       request.setAttribute("jwtClaims", claims);
+      log.info("Authorized - Validated JWT for user: {}", claims.getSubject());
       filterChain.doFilter(request, response);
     } catch (Exception e) {
+      log.info("JWT validation failed: {}", e.getMessage());
       throw new UnauthorizedException();
     }
   }

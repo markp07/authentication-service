@@ -43,12 +43,7 @@ spring:
             enable: true
 
 security:
-  excluded-paths:
-    - /v1/auth/register
-    - /v1/auth/login
-    - /v1/auth/password/forgot
-    - /v1/auth/password/reset
-    - /v1/public-key
+  excluded-paths: /v1/auth/register,/v1/auth/login,/v1/auth/password/forgot,/v1/auth/password/reset,/v1/public-key
 
 email:
   from: "no-reply@example.com"
@@ -76,6 +71,9 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 
+authentication:
+  cors:
+    allowed-origin-patterns: "http://localhost:3000"
 
 cookie:
   secure: false

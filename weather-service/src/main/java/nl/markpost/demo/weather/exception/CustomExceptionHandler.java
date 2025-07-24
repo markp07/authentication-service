@@ -1,4 +1,4 @@
-package nl.markpost.demo.authentication.exception;
+package nl.markpost.demo.weather.exception;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
