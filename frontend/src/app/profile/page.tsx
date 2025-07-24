@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { IconUser, IconLock } from "@tabler/icons-react";
+import QRCode from "qrcode.react";
 
 const USER_API = "http://localhost:12002/v1/user";
 
@@ -14,6 +15,12 @@ export default function ProfilePage() {
   const [message, setMessage] = useState<string | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [show2FA, setShow2FA] = useState(false);
+  const [totpSecret, setTotpSecret] = useState("");
+  const [totpQr, setTotpQr] = useState("");
+  const [totpCode, setTotpCode] = useState("");
+  const [totpStep, setTotpStep] = useState<"idle"|"setup"|"verify"|"enabled">("idle");
+  const [totpError, setTotpError] = useState<string|null>(null);
 
   useEffect(() => {
     async function fetchUser() {
@@ -105,6 +112,46 @@ export default function ProfilePage() {
     }
   };
 
+  const start2FASetup = async () => {
+    setTotpError(null);
+    setTotpStep("setup");
+    try {
+      const res = await fetch("http://localhost:12002/v1/auth/2fa/setup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include"
+      });
+      if (!res.ok) throw new Error("Failed to start 2FA setup");
+      const data = await res.json();
+      setTotpSecret(data.secret);
+      setTotpQr(data.qrCodeUrl);
+      setTotpStep("verify");
+    } catch (err) {
+      setTotpError("Could not start 2FA setup.");
+      setTotpStep("idle");
+    }
+  };
+
+  const handle2FAVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setTotpError(null);
+    try {
+      const res = await fetch("http://localhost:12002/v1/auth/2fa/enable", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ code: totpCode })
+      });
+      if (res.ok) {
+        setTotpStep("enabled");
+      } else {
+        setTotpError("Invalid code. Please try again.");
+      }
+    } catch (err) {
+      setTotpError("Could not verify code.");
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-gradient-to-br from-blue-100 via-white to-blue-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700">
       <div className="w-full max-w-md bg-white/80 dark:bg-gray-900/80 rounded-lg shadow-2xl p-8 border border-blue-200 dark:border-gray-800 backdrop-blur">
@@ -142,6 +189,40 @@ export default function ProfilePage() {
               <span className="ml-2 text-black dark:text-white">{createdAt}</span>
             </div>
             {message && <div className="text-red-500 mb-4">{message}</div>}
+            {/* 2FA Section */}
+            <div className="mb-8">
+              <h2 className="text-xl font-bold mb-2 text-blue-700 dark:text-blue-200">Two-Factor Authentication (2FA)</h2>
+              {totpStep === "idle" && (
+                <button className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700" onClick={start2FASetup}>
+                  Enable 2FA
+                </button>
+              )}
+              {totpStep === "verify" && (
+                <div className="mt-4">
+                  <p className="mb-2">Scan this QR code with your authenticator app, or enter the secret manually:</p>
+                  {totpQr && <QRCode value={totpQr} size={180} />}
+                  <div className="mt-2 text-sm break-all">Secret: <span className="font-mono">{totpSecret}</span></div>
+                  <form onSubmit={handle2FAVerify} className="mt-4 flex flex-col gap-2">
+                    <label htmlFor="totpCode">Enter code from your app:</label>
+                    <input
+                      id="totpCode"
+                      type="text"
+                      value={totpCode}
+                      onChange={e => setTotpCode(e.target.value)}
+                      className="px-3 py-2 rounded border border-blue-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-black dark:text-white"
+                      required
+                      pattern="\\d{6}"
+                      maxLength={6}
+                    />
+                    <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Verify & Enable</button>
+                    {totpError && <div className="text-red-500">{totpError}</div>}
+                  </form>
+                </div>
+              )}
+              {totpStep === "enabled" && (
+                <div className="text-green-700 font-semibold mt-2">2FA is now enabled for your account!</div>
+              )}
+            </div>
           </div>
         )}
         <form onSubmit={handlePasswordChange}>

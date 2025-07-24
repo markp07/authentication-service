@@ -1,6 +1,5 @@
 package nl.markpost.demo.authentication.config;
 
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.authentication.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
@@ -12,9 +11,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -27,18 +23,6 @@ public class SecurityConfig {
 
   public SecurityConfig(SecurityProperties securityProperties) {
     this.securityProperties = securityProperties;
-  }
-
-  @Bean
-  public CorsFilter corsFilter() {
-    CorsConfiguration config = new CorsConfiguration();
-    config.setAllowCredentials(true);
-    config.setAllowedOriginPatterns(List.of("http://localhost:3000"));
-    config.setAllowedHeaders(List.of("*"));
-    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", config);
-    return new CorsFilter(source);
   }
 
   @Bean

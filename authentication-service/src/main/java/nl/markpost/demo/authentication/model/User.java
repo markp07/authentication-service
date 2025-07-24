@@ -56,6 +56,12 @@ public class User implements UserDetails {
   @Column(name = "reset_token")
   private String resetToken;
 
+  @Column(name = "totp_secret")
+  private String totpSecret;
+
+  @Column(name = "is_2fa_enabled")
+  private boolean is2faEnabled;
+
   @CreationTimestamp
   private LocalDateTime createdAt;
 
