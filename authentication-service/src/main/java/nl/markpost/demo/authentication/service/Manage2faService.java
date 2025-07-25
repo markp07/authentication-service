@@ -2,6 +2,8 @@ package nl.markpost.demo.authentication.service;
 
 import com.bastiaanjansen.otp.SecretGenerator;
 import com.bastiaanjansen.otp.TOTPGenerator;
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.codec.binary.Base32;
 import nl.markpost.demo.authentication.api.v1.model.TOTPCode;
 import nl.markpost.demo.authentication.api.v1.model.TOTPSetupResponse;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Service
 public class Manage2faService {
@@ -26,8 +30,24 @@ public class Manage2faService {
         this.userRepository = userRepository;
     }
 
+
+    //TODO: move into util class
+    public HttpServletRequest getCurrentRequest() {
+        ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        return attrs != null ? attrs.getRequest() : null;
+    }
+
+    public String getEmailFromClaims(HttpServletRequest request) {
+        Claims claims = (Claims) request.getAttribute("jwtClaims");
+        if (claims != null) {
+            return claims.getSubject(); // email is stored as subject
+        }
+        return null;
+    }
+
     public ResponseEntity<TOTPSetupResponse> setup2fa() {
-        String email = "user@example.com";
+        HttpServletRequest request = getCurrentRequest();
+        String email = getEmailFromClaims(request);
         User user = userRepository.findByEmail(email);
         if (user == null) {
             return ResponseEntity.badRequest().build();

@@ -38,7 +38,7 @@ public class BaseCustomExceptionHandler {
    * @return ResponseEntity containing the error details
    */
   @ExceptionHandler(GenericException.class)
-  ResponseEntity<Error> handleGenericExceptionException(GenericException exception) {
+  public ResponseEntity<Error> handleGenericExceptionException(GenericException exception) {
     log.error("An error occurred", exception);
     return ResponseEntity.status(exception.getHttpStatus())
         .body(createError(exception.getErrorCode(), exception.getHttpStatus()));
@@ -52,7 +52,7 @@ public class BaseCustomExceptionHandler {
    * @return ResponseEntity containing the error details
    */
   @ExceptionHandler(Exception.class)
-  ResponseEntity<Error> handleException(Exception e) {
+  public ResponseEntity<Error> handleException(Exception e) {
     log.error("An error occurred", e);
     return ResponseEntity.internalServerError()
         .body(createError(GenericErrorCodes.INTERNAL_SERVER_ERROR));

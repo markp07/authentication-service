@@ -1,5 +1,6 @@
 package nl.markpost.demo.weather.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
@@ -19,10 +20,15 @@ import java.time.Duration;
 import java.util.Base64;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.common.exception.UnauthorizedException;
+import nl.markpost.demo.common.model.Error;
+import nl.markpost.demo.weather.exception.CustomExceptionHandler;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -38,7 +44,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 @Profile("!ut")
 @Slf4j
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+  private final CustomExceptionHandler customExceptionHandler;
+
+  private final ObjectMapper objectMapper;
 
   private static final String AUTH_SERVICE_PUBLIC_KEY_URL = "http://localhost:12002/v1/public-key";
   private static final AtomicReference<PublicKey> cachedPublicKey = new AtomicReference<>();
@@ -46,10 +57,41 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   @Value("${security.excluded-paths}")
   private String[] excludedPaths;
 
+  //TODO: cleanup and refactor -- Can we move to common package?
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-      FilterChain filterChain) throws ServletException, IOException {
+      FilterChain filterChain) {
+    try {
+      handleAuthentication(request, response, filterChain);
+    } catch (UnauthorizedException e) {
+      log.info("Unauthorized access attempt: {}", e.getMessage());
+      ResponseEntity<Error> errorResponse = customExceptionHandler.handleGenericExceptionException(e);
+      response.setContentType("application/json");
+      response.setStatus(e.getHttpStatus().value());
+      addCorsHeaders(request, response);
+      try {
+        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+      } catch (IOException ioException) {
+        log.error("Error writing response: {}", ioException.getMessage(), ioException);
+      }
+    } catch (Exception e) {
+      log.error("Error during JWT authentication: {}", e.getMessage(), e);
+      ResponseEntity<Error> errorResponse = customExceptionHandler.handleException(e);
+      response.setContentType("application/json");
+      response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+      addCorsHeaders(request, response);
 
+      try {
+        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+      } catch (IOException ioException) {
+        log.error("Error writing response: {}", ioException.getMessage(), ioException);
+      }
+    }
+
+  }
+
+  private void handleAuthentication(HttpServletRequest request, HttpServletResponse response,
+      FilterChain filterChain) throws Exception {
     String path = request.getRequestURI();
     if (excludedPaths != null && List.of(excludedPaths).contains(path) || isPreflightRequest(
         request)) {
@@ -60,6 +102,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     String accessToken = extractAccessToken(request);
     if (accessToken == null) {
       log.info("No access token found in request");
+      response.setStatus(401);
       throw new UnauthorizedException();
     }
     try {
@@ -100,7 +143,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
    * Extracts the access_token from cookies.
    */
   String extractAccessToken(HttpServletRequest request) {
-    if (request.getCookies() == null) return null;
+    if (request.getCookies() == null) {
+      return null;
+    }
     for (Cookie cookie : request.getCookies()) {
       if ("access_token".equals(cookie.getName())) {
         return cookie.getValue();
@@ -158,5 +203,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             List.of());
     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
     SecurityContextHolder.getContext().setAuthentication(authToken);
+  }
+
+  private void addCorsHeaders(HttpServletRequest request, HttpServletResponse response) {
+    String origin = request.getHeader("Origin");
+    if (origin != null) {
+      response.setHeader("Access-Control-Allow-Origin", origin);
+      response.setHeader("Access-Control-Allow-Credentials", "true");
+    }
   }
 }
