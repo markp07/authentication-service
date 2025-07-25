@@ -1,4 +1,4 @@
-package nl.markpost.demo.authentication.security;
+package nl.markpost.demo.authentication.filter;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -12,8 +12,11 @@ import java.security.PublicKey;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import nl.markpost.demo.authentication.security.JwtKeyProvider;
 import nl.markpost.demo.authentication.service.JwtService;
 import nl.markpost.demo.common.exception.UnauthorizedException;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,14 +24,15 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.beans.factory.annotation.Value;
 
+/**
+ * Servlet filter for authenticating requests using JWT access tokens.
+ */
 @Component
+@Profile("!ut")
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
-  private final JwtService jwtService;
 
   private final UserDetailsService userDetailsService;
 
@@ -42,8 +46,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
     String path = request.getRequestURI();
-    // Ignore authentication for these endpoints
-    if (excludedPaths != null && List.of(excludedPaths).contains(path) || isPreflightRequest(request)) {
+    if (excludedPaths != null && List.of(excludedPaths).contains(path) || isPreflightRequest(
+        request)) {
       filterChain.doFilter(request, response);
       return;
     }
@@ -64,15 +68,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       request.setAttribute("jwtClaims", claims);
       String email = claims.getSubject();
 
-      if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-        UsernamePasswordAuthenticationToken authToken =
-            new UsernamePasswordAuthenticationToken(userDetails, null,
-                userDetails.getAuthorities());
-        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+      if (email == null) {
+        log.info("JWT claims do not contain email subject");
+        throw new UnauthorizedException();
       }
 
+      if (SecurityContextHolder.getContext().getAuthentication() == null) {
+        setAuthentication(email, request);
+      }
+
+      log.info("Authorized - Validated JWT for user: {}", email);
       filterChain.doFilter(request, response);
     } catch (Exception e) {
       log.info("JWT validation failed: {}", e.getMessage());
@@ -101,5 +106,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       }
     }
     return null;
+  }
+
+  /**
+   * Sets the authentication in the security context based on the email from JWT claims.
+   *
+   * @param email   the email extracted from JWT claims
+   * @param request the HTTP request to set authentication details
+   */
+  private void setAuthentication(String email, HttpServletRequest request) {
+    UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+    UsernamePasswordAuthenticationToken authToken =
+        new UsernamePasswordAuthenticationToken(userDetails, null,
+            userDetails.getAuthorities());
+    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+    SecurityContextHolder.getContext().setAuthentication(authToken);
   }
 }

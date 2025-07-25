@@ -77,3 +77,9 @@ authentication:
 
 cookie:
   secure: false
+
+
+logging:
+  level:
+    root: DEBUG
+    nl.markpost.demo: DEBUG

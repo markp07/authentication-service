@@ -17,23 +17,23 @@ import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.time.Duration;
 import java.util.Base64;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.common.exception.UnauthorizedException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-//TODO: CLeanup, refactor and revisit logic
-
 /**
  * Servlet filter for authenticating requests using JWT access tokens.
- * <p>
- * - Extracts the access_token from cookies.
- * - Validates the JWT using the public key from the authentication service.
- * - Caches the public key for efficiency.
- * - Allows CORS preflight (OPTIONS) requests to pass through.
- * </p>
  */
 @Component
 @Profile("!ut")
@@ -43,13 +43,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private static final String AUTH_SERVICE_PUBLIC_KEY_URL = "http://localhost:12002/v1/public-key";
   private static final AtomicReference<PublicKey> cachedPublicKey = new AtomicReference<>();
 
+  @Value("${security.excluded-paths}")
+  private String[] excludedPaths;
+
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {
-    if (isPreflightRequest(request)) {
+
+    String path = request.getRequestURI();
+    if (excludedPaths != null && List.of(excludedPaths).contains(path) || isPreflightRequest(
+        request)) {
       filterChain.doFilter(request, response);
       return;
     }
+
     String accessToken = extractAccessToken(request);
     if (accessToken == null) {
       log.info("No access token found in request");
@@ -63,7 +70,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           .parseClaimsJws(accessToken)
           .getBody();
       request.setAttribute("jwtClaims", claims);
-      log.info("Authorized - Validated JWT for user: {}", claims.getSubject());
+      String email = claims.getSubject();
+
+      if (email == null) {
+        log.info("JWT claims do not contain email subject");
+        throw new UnauthorizedException();
+      }
+
+      if (SecurityContextHolder.getContext().getAuthentication() == null) {
+        setAuthentication(email, request);
+      }
+
+      log.info("Authorized - Validated JWT for user: {}", email);
       filterChain.doFilter(request, response);
     } catch (Exception e) {
       log.info("JWT validation failed: {}", e.getMessage());
@@ -125,5 +143,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     byte[] encoded = Base64.getDecoder().decode(publicKeyPEM);
     X509EncodedKeySpec keySpec = new X509EncodedKeySpec(encoded);
     return KeyFactory.getInstance("RSA").generatePublic(keySpec);
+  }
+
+  /**
+   * Sets the authentication in the security context based on the email from JWT claims.
+   *
+   * @param email   the email extracted from JWT claims
+   * @param request the HTTP request to set authentication details
+   */
+  private void setAuthentication(String email, HttpServletRequest request) {
+    UserDetails userDetails = new User(email, "", List.of(new SimpleGrantedAuthority("ROLE_USER")));
+    UsernamePasswordAuthenticationToken authToken =
+        new UsernamePasswordAuthenticationToken(userDetails, null,
+            List.of());
+    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+    SecurityContextHolder.getContext().setAuthentication(authToken);
   }
 }

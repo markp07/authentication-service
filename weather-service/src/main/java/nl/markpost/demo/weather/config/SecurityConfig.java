@@ -1,11 +1,18 @@
 package nl.markpost.demo.weather.config;
 
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
+import nl.markpost.demo.weather.filter.TraceparentFilter;
+import nl.markpost.demo.weather.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -14,11 +21,13 @@ import org.springframework.web.filter.CorsFilter;
  * Security configuration for the weather service.
  */
 @Configuration
-@Slf4j
+@EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-  @Value("${weather.cors.allowed-origin-patterns:}")
-  private String[] allowedOriginPatterns;
+  private final TraceparentFilter traceparentFilter;
+
+  private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
   /**
    * Creates a CORS filter bean for local development.
@@ -27,16 +36,31 @@ public class SecurityConfig {
    */
   @Bean
   @Profile("local")
-  public CorsFilter corsFilter() {
-    log.info("CORS filter initialized with allowed origin patterns: {}", List.of(allowedOriginPatterns));
+  public CorsFilter corsFilter(
+      @Value("${weather.cors.allowed-origin-patterns:}") String[] allowedOriginPatterns) {
     CorsConfiguration config = new CorsConfiguration();
     config.setAllowCredentials(true);
-    config.setAllowedOriginPatterns(allowedOriginPatterns != null ? List.of(allowedOriginPatterns) : List.of());
+    config.setAllowedOriginPatterns(
+        allowedOriginPatterns != null ? List.of(allowedOriginPatterns) : List.of());
     config.setAllowedHeaders(List.of("*"));
     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", config);
     return new CorsFilter(source);
+  }
+
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http,
+      @Value("${security.excluded-paths:}") String[] excludedPaths) throws Exception {
+    http
+        .csrf(csrf -> csrf.ignoringRequestMatchers(excludedPaths))
+        .addFilterBefore(traceparentFilter, UsernamePasswordAuthenticationFilter.class)
+        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+        .authorizeHttpRequests(authz -> authz
+            .requestMatchers(excludedPaths).permitAll()
+            .anyRequest().authenticated()
+        );
+    return http.build();
   }
 
 }

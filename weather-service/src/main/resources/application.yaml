@@ -18,6 +18,9 @@ spring:
       host: redis
       port: 12005
 
+security:
+  excluded-paths: /actuator/health,/actuator/info,/swagger-ui.html,/swagger-ui/**,/*/api-docs
+
 ---
 # Local environment profile
 spring:
