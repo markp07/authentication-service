@@ -187,7 +187,7 @@ public class Manage2faService {
    */
   private boolean verifyTotpCode(String base32Secret, String code) {
     try {
-      byte[] secret = new Base32().decode(base32Secret);
+      byte[] secret = base32Secret.getBytes(StandardCharsets.UTF_8);
       TOTPGenerator totp = new TOTPGenerator.Builder(secret).build();
       return totp.verify(code);
     } catch (Exception e) {
