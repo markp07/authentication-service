@@ -2,11 +2,11 @@ package nl.markpost.demo.authentication.service;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.RequiredArgsConstructor;
-import nl.markpost.demo.authentication.security.JwtKeyProvider;
 import java.util.Date;
+import lombok.RequiredArgsConstructor;
 import nl.markpost.demo.authentication.constant.Constants;
 import nl.markpost.demo.authentication.model.User;
+import nl.markpost.demo.authentication.security.JwtKeyProvider;
 import org.springframework.stereotype.Service;
 
 @Service

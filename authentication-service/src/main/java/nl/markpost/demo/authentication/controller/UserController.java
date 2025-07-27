@@ -1,6 +1,11 @@
 package nl.markpost.demo.authentication.controller;
 
 import lombok.RequiredArgsConstructor;
+import nl.markpost.demo.authentication.api.v1.controller.UserApi;
+import nl.markpost.demo.authentication.api.v1.model.Message;
+import nl.markpost.demo.authentication.api.v1.model.UpdateUserNameRequest;
+import nl.markpost.demo.authentication.api.v1.model.UserDetails;
+import nl.markpost.demo.authentication.dto.UserDetailsResponse;
 import nl.markpost.demo.authentication.model.User;
 import nl.markpost.demo.authentication.service.UserService;
 import nl.markpost.demo.common.exception.UnauthorizedException;
@@ -15,12 +20,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/v1/user")
 @RequiredArgsConstructor
-public class UserController {
+public class UserController implements UserApi {
 
   private final UserService userService;
 
   @GetMapping("")
-  public ResponseEntity<nl.markpost.demo.authentication.dto.UserDetailsResponse> getUserDetails(
+  public ResponseEntity<UserDetailsResponse> getUserDetails(
       @AuthenticationPrincipal User user) {
     if (user == null) {
       throw new UnauthorizedException();
@@ -36,5 +41,15 @@ public class UserController {
     }
     userService.updateUserName(user, request.username());
     return ResponseEntity.ok().build();
+  }
+
+  @Override
+  public ResponseEntity<UserDetails> getUserDetails() {
+    return null;
+  }
+
+  @Override
+  public ResponseEntity<Message> updateUserName(UpdateUserNameRequest updateUserNameRequest) {
+    return null;
   }
 }

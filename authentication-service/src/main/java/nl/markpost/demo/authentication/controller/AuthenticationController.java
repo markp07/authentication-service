@@ -1,59 +1,80 @@
 package nl.markpost.demo.authentication.controller;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import static nl.markpost.demo.authentication.util.MessageResponseUtil.createMessageResponse;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import nl.markpost.demo.authentication.api.v1.controller.LoginApi;
 import nl.markpost.demo.authentication.api.v1.model.LoginRequest;
+import nl.markpost.demo.authentication.api.v1.model.Message;
 import nl.markpost.demo.authentication.api.v1.model.RegisterRequest;
-import nl.markpost.demo.authentication.security.JwtKeyProvider;
+import nl.markpost.demo.authentication.constant.Messages;
 import nl.markpost.demo.authentication.service.LoginService;
+import nl.markpost.demo.authentication.util.MessageResponseUtil;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controller for handling authentication-related requests such as login, logout, refresh, and registration.
+ */
 @RestController
 @RequestMapping("/v1")
 @RequiredArgsConstructor
 @Slf4j
-public class AuthenticationController {
+public class AuthenticationController implements LoginApi {
 
   private final LoginService loginService;
 
-  private final JwtKeyProvider keyProvider;
-
-  @PostMapping("/auth/login")
-  public ResponseEntity<Void> login(@RequestBody LoginRequest loginRequest,
-      HttpServletResponse response) {
+  /**
+   * Handles user login requests.
+   *
+   * @param loginRequest the login request containing email and password
+   * @return a ResponseEntity containing a message indicating success or failure
+   */
+  @Override
+  public ResponseEntity<Message> login(LoginRequest loginRequest) {
     log.info("Login attempt for user: {}", loginRequest.getEmail());
-    return loginService.login(loginRequest, response);
+    return loginService.login(loginRequest);
   }
 
-  @PostMapping("/auth/logout")
-  public ResponseEntity<Void> logout(HttpServletResponse response) {
+  /**
+   * Handles user logout requests.
+   *
+   * @return a ResponseEntity containing a message indicating successful logout
+   */
+  @Override
+  public ResponseEntity<Message> logout() {
     log.info("Logout request received");
-    return loginService.logout(response);
+    loginService.logout();
+    return ResponseEntity.status(HttpStatus.OK).body(createMessageResponse(Messages.LOGOUT_SUCCESS));
   }
 
-  @PostMapping("/auth/refresh")
-  public ResponseEntity<Void> refresh(HttpServletRequest request, HttpServletResponse response) {
+  /**
+   * Handles token refresh requests.
+   *
+   * @return a ResponseEntity containing a message indicating successful token refresh
+   */
+  @Override
+  public ResponseEntity<Message> refresh() {
     log.info("Refresh token request received");
-    return loginService.refresh(request, response);
+    loginService.refresh();
+    return ResponseEntity.status(HttpStatus.OK).body(createMessageResponse(Messages.REFRESH_SUCCESS));
   }
 
-  @PostMapping("/auth/register")
-  public ResponseEntity<Void> register(@RequestBody RegisterRequest registerRequest) {
+  /**
+   * Handles user registration requests.
+   *
+   * @param registerRequest the registration request containing user details
+   * @return a ResponseEntity containing a message indicating successful registration
+   */
+  @Override
+  public ResponseEntity<Message> register(RegisterRequest registerRequest) {
     log.info("Registration attempt for user: {}", registerRequest.getEmail());
-    return loginService.register(registerRequest);
-  }
-
-  @GetMapping("/public-key")
-  public ResponseEntity<String> getPublicKey() {
-    log.info("Public key request received");
-    return ResponseEntity.ok(keyProvider.getPublicKeyAsPem());
+    loginService.register(registerRequest);
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body(MessageResponseUtil.createMessageResponse(Messages.REGISTRATION_SUCCESS));
   }
 
 }

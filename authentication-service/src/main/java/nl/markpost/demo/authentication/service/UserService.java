@@ -6,11 +6,21 @@ import nl.markpost.demo.authentication.model.User;
 import nl.markpost.demo.authentication.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+/**
+ * Service class for handling user-related operations.
+ * Provides methods to retrieve user details and update user information.
+ */
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
 
+    /**
+     * Retrieves user details for the given user.
+     *
+     * @param user the user for whom details are to be retrieved
+     * @return a UserDetailsResponse containing the user's details
+     */
     public UserDetailsResponse getUserDetails(User user) {
         return new UserDetailsResponse(
                 user.getUsername(),
@@ -19,6 +29,12 @@ public class UserService {
         );
     }
 
+    /**
+     * Updates the username of the given user.
+     *
+     * @param user     the user whose username is to be updated
+     * @param username the new username to set
+     */
     public void updateUserName(User user, String username) {
         user.setUserName(username);
         userRepository.save(user);

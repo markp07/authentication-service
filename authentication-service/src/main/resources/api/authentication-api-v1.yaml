@@ -11,6 +11,10 @@ tags:
     description: Endpoints for password change and reset
   - name: manage-2fa
     description: Endpoints for managing two-factor authentication (2FA)
+  - name: public-key
+    description: Endpoint for retrieving public key
+  - name: user
+    description: Endpoints for user profile management
 
 servers:
   - url: https://your-backend.com
@@ -31,10 +35,30 @@ paths:
       responses:
         '200':
           description: Login successful, tokens set in HttpOnly cookies
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '202':
+          description: Login accepted, further action required (e.g. 2FA)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
         '401':
           description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '400':
           description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: []
 
   /auth/refresh:
     post:
@@ -50,8 +74,18 @@ paths:
       responses:
         '200':
           description: Access token refreshed and set in HttpOnly cookie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
         '401':
           description: Invalid or expired refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - RefreshCookie: []
   /auth/logout:
     post:
       operationId: logout
@@ -61,6 +95,12 @@ paths:
       responses:
         '200':
           description: Tokens cleared (cookies deleted)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+      security:
+        - AccessCookie: []
   /auth/register:
     post:
       operationId: register
@@ -76,10 +116,20 @@ paths:
       responses:
         '201':
           description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
         '400':
           description: Invalid registration data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: []
   /auth/password/change:
-    post:
+    put:
       operationId: changePassword
       summary: Change password for authenticated user
       tags:
@@ -93,10 +143,24 @@ paths:
       responses:
         '200':
           description: Password changed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
         '401':
           description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
         '403':
           description: Old password incorrect
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: []
   /auth/password/forgot:
     post:
       operationId: forgotPassword
@@ -112,6 +176,12 @@ paths:
       responses:
         '200':
           description: Password reset email sent (or silently ignored)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+      security:
+        - AccessCookie: []
   /auth/password/reset:
     post:
       operationId: resetPassword
@@ -127,8 +197,18 @@ paths:
       responses:
         '200':
           description: Password reset successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
         '400':
           description: Invalid or expired token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: []
   /auth/2fa/setup:
     post:
       operationId: setup2FA
@@ -142,6 +222,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TOTPSetupResponse'
+      security:
+        - AccessCookie: []
   /auth/2fa/confirm:
     post:
       operationId: enable2FA
@@ -157,6 +239,12 @@ paths:
       responses:
         '200':
           description: 2FA enabled for user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+      security:
+        - AccessCookie: []
   /auth/2fa/verify:
     post:
       operationId: verify2FA
@@ -172,10 +260,89 @@ paths:
       responses:
         '200':
           description: Login successful (tokens set)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
         '401':
           description: Invalid or missing code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: []
+  /public-key:
+    get:
+      operationId: getPublicKey
+      summary: Get public key for JWT verification
+      tags:
+        - public-key
+      responses:
+        '200':
+          description: Public key PEM string
+          content:
+            text/plain:
+              schema:
+                type: string
+  /user:
+    get:
+      operationId: getUserDetails
+      summary: Get user profile information
+      tags:
+        - user
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetails'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: []
+    put:
+      operationId: updateUserName
+      summary: Update user name
+      tags:
+        - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserNameRequest'
+        required: true
+      responses:
+        '200':
+          description: Username updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: []
 
 components:
+  securitySchemes:
+    AccessCookie:
+      type: apiKey
+      in: cookie
+      name: access
+    RefreshCookie:
+      type: apiKey
+      in: cookie
+      name: refresh
   schemas:
     LoginRequest:
       type: object
@@ -215,12 +382,15 @@ components:
     TOTPSetupResponse:
       type: object
       properties:
-        qrCodeUrl:
+        otpUri:
           type: string
           description: otpauth:// URI for TOTP app
         secret:
           type: string
           description: Base32 TOTP secret
+        qrCodeImage:
+          type: string
+          description: Image data URL for QR code
     TOTPCode:
       type: object
       properties:
@@ -231,8 +401,6 @@ components:
     TOTPVerifyRequest:
       type: object
       properties:
-        email:
-          type: string
         code:
           type: string
       required: [ email, code ]
@@ -251,3 +419,43 @@ components:
         - email
         - password
         - userName
+    UserDetails:
+      type: object
+      properties:
+        email:
+          type: string
+        userName:
+          type: string
+        twoFactorEnabled:
+          type: boolean
+    UpdateUserNameRequest:
+      type: object
+      properties:
+        username:
+          type: string
+      required:
+        - username
+    Message:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        code:
+          type: string
+        description:
+          type: string
+    Error:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+        code:
+          type: string
+        traceparent:
+          type: string
+        description:
+          type: string
