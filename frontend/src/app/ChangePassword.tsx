@@ -50,7 +50,7 @@ export default function ChangePassword({ onClose }: ChangePasswordProps) {
       <input
         type="password"
         placeholder="Current Password"
-        className="border rounded px-3 py-2 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        className="border rounded px-3 py-2 bg-blue-50 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
         required
         value={oldPassword}
         onChange={e => setOldPassword(e.target.value)}
@@ -58,7 +58,7 @@ export default function ChangePassword({ onClose }: ChangePasswordProps) {
       <input
         type="password"
         placeholder="New Password"
-        className="border rounded px-3 py-2 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        className="border rounded px-3 py-2 bg-blue-50 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
         required
         value={newPassword}
         onChange={e => setNewPassword(e.target.value)}
@@ -66,7 +66,7 @@ export default function ChangePassword({ onClose }: ChangePasswordProps) {
       <input
         type="password"
         placeholder="Confirm New Password"
-        className="border rounded px-3 py-2 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        className="border rounded px-3 py-2 bg-blue-50 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
         required
         value={confirm}
         onChange={e => setConfirm(e.target.value)}
@@ -84,4 +84,3 @@ export default function ChangePassword({ onClose }: ChangePasswordProps) {
     </form>
   );
 }
-
