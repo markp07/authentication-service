@@ -16,11 +16,11 @@ public class HourlyResponse {
 
     private List<String> time;
 
+    private List<Integer> weather_code;
+
     private List<Double> temperature_2m;
 
-    private List<Integer> relative_humidity_2m;
-
-    private List<Double> wind_speed_10m;
+    private List<Integer> precipitation_probability;
 
 }
 

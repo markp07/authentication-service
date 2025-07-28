@@ -21,7 +21,8 @@ class CurrentMapperTest {
     response.setTime("2025-07-23T12:00:00");
     response.setWeather_code(1);
     response.setTemperature_2m(22.5);
-    response.setWind_speed_10m(5.5);
+    response.setWind_speed_10m(5);
+    response.setWind_direction_10m(270);
 
     Current current = mapper.toCurrent(response);
 
@@ -29,6 +30,7 @@ class CurrentMapperTest {
     assertEquals(LocalDateTime.parse("2025-07-23T12:00:00"), current.getTime());
     assertEquals(WeatherCode.MAINLY_CLEAR, current.getWeatherCode());
     assertEquals(22.5, current.getTemperature());
-    assertEquals(5.5, current.getWindSpeed());
+    assertEquals(5, current.getWindSpeed());
+    assertEquals(270, current.getWindDirection());
   }
 }

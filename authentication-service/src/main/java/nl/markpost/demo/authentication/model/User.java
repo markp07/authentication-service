@@ -26,7 +26,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = "password")
+@ToString(exclude = {"password","resetToken","totpSecret"})
 @Entity
 @Table(name = "users")
 @Builder(toBuilder = true)
@@ -76,7 +76,7 @@ public class User implements UserDetails {
 
   @Override
   public String getUsername() {
-    return email;
+    return userName;
   }
 
   @Override

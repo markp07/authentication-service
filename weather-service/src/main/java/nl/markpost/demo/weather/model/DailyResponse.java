@@ -28,5 +28,7 @@ public class DailyResponse {
 
     private List<Double> precipitation_sum;
 
+    private List<Integer> precipitation_probability_max;
+
 }
 

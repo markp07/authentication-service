@@ -12,17 +12,18 @@ public class Daily {
 
   private LocalDateTime time;
 
+  private WeatherCode weatherCode;
+
+  private Double temperatureMin;
+
+  private Double temperatureMax;
+
+  private Double precipitation;
+
+  private Integer precipitationProbabilityMax;
+
   private LocalDateTime sunRise;
 
   private LocalDateTime sunSet;
-
-  private WeatherCode weatherCode;
-
-  private double temperatureMin;
-
-  private double temperatureMax;
-
-  private int precipitation;
-
 
 }

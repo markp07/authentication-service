@@ -22,5 +22,7 @@ public class Weather {
 
   private List<Daily> daily;
 
+  private List<Hourly> hourly;
+
 }
 

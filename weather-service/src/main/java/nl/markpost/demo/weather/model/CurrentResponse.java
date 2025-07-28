@@ -14,17 +14,15 @@ public class CurrentResponse {
 
     private String time;
 
-    private int interval;
+    private Integer interval;
 
-    private double temperature_2m;
+    private Integer weather_code;
 
-    Integer relative_humidity_2m;
+    private Double temperature_2m;
 
-    private double wind_speed_10m;
+    private Integer wind_speed_10m;
 
-    private double precipitation;
-
-    private int weather_code;
+    private Integer wind_direction_10m;
 
 }
 

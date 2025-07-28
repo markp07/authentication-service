@@ -19,8 +19,10 @@ public class Current {
 
     private WeatherCode weatherCode;
 
-    private double temperature;
+    private Double temperature;
 
-    private double windSpeed;
+    private Integer windSpeed;
+
+    private Integer windDirection;
 
 }

@@ -13,10 +13,11 @@ public class Hourly {
 
   private LocalDateTime time;
 
-  private double temperature;
+  private WeatherCode weatherCode;
 
-  private double windSpeed;
+  private Double temperature;
 
-  private int relativeHumidity;
+  private Integer precipitationProbability;
+
 
 }
