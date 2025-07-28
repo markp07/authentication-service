@@ -13,9 +13,9 @@ export default function Profile({ onClose, onSetup2FA, onChangePassword }: Profi
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
-  const [username, setUsername] = useState("");
-  const [usernameError, setUsernameError] = useState<string | null>(null);
-  const [usernameSuccess, setUsernameSuccess] = useState<string | null>(null);
+  const [userName, setuserName] = useState("");
+  const [userNameError, setuserNameError] = useState<string | null>(null);
+  const [userNameSuccess, setuserNameSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchUser() {
@@ -37,14 +37,14 @@ export default function Profile({ onClose, onSetup2FA, onChangePassword }: Profi
   }, []);
 
   useEffect(() => {
-    if (user) setUsername(user.username || "");
+    if (user) setuserName(user.userName || "");
   }, [user]);
 
-  async function handleUsernameSave() {
-    setUsernameError(null);
-    setUsernameSuccess(null);
-    if (!username.trim()) {
-      setUsernameError("Username cannot be empty.");
+  async function handleuserNameSave() {
+    setuserNameError(null);
+    setuserNameSuccess(null);
+    if (!userName.trim()) {
+      setuserNameError("userName cannot be empty.");
       return;
     }
     try {
@@ -52,17 +52,17 @@ export default function Profile({ onClose, onSetup2FA, onChangePassword }: Profi
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ username }),
+        body: JSON.stringify({ userName }),
       });
       if (res.ok) {
-        setUsernameSuccess("Username updated successfully.");
+        setuserNameSuccess("userName updated successfully.");
         setEditing(false);
-        setUser({ ...user, username });
+        setUser({ ...user, userName });
       } else {
-        setUsernameError("Failed to update username.");
+        setuserNameError("Failed to update userName.");
       }
     } catch {
-      setUsernameError("Network error.");
+      setuserNameError("Network error.");
     }
   }
 
@@ -77,27 +77,27 @@ export default function Profile({ onClose, onSetup2FA, onChangePassword }: Profi
         <div className="bg-blue-50 dark:bg-gray-800 rounded p-4 mb-2">
           <div><span className="font-semibold">Email:</span> {user.email}</div>
           <div className="flex items-center gap-2">
-            <span className="font-semibold">Username:</span>
+            <span className="font-semibold">userName:</span>
             {editing ? (
               <>
                 <input
                   className="border rounded px-2 py-1 text-sm bg-white dark:bg-gray-900"
-                  value={username}
-                  onChange={e => setUsername(e.target.value)}
+                  value={userName}
+                  onChange={e => setuserName(e.target.value)}
                   autoFocus
                 />
-                <button className="bg-green-600 text-white rounded px-2 py-1 text-xs font-semibold" onClick={handleUsernameSave} type="button">Save</button>
-                <button className="bg-gray-400 text-white rounded px-2 py-1 text-xs font-semibold" onClick={() => { setEditing(false); setUsername(user.username); }} type="button">Cancel</button>
+                <button className="bg-green-600 text-white rounded px-2 py-1 text-xs font-semibold" onClick={handleuserNameSave} type="button">Save</button>
+                <button className="bg-gray-400 text-white rounded px-2 py-1 text-xs font-semibold" onClick={() => { setEditing(false); setuserName(user.userName); }} type="button">Cancel</button>
               </>
             ) : (
               <>
-                <span>{user.username}</span>
+                <span>{user.userName}</span>
                 <button className="ml-2 text-xs text-blue-600 underline" onClick={() => setEditing(true)} type="button">Edit</button>
               </>
             )}
           </div>
-          {usernameError && <div className="text-red-600 text-xs mt-1">{usernameError}</div>}
-          {usernameSuccess && <div className="text-green-600 text-xs mt-1">{usernameSuccess}</div>}
+          {userNameError && <div className="text-red-600 text-xs mt-1">{userNameError}</div>}
+          {userNameSuccess && <div className="text-green-600 text-xs mt-1">{userNameSuccess}</div>}
           <div><span className="font-semibold">2FA Enabled:</span> {user.twoFAEnabled ? "Yes" : "No"}</div>
         </div>
       ) : null}

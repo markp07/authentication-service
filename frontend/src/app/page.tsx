@@ -87,7 +87,7 @@ export default function Home() {
         setLoggedIn(res.ok);
         if (res.ok) {
           const data = await res.json();
-          setUsername(data.username || null);
+          setUsername(data.userName || null);
         } else {
           setUsername(null);
         }
