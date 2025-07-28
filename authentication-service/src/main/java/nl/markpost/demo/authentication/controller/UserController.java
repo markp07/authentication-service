@@ -2,57 +2,67 @@ package nl.markpost.demo.authentication.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import nl.markpost.demo.authentication.api.v1.controller.UserApi;
+import nl.markpost.demo.authentication.api.v1.model.Message;
+import nl.markpost.demo.authentication.api.v1.model.PasswordRequest;
 import nl.markpost.demo.authentication.api.v1.model.UpdateUserNameRequest;
-import nl.markpost.demo.authentication.dto.UserDetailsResponse;
+import nl.markpost.demo.authentication.api.v1.model.UserDetails;
+import nl.markpost.demo.authentication.constant.Messages;
 import nl.markpost.demo.authentication.model.User;
+import nl.markpost.demo.authentication.service.LoginService;
 import nl.markpost.demo.authentication.service.UserService;
-import nl.markpost.demo.common.exception.UnauthorizedException;
+import nl.markpost.demo.authentication.util.MessageResponseUtil;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/v1/user")
+@RequestMapping("/v1")
 @RequiredArgsConstructor
 @Slf4j
-public class UserController /*implements UserApi*/ {
+public class UserController implements UserApi {
 
   private final UserService userService;
 
-  @GetMapping("")
-  public ResponseEntity<UserDetailsResponse> getUserDetails(
-      @AuthenticationPrincipal User user) {
-    if (user == null) {
-      throw new UnauthorizedException();
-    }
-    UserDetailsResponse userDetailsResponse = userService.getUserDetails(user);
-    log.info("User details retrieved for user: {} with userName {}", user.getEmail(),
-        userDetailsResponse.username());
-    return ResponseEntity.ok(userDetailsResponse);
+  private final LoginService loginService;
+
+  /**
+   * Deletes the account of the currently authenticated user.
+   *
+   * @param passwordRequest the request containing the user's password for verification
+   * @return ResponseEntity with a message indicating success
+   */
+  @Override
+  public ResponseEntity<Message> deleteAccount(PasswordRequest passwordRequest) {
+    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    userService.deleteAccount(user, passwordRequest.getPassword());
+    loginService.logout();
+    return ResponseEntity.ok(MessageResponseUtil.createMessageResponse(Messages.ACCOUNT_DELETED));
   }
 
-  @PutMapping("")
-  public ResponseEntity<Void> updateUserName(@AuthenticationPrincipal User user,
-      @RequestBody UpdateUserNameRequest request) {
-    if (user == null) {
-      throw new UnauthorizedException();
-    }
-    log.info("Updating username for user: {} to {}", user.getEmail(), request.getUsername());
-    userService.updateUserName(user, request.getUsername());
+  /**
+   * Retrieves the details of the currently authenticated user.
+   *
+   * @return ResponseEntity containing UserDetails of the authenticated user
+   */
+  @Override
+  public ResponseEntity<UserDetails> getUserDetails() {
+    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    UserDetails userDetails = userService.getUserDetails(user);
+    log.info("User details retrieved for user: {} with userName {}", user.getEmail(),
+        userDetails.getUserName());
+    return ResponseEntity.ok(userDetails);
+  }
+
+  /**
+   * @param updateUserNameRequest (required)
+   * @return ResponseEntity with a message indicating success
+   */
+  @Override
+  public ResponseEntity<Message> updateUserName(UpdateUserNameRequest updateUserNameRequest) {
+    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    userService.updateUserName(user, updateUserNameRequest.getUsername());
     return ResponseEntity.ok().build();
   }
-
-//  @Override
-//  public ResponseEntity<UserDetails> getUserDetails() {
-//    return null;
-//  }
-//
-//  @Override
-//  public ResponseEntity<Message> updateUserName(UpdateUserNameRequest updateUserNameRequest) {
-//    return null;
-//  }
 }

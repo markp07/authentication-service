@@ -16,6 +16,8 @@ public enum Messages {
     PASSWORD_CHANGE_SUCCESS("PASSWORD_CHANGE_SUCCESS", "Password changed successfully"),
     RESET_SENT_SUCCESS("RESET_SENT_SUCCESS", "Reset token sent successfully"),
     RESET_SUCCESS("RESET_SUCCESS", "Password reset successfully"),
+    ACCOUNT_DELETED("ACCOUNT_DELETED", "Account deleted successfully"),
+    TWO_FA_DISABLED("TWO_FA_DISABLED", "2fa disabled successfully"),
     ;
 
     private final String code;

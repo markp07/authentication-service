@@ -332,6 +332,59 @@ paths:
                 $ref: '#/components/schemas/Error'
       security:
         - AccessCookie: []
+    delete:
+      operationId: deleteAccount
+      summary: Delete user account (requires password)
+      tags:
+        - user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordRequest'
+      responses:
+        '200':
+          description: Account deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '401':
+          description: Not authenticated or password incorrect
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: []
+  /auth/2fa/disable:
+    post:
+      operationId: disable2FA
+      summary: Disable 2FA for user (requires password)
+      tags:
+        - manage-2fa
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordRequest'
+      responses:
+        '200':
+          description: 2FA disabled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '401':
+          description: Not authenticated or password incorrect
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: []
 
 components:
   securitySchemes:
@@ -459,3 +512,11 @@ components:
           type: string
         description:
           type: string
+    PasswordRequest:
+      type: object
+      properties:
+        password:
+          type: string
+          format: password
+      required:
+        - password

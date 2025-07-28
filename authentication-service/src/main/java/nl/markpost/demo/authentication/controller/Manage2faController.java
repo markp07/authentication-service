@@ -6,11 +6,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.authentication.api.v1.controller.Manage2faApi;
 import nl.markpost.demo.authentication.api.v1.model.Message;
+import nl.markpost.demo.authentication.api.v1.model.PasswordRequest;
 import nl.markpost.demo.authentication.api.v1.model.TOTPCode;
 import nl.markpost.demo.authentication.api.v1.model.TOTPSetupResponse;
 import nl.markpost.demo.authentication.api.v1.model.TOTPVerifyRequest;
 import nl.markpost.demo.authentication.constant.Messages;
+import nl.markpost.demo.authentication.service.LoginService;
 import nl.markpost.demo.authentication.service.Manage2faService;
+import nl.markpost.demo.authentication.util.MessageResponseUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +29,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class Manage2faController implements Manage2faApi {
 
   private final Manage2faService manage2faService;
+
+  private final LoginService loginService;
 
   /**
    * Endpoint to initiate the setup of two-factor authentication (2FA).
@@ -53,6 +58,19 @@ public class Manage2faController implements Manage2faApi {
   }
 
   /**
+   * Endpoint to disable two-factor authentication (2FA).
+   *
+   * @param passwordRequest the request containing the user's password for verification
+   * @return ResponseEntity with a message indicating success
+   */
+  @Override
+  public ResponseEntity<Message> disable2FA(PasswordRequest passwordRequest) {
+    manage2faService.disable2fa(passwordRequest);
+    loginService.logout();
+    return ResponseEntity.status(HttpStatus.OK).body(createMessageResponse(Messages.TWO_FA_DISABLED));
+  }
+
+  /**
    * Endpoint to verify the two-factor authentication (2FA) code.
    *
    * @param request the request containing the TOTP code to verify
@@ -65,4 +83,3 @@ public class Manage2faController implements Manage2faApi {
     return ResponseEntity.status(HttpStatus.OK).body(createMessageResponse(Messages.LOGIN_SUCCESS));
   }
 }
-

@@ -26,17 +26,21 @@ import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import nl.markpost.demo.authentication.api.v1.model.Message;
+import nl.markpost.demo.authentication.api.v1.model.PasswordRequest;
 import nl.markpost.demo.authentication.api.v1.model.TOTPCode;
 import nl.markpost.demo.authentication.api.v1.model.TOTPSetupResponse;
 import nl.markpost.demo.authentication.api.v1.model.TOTPVerifyRequest;
 import nl.markpost.demo.authentication.model.User;
 import nl.markpost.demo.authentication.repository.UserRepository;
 import nl.markpost.demo.authentication.util.CookieUtil;
+import nl.markpost.demo.authentication.util.MessageResponseUtil;
 import nl.markpost.demo.authentication.util.RequestUtil;
 import nl.markpost.demo.common.exception.BadRequestException;
 import nl.markpost.demo.common.exception.ForbiddenException;
 import nl.markpost.demo.common.exception.UnauthorizedException;
 import org.apache.commons.codec.binary.Base32;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -54,6 +58,8 @@ public class Manage2faService {
   private final UserRepository userRepository;
 
   private final JwtService jwtService;
+
+  private final PasswordEncoder passwordEncoder;
 
   /**
    * Sets up two-factor authentication (2FA) for the user. Generates a TOTP secret, creates an
@@ -193,5 +199,28 @@ public class Manage2faService {
     } catch (Exception e) {
       return false;
     }
+  }
+
+  /**
+   * Disables two-factor authentication (2FA) for the user after verifying the password.
+   *
+   * @param passwordRequest the request containing the user's password
+   */
+  public void disable2fa(PasswordRequest passwordRequest) {
+    HttpServletRequest request = getCurrentRequest();
+    String email = getEmailFromClaims(request);
+    User user = userRepository.findByEmail(email);
+    if (user == null) {
+      throw new BadRequestException("User not found");
+    }
+    if (!user.is2faEnabled()) {
+      throw new BadRequestException("2FA is not enabled for this user.");
+    }
+    if (!passwordEncoder.matches(passwordRequest.getPassword(), user.getPassword())) {
+      throw new UnauthorizedException();
+    }
+    user.set2faEnabled(false);
+    user.setTotpSecret(null);
+    userRepository.save(user);
   }
 }
