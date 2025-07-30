@@ -23,7 +23,12 @@ security:
 
 authentication:
   cors:
-    allowed-origin-patterns: "https://demo.markpost.dev"
+    allowed-origin-patterns: http://localhost:12006,https://demo.markpost.dev
+
+logging:
+  level:
+    root: DEBUG
+    nl.markpost.demo: DEBUG
 
 ---
 # Local environment profile
