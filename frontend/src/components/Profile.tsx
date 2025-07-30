@@ -7,7 +7,7 @@ interface ProfileProps {
 
 const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
 const AUTH_API_BASE = isDev
-  ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:12002/v1")
+  ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:12002")
   : "https://demo.markpost.dev";
 
 export default function Profile({ onClose }: ProfileProps) {
@@ -24,7 +24,7 @@ export default function Profile({ onClose }: ProfileProps) {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`${AUTH_API_BASE}/user`, { credentials: "include" });
+        const res = await fetch(`${AUTH_API_BASE}/api/auth/v1/user`, { credentials: "include" });
         if (res.ok) {
           setUser(await res.json());
         } else {

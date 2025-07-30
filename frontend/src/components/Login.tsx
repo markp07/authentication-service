@@ -28,7 +28,7 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
     setLoading(true);
     setError(null);
     try {
-      const res = await apiFetch(`${AUTH_API_BASE}/auth/login`, {
+      const res = await apiFetch(`${AUTH_API_BASE}/api/auth/v1/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),

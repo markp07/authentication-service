@@ -33,7 +33,7 @@ export default function ResetPassword({ onBack, onLogin }: ResetPasswordProps) {
       return;
     }
     try {
-      const res = await apiFetch(`${AUTH_API_BASE}/auth/password/reset`, {
+      const res = await apiFetch(`${AUTH_API_BASE}/api/auth/v1/password/reset`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ resetToken, newPassword }),

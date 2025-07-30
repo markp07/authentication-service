@@ -28,7 +28,7 @@ export default function ChangePassword({ onClose }: ChangePasswordProps) {
       return;
     }
     try {
-      const res = await fetch(`${AUTH_API_BASE}/auth/password/change`, {
+      const res = await fetch(`${AUTH_API_BASE}/api/auth/v1/password/change`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

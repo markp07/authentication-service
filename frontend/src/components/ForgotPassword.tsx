@@ -26,7 +26,7 @@ export default function ForgotPassword({ onBack, onReset }: ForgotPasswordProps)
     setError(null);
     setSuccess(null);
     try {
-      const res = await apiFetch(`${AUTH_API_BASE}/auth/password/forgot`, {
+      const res = await apiFetch(`${AUTH_API_BASE}/api/auth/v1/password/forgot`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

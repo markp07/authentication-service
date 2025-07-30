@@ -24,7 +24,7 @@ export default function Setup2FA({ onClose }: Setup2FAProps) {
     setError(null);
     setSuccess(null);
     try {
-      const res = await fetch(`${AUTH_API_BASE}/auth/2fa/setup`, { method: "POST", credentials: "include" });
+      const res = await fetch(`${AUTH_API_BASE}/api/auth/v1/2fa/setup`, { method: "POST", credentials: "include" });
       if (res.ok) {
         const data = await res.json();
         setQrCodeUrl(data.qrCodeImage || null);
