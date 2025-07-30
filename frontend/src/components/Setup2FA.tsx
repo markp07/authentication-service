@@ -43,7 +43,7 @@ export default function Setup2FA({ onClose }: Setup2FAProps) {
     setError(null);
     setSuccess(null);
     try {
-      const res = await fetch(`${AUTH_API_BASE}/auth/2fa/confirm`, {
+      const res = await fetch(`${AUTH_API_BASE}/api/auth/v1/2fa/confirm`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

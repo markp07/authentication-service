@@ -34,6 +34,7 @@ services:
 
   authentication-service:
     image: authentication-service:latest
+    restart: always
     build:
       context: ./authentication-service
       dockerfile: Dockerfile
@@ -49,6 +50,7 @@ services:
 
   weather-service:
     image: weather-service:latest
+    restart: always
     build:
       context: ./weather-service
       dockerfile: Dockerfile
@@ -64,6 +66,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    restart: always
     ports:
       - "12006:3000"
     depends_on:
