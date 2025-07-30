@@ -113,6 +113,7 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
           <label htmlFor="totp-code" className="font-semibold">Enter your 2FA code:</label>
           <input
             id="totp-code"
+            autocomplete="one-time-code"
             type="text"
             inputMode="numeric"
             pattern="\d{6}"
