@@ -47,7 +47,7 @@ security:
 
 authentication:
   cors:
-    allowed-origin-patterns: "https://demo.markpost.dev"
+    allowed-origin-patterns: "http://localhost:12006"
 
 email:
   from: "no-reply@example.com"
