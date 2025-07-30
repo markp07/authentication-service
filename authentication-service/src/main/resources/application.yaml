@@ -43,7 +43,7 @@ spring:
             enable: true
 
 security:
-  excluded-paths: /v1/auth/register,/v1/auth/login,/v1/auth/refresh,/v1/auth/2fa/verify,/v1/auth/password/forgot,/v1/auth/password/reset,/v1/public-key
+  excluded-paths: /api/auth/v1/register,/api/auth/v1/login,/api/auth/v1/refresh,/api/auth/v1/2fa/verify,/api/auth/v1/password/forgot,/api/auth/v1/password/reset,/api/auth/v1/public-key
 
 authentication:
   cors:
