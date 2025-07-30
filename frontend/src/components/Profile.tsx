@@ -50,7 +50,7 @@ export default function Profile({ onClose }: ProfileProps) {
       return;
     }
     try {
-      const res = await fetch(`${AUTH_API_BASE}/user`, {
+      const res = await fetch(`${AUTH_API_BASE}/api/auth/v1/user`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
