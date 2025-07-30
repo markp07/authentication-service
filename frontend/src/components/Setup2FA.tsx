@@ -5,7 +5,10 @@ interface Setup2FAProps {
   onClose: () => void;
 }
 
-const API_BASE = "http://localhost:12002/v1";
+const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
+const AUTH_API_BASE = isDev
+  ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:12002/v1")
+  : "https://demo.markpost.dev";
 
 export default function Setup2FA({ onClose }: Setup2FAProps) {
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
@@ -21,7 +24,7 @@ export default function Setup2FA({ onClose }: Setup2FAProps) {
     setError(null);
     setSuccess(null);
     try {
-      const res = await fetch(`${API_BASE}/auth/2fa/setup`, { method: "POST", credentials: "include" });
+      const res = await fetch(`${AUTH_API_BASE}/auth/2fa/setup`, { method: "POST", credentials: "include" });
       if (res.ok) {
         const data = await res.json();
         setQrCodeUrl(data.qrCodeImage || null);
@@ -40,7 +43,7 @@ export default function Setup2FA({ onClose }: Setup2FAProps) {
     setError(null);
     setSuccess(null);
     try {
-      const res = await fetch(`${API_BASE}/auth/2fa/confirm`, {
+      const res = await fetch(`${AUTH_API_BASE}/auth/2fa/confirm`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

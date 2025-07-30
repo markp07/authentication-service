@@ -13,7 +13,13 @@ import { IconTrash, IconShieldLock, IconSun, IconLogout, IconUser } from "@table
 import type { Weather } from "../types/Weather";
 import { weatherCodeMap } from "../types/WeatherCodeMap";
 
-const API_BASE = "http://localhost:12002/v1";
+const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
+const AUTH_API_BASE = isDev
+  ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:12002/v1")
+  : "https://demo.markpost.dev";
+const WEATHER_API_BASE = isDev
+  ? (process.env.NEXT_PUBLIC_WEATHER_API_URL || "http://localhost:12001")
+  : "https://demo.markpost.dev";
 
 function getWeatherIcon(code: string, size = 32) {
   return weatherCodeMap[code]?.icon(size) || <IconSun size={size} />;
@@ -83,12 +89,12 @@ export default function Home() {
   React.useEffect(() => {
     async function checkLogin() {
       try {
-        let res = await fetch(`${API_BASE}/user`, { credentials: "include" });
+        let res = await fetch(`${AUTH_API_BASE}/api/auth/v1/user`, { credentials: "include" });
         if (res.status === 401) {
           // Try refresh token
-          const refreshRes = await fetch(`${API_BASE}/auth/refresh`, { method: "POST", credentials: "include" });
+          const refreshRes = await fetch(`${AUTH_API_BASE}/api/auth/v1/refresh`, { method: "POST", credentials: "include" });
           if (refreshRes.ok) {
-            res = await fetch(`${API_BASE}/user`, { credentials: "include" });
+            res = await fetch(`${AUTH_API_BASE}/api/auth/v1/user`, { credentials: "include" });
           }
         }
         setLoggedIn(res.ok);
@@ -124,7 +130,7 @@ export default function Home() {
         }
         const lat = position.coords.latitude;
         const lon = position.coords.longitude;
-        const res = await fetch(`http://localhost:12001/api/v1/weather?latitude=${lat}&longitude=${lon}`, { credentials: "include" });
+        const res = await fetch(`${WEATHER_API_BASE}/api/weather/v1/forecast?latitude=${lat}&longitude=${lon}`, { credentials: "include" });
         if (res.status === 401) return "401";
         if (!res.ok) {
           setWeatherError("Failed to load weather.");
@@ -139,7 +145,7 @@ export default function Home() {
       let result = await fetchWeather();
       if (result === "401") {
         // Try refresh token
-        const refreshRes = await fetch(`${API_BASE}/auth/refresh`, { method: "POST", credentials: "include" });
+        const refreshRes = await fetch(`${AUTH_API_BASE}/api/auth/v1/refresh`, { method: "POST", credentials: "include" });
         if (refreshRes.ok) {
           result = await fetchWeather();
           if (result === true) return;
@@ -154,7 +160,7 @@ export default function Home() {
   }, [loggedIn]);
 
   async function handleLogout() {
-    await fetch(`${API_BASE}/auth/logout`, { method: "POST", credentials: "include" });
+    await fetch(`${AUTH_API_BASE}/api/auth/v1/logout`, { method: "POST", credentials: "include" });
     setLoggedIn(false);
     setShowWeather(false);
     setWeather(null);
@@ -162,7 +168,7 @@ export default function Home() {
   }
 
   async function handleDeleteAccount() {
-    await fetch(`${API_BASE}/auth/delete`, { method: "POST", credentials: "include" });
+    await fetch(`${AUTH_API_BASE}/api/auth/v1/delete`, { method: "POST", credentials: "include" });
     setGlobalMessage("Account deleted.");
     handleLogout();
   }

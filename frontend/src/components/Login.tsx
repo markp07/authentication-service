@@ -6,7 +6,10 @@ interface LoginProps {
   onForgot: () => void;
 }
 
-const API_BASE = "http://localhost:12002/v1";
+const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
+const AUTH_API_BASE = isDev
+  ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:12002/v1")
+  : "https://demo.markpost.dev";
 
 export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
   const [email, setEmail] = useState("");
@@ -25,7 +28,7 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
     setLoading(true);
     setError(null);
     try {
-      const res = await apiFetch(`${API_BASE}/auth/login`, {
+      const res = await apiFetch(`${AUTH_API_BASE}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -49,7 +52,7 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
     setLoading(true);
     setError(null);
     try {
-      const res = await apiFetch(`${API_BASE}/auth/2fa/verify`, {
+      const res = await apiFetch(`${AUTH_API_BASE}/auth/2fa/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code: totpCode }),

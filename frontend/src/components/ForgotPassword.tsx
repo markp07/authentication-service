@@ -5,7 +5,10 @@ interface ForgotPasswordProps {
   onReset: () => void;
 }
 
-const API_BASE = "http://localhost:12002/v1";
+const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
+const AUTH_API_BASE = isDev
+  ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:12002/v1")
+  : "https://demo.markpost.dev";
 
 export default function ForgotPassword({ onBack, onReset }: ForgotPasswordProps) {
   const [email, setEmail] = useState("");
@@ -23,7 +26,7 @@ export default function ForgotPassword({ onBack, onReset }: ForgotPasswordProps)
     setError(null);
     setSuccess(null);
     try {
-      const res = await apiFetch(`${API_BASE}/auth/password/forgot`, {
+      const res = await apiFetch(`${AUTH_API_BASE}/auth/password/forgot`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),

@@ -20,7 +20,7 @@ servers:
   - url: https://your-backend.com
 
 paths:
-  /auth/login:
+  /login:
     post:
       operationId: login
       summary: Login and receive access/refresh tokens
@@ -60,7 +60,7 @@ paths:
       security:
         - AccessCookie: []
 
-  /auth/refresh:
+  /refresh:
     post:
       operationId: refresh
       summary: Refresh access token using refresh token cookie
@@ -86,7 +86,7 @@ paths:
                 $ref: '#/components/schemas/Error'
       security:
         - RefreshCookie: []
-  /auth/logout:
+  /logout:
     post:
       operationId: logout
       summary: Clear access and refresh tokens
@@ -101,7 +101,7 @@ paths:
                 $ref: '#/components/schemas/Message'
       security:
         - AccessCookie: []
-  /auth/register:
+  /register:
     post:
       operationId: register
       summary: Register a new user
@@ -128,7 +128,7 @@ paths:
                 $ref: '#/components/schemas/Error'
       security:
         - AccessCookie: []
-  /auth/password/change:
+  /password/change:
     put:
       operationId: changePassword
       summary: Change password for authenticated user
@@ -161,7 +161,7 @@ paths:
                 $ref: '#/components/schemas/Error'
       security:
         - AccessCookie: []
-  /auth/password/forgot:
+  /password/forgot:
     post:
       operationId: forgotPassword
       summary: Initiate password reset (sends email)
@@ -182,7 +182,7 @@ paths:
                 $ref: '#/components/schemas/Message'
       security:
         - AccessCookie: []
-  /auth/password/reset:
+  /password/reset:
     post:
       operationId: resetPassword
       summary: Reset password using reset token
@@ -209,7 +209,7 @@ paths:
                 $ref: '#/components/schemas/Error'
       security:
         - AccessCookie: []
-  /auth/2fa/setup:
+  /2fa/setup:
     post:
       operationId: setup2FA
       summary: Start 2FA setup (generates secret and QR code URL)
@@ -224,7 +224,7 @@ paths:
                 $ref: '#/components/schemas/TOTPSetupResponse'
       security:
         - AccessCookie: []
-  /auth/2fa/confirm:
+  /2fa/confirm:
     post:
       operationId: enable2FA
       summary: Enable 2FA for user
@@ -245,7 +245,7 @@ paths:
                 $ref: '#/components/schemas/Message'
       security:
         - AccessCookie: []
-  /auth/2fa/verify:
+  /2fa/verify:
     post:
       operationId: verify2FA
       summary: Complete login using TOTP code after password check
@@ -358,7 +358,7 @@ paths:
                 $ref: '#/components/schemas/Error'
       security:
         - AccessCookie: []
-  /auth/2fa/disable:
+  /2fa/disable:
     post:
       operationId: disable2FA
       summary: Disable 2FA for user (requires password)

@@ -4,7 +4,10 @@ interface ChangePasswordProps {
   onClose: () => void;
 }
 
-const API_BASE = "http://localhost:12002/v1";
+const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
+const AUTH_API_BASE = isDev
+  ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:12002/v1")
+  : "https://demo.markpost.dev";
 
 export default function ChangePassword({ onClose }: ChangePasswordProps) {
   const [oldPassword, setOldPassword] = useState("");
@@ -25,7 +28,7 @@ export default function ChangePassword({ onClose }: ChangePasswordProps) {
       return;
     }
     try {
-      const res = await fetch(`${API_BASE}/auth/password/change`, {
+      const res = await fetch(`${AUTH_API_BASE}/auth/password/change`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

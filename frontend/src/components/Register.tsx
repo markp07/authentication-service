@@ -5,7 +5,10 @@ interface RegisterProps {
   onLogin: () => void;
 }
 
-const API_BASE = "http://localhost:12002/v1";
+const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
+const AUTH_API_BASE = isDev
+  ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:12002/v1")
+  : "https://demo.markpost.dev";
 
 export default function Register({ onSuccess, onLogin }: RegisterProps) {
   const [email, setEmail] = useState("");
@@ -31,7 +34,7 @@ export default function Register({ onSuccess, onLogin }: RegisterProps) {
       return;
     }
     try {
-      const res = await apiFetch(`${API_BASE}/auth/register`, {
+      const res = await apiFetch(`${AUTH_API_BASE}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, userName, password }),

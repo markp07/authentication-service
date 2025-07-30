@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/weather")
+@RequestMapping("/v1")
 public class WeatherController {
 
     private final WeatherService weatherService;
@@ -29,7 +29,7 @@ public class WeatherController {
      * @param longitude the longitude
      * @return a Mono emitting the mapped WeatherResponse
      */
-    @GetMapping
+    @GetMapping("/forecast")
     public ResponseEntity<Weather> getWeather(@RequestParam double latitude, @RequestParam double longitude) {
         log.info("Receive weather data at latitude: {}, longitude: {}", latitude, longitude);
         return ResponseEntity.ok(weatherService.getWeather(latitude, longitude));

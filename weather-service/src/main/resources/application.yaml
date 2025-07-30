@@ -2,7 +2,7 @@
 server:
   port: 12001
   servlet:
-    context-path: /
+    context-path: /api/weather
 
 management:
   endpoints:
