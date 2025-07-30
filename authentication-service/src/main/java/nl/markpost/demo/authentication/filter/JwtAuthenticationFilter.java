@@ -87,12 +87,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       FilterChain filterChain) throws Exception {
     String path = request.getRequestURI();
     String contextPath = request.getContextPath();
-    log.info("Processing request for path: {}", path);
-    log.info("Excluded paths: {}", (Object) excludedPaths);
     if (contextPath != null && !contextPath.isEmpty() && path.startsWith(contextPath)) {
       path = path.substring(contextPath.length());
     }
-    log.info("Processing request for path processed: {}", path);
     if (excludedPaths != null && List.of(excludedPaths).contains(path) || isPreflightRequest(
         request)) {
       filterChain.doFilter(request, response);

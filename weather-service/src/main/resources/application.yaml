@@ -30,6 +30,9 @@ logging:
     root: DEBUG
     nl.markpost.demo: DEBUG
 
+jwt:
+  public-key-url: http://authentication-service:12002/api/auth/v1/public-key
+
 ---
 # Local environment profile
 spring:
@@ -47,6 +50,8 @@ spring:
     activate:
       on-profile: ut
 
+jwt:
+  public-key-url: http://localhost:12002/v1/public-key
 
 security:
   excluded-paths: /actuator/health,/actuator/info,/swagger-ui.html,/swagger-ui/**,/*/api-docs,/v1/forecast

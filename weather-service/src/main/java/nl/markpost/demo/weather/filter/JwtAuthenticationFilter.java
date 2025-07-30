@@ -48,11 +48,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final ObjectMapper objectMapper;
 
-  private static final String AUTH_SERVICE_PUBLIC_KEY_URL = "http://localhost:12002/v1/public-key";
   private static final AtomicReference<PublicKey> cachedPublicKey = new AtomicReference<>();
 
   @Value("${security.excluded-paths}")
   private String[] excludedPaths;
+
+  @Value("${jwt.public-key-url}")
+  private String publicKeyUrl;
 
   //TODO: cleanup and refactor -- Can we move to common package?
   @Override
@@ -176,7 +178,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   PublicKey fetchPublicKeyFromAuthService() throws Exception {
     HttpClient client = HttpClient.newHttpClient();
     HttpRequest request = HttpRequest.newBuilder()
-        .uri(URI.create(AUTH_SERVICE_PUBLIC_KEY_URL))
+        .uri(URI.create(publicKeyUrl))
         .GET()
         .timeout(Duration.ofSeconds(2))
         .build();

@@ -59,11 +59,6 @@ email:
 cookie:
   secure: true
 
-logging:
-  level:
-    root: DEBUG
-    nl.markpost.demo: DEBUG
-
 ---
 # Local environment profile
 spring:
