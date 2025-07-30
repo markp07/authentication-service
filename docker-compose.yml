@@ -32,39 +32,52 @@ services:
     depends_on:
       - postgres
 
-#  authentication-service:
-#    image: authentication-service:latest
-#    build:
-#      context: ./
-#      dockerfile: authentication-service/Dockerfile
-#    depends_on:
-#      - redis
-#      - postgres
-#    ports:
-#      - '12001:12001'
-#    volumes:
-#      - /data/authentication_service
-#    links:
-#      - postgres
-#
-#  weather-service:
-#    image: weather-service:latest
-#    build:
-#      context: ./
-#      dockerfile: weather-server/Dockerfile
-#    depends_on:
-#      - redis
-#      - postgres
-#    ports:
-#      - '12002:12002'
-#    volumes:
-#      - /data/weather_service
-#    links:
-#      - redis
+  authentication-service:
+    image: authentication-service:latest
+    build:
+      context: ./authentication-service
+      dockerfile: Dockerfile
+    depends_on:
+      - redis
+      - postgres
+    ports:
+      - '12002:12002'
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - authentication_service_data:/data
+
+  weather-service:
+    image: weather-service:latest
+    build:
+      context: ./weather-service
+      dockerfile: Dockerfile
+    depends_on:
+      - redis
+      - postgres
+    ports:
+      - '12001:12001'
+    volumes:
+      - weather_service_data:/data
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "12006:3000"
+    depends_on:
+      - authentication-service
+      - weather-service
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:12002
 
 volumes:
   cache:
     driver: local
   postgres_data:
     driver: local
-  pgadmin-data:
+  authentication_service_data:
+    driver: local
+  weather_service_data:
+    driver: local

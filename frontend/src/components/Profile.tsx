@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { User } from "../types/User";
 
 interface ProfileProps {
   onClose: () => void;
-  onSetup2FA: () => void;
-  onChangePassword: () => void;
 }
 
 const API_BASE = "http://localhost:12002/v1";
 
-export default function Profile({ onClose, onSetup2FA, onChangePassword }: ProfileProps) {
-  const [user, setUser] = useState<any | null>(null);
+export default function Profile({ onClose }: ProfileProps) {
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
@@ -57,7 +56,9 @@ export default function Profile({ onClose, onSetup2FA, onChangePassword }: Profi
       if (res.ok) {
         setuserNameSuccess("userName updated successfully.");
         setEditing(false);
-        setUser({ ...user, userName });
+        if (user) {
+          setUser({ ...user, userName } as User);
+        }
       } else {
         setuserNameError("Failed to update userName.");
       }

@@ -9,15 +9,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
+import nl.markpost.demo.weather.config.SecurityConfig;
 import nl.markpost.demo.weather.model.Current;
 import nl.markpost.demo.weather.model.Weather;
 import nl.markpost.demo.weather.model.WeatherCode;
+import nl.markpost.demo.weather.security.JwtAuthenticationFilter;
 import nl.markpost.demo.weather.service.WeatherService;
 import nl.markpost.demo.weather.util.ObjectMapperUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -26,6 +29,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 @WebMvcTest(controllers = WeatherController.class)
 @ActiveProfiles(value = "ut")
+@Import({SecurityConfig.class, JwtAuthenticationFilter.class})
 class WeatherControllerTest {
 
   @MockitoBean
@@ -37,10 +41,22 @@ class WeatherControllerTest {
   @Test
   @DisplayName("Should return weather data for valid coordinates")
   void getWeather_success() throws Exception {
-    Current current = new Current(LocalDateTime.of(2025, Month.APRIL, 1, 12, 0), WeatherCode.FOG, 1,
-        6);
-    Weather weather = new Weather(52.0, 4.0, "Europe/Berlin", 10.0,
-        current, List.of());
+    Current current = new Current(
+        LocalDateTime.of(2025, Month.APRIL, 1, 12, 0),
+        WeatherCode.FOG,
+        1.0,
+        6,
+        180
+    );
+    Weather weather = new Weather(
+        52.0,
+        4.0,
+        "Europe/Berlin",
+        10.0,
+        current,
+        List.of(),
+        List.of()
+    );
     when(weatherService.getWeather(52.0, 4.0)).thenReturn(weather);
 
     MvcResult result = mockMvc.perform(

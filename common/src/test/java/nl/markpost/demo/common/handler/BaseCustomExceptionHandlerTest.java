@@ -52,5 +52,14 @@ class BaseCustomExceptionHandlerTest {
         response.getBody().getMessage());
   }
 
-}
+  @Test
+  void testHandleMissingServletRequestParameterException() {
+    Exception exception = new Exception("Missing parameter");
+    ResponseEntity<Error> response = baseCustomExceptionHandler.handleMissingServletRequestParameterException(exception);
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    assertNotNull(response.getBody());
+    assertEquals(GenericErrorCodes.BAD_REQUEST.getCode(), response.getBody().getCode());
+    assertEquals(GenericErrorCodes.BAD_REQUEST.getMessage(), response.getBody().getMessage());
+  }
 
+}

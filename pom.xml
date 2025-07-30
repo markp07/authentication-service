@@ -118,7 +118,8 @@
               <include>**/*Test.java</include>
             </includes>
             <testFailureIgnore>false</testFailureIgnore>
-            <argLine>@{surefireArgLine} -Xmx1024m -Duser.timezone=UTC</argLine>
+            <argLine>-Xmx1024m -Duser.timezone=UTC</argLine>
+<!--            <argLine>@{surefireArgLine} -Xmx1024m -Duser.timezone=UTC</argLine>-->
             <printSummary>false</printSummary>
             <redirectTestOutputToFile>true</redirectTestOutputToFile>
             <forkCount>3</forkCount>
@@ -165,4 +166,3 @@
     </pluginManagement>
   </build>
 </project>
-

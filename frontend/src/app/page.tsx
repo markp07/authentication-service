@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
 import Modal from "../components/Modal";
 import Login from "../components/Login";
 import Register from "../components/Register";
@@ -10,9 +9,9 @@ import ResetPassword from "../components/ResetPassword";
 import Profile from "../components/Profile";
 import Setup2FA from "../components/Setup2FA";
 import ChangePassword from "../components/ChangePassword";
-import { IconTrash, IconShieldLock, IconSun, IconCloud, IconCloudFog, IconCloudRain, IconCloudSnow, IconLogout, IconUser, IconSunrise, IconSunset } from "@tabler/icons-react";
-import type { Weather } from "../Types/Weather";
-import { weatherCodeMap } from "../Types/WeatherCodeMap";
+import { IconTrash, IconShieldLock, IconSun, IconLogout, IconUser } from "@tabler/icons-react";
+import type { Weather } from "../types/Weather";
+import { weatherCodeMap } from "../types/WeatherCodeMap";
 
 const API_BASE = "http://localhost:12002/v1";
 
@@ -23,7 +22,16 @@ function getWeatherLabel(code: string) {
   return weatherCodeMap[code]?.label || code;
 }
 
-function UserMenu({ username, onProfile, on2FA, onChangePassword, onDelete, onLogout }) {
+interface UserMenuProps {
+  username: string | null;
+  onProfile: () => void;
+  on2FA: () => void;
+  onChangePassword: () => void;
+  onDelete: () => void;
+  onLogout: () => void;
+}
+
+function UserMenu({ username, onProfile, on2FA, onChangePassword, onDelete, onLogout }: UserMenuProps) {
   const [open, setOpen] = React.useState(false);
   return (
     <div className="fixed top-1 right-1 z-50">
@@ -49,7 +57,6 @@ function UserMenu({ username, onProfile, on2FA, onChangePassword, onDelete, onLo
 }
 
 export default function Home() {
-  const router = useRouter();
   const [modal, setModal] = React.useState<
     | "login"
     | "register"
@@ -110,7 +117,7 @@ export default function Home() {
         let position;
         try {
           position = await getLocation();
-        } catch (e) {
+        } catch {
           setWeatherError("Could not get location.");
           setShowWeather(false);
           return false;
@@ -290,11 +297,7 @@ export default function Home() {
         />
       </Modal>
       <Modal open={modal === "profile"} onClose={closeModal}>
-        <Profile
-          onClose={closeModal}
-          onSetup2FA={() => openModal("2fa")}
-          onChangePassword={() => openModal("changePassword")}
-        />
+        <Profile onClose={closeModal} />
       </Modal>
       <Modal open={modal === "2fa"} onClose={closeModal}>
         <Setup2FA onClose={closeModal} />

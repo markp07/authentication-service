@@ -21,6 +21,10 @@ spring:
 security:
   excluded-paths: /actuator/health,/actuator/info,/swagger-ui.html,/swagger-ui/**,/*/api-docs
 
+authentication:
+  cors:
+    allowed-origin-patterns: "http://localhost:12006"
+
 ---
 # Local environment profile
 spring:
@@ -35,3 +39,14 @@ logging:
   level:
     root: DEBUG
     nl.markpost.demo: DEBUG
+
+---
+# UT environment profile
+spring:
+  config:
+    activate:
+      on-profile: ut
+
+
+security:
+  excluded-paths: /actuator/health,/actuator/info,/swagger-ui.html,/swagger-ui/**,/*/api-docs,/api/v1/weather

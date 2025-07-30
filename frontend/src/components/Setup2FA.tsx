@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Image from "next/image";
 
 interface Setup2FAProps {
   onClose: () => void;
@@ -73,7 +74,7 @@ export default function Setup2FA({ onClose }: Setup2FAProps) {
       {success && <div className="text-green-600 text-sm mb-2">{success}</div>}
       {step === "setup" && qrCodeUrl && (
         <div className="flex flex-col gap-4 items-center">
-          <img src={qrCodeUrl} alt="Scan this QR code with your authenticator app" className="w-40 h-40 border" />
+          <Image src={qrCodeUrl} alt="Scan this QR code with your authenticator app" width={160} height={160} className="w-40 h-40 border" />
           {otpUri && (
             <a href={otpUri} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline break-all">Open in Authenticator App</a>
           )}

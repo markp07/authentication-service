@@ -11,6 +11,7 @@ import nl.markpost.demo.common.exception.NotFoundException;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import nl.markpost.demo.common.model.Error;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -61,6 +62,14 @@ public class BaseCustomExceptionHandler {
   @ExceptionHandler(NoResourceFoundException.class)
   ResponseEntity<Error> handleNoResourceFoundException(Exception e) {
     return handleGenericExceptionException(new NotFoundException(e.getMessage()));
+  }
+
+  @ExceptionHandler(MissingServletRequestParameterException .class)
+  ResponseEntity<Error> handleMissingServletRequestParameterException(Exception e) {
+    log.error("Missing request parameter", e);
+    //TODO: handle specific missing parameter case
+    return ResponseEntity.badRequest()
+        .body(createError(GenericErrorCodes.BAD_REQUEST));
   }
 
   /**
