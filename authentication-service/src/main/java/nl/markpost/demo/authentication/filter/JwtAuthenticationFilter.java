@@ -86,6 +86,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private void handleAuthentication(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain) throws Exception {
     String path = request.getRequestURI();
+    String contextPath = request.getContextPath();
+    if (contextPath != null && !contextPath.isEmpty() && path.startsWith(contextPath)) {
+      path = path.substring(contextPath.length());
+    }
     if (excludedPaths != null && List.of(excludedPaths).contains(path) || isPreflightRequest(
         request)) {
       filterChain.doFilter(request, response);

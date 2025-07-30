@@ -13,7 +13,7 @@ import nl.markpost.demo.weather.config.SecurityConfig;
 import nl.markpost.demo.weather.model.Current;
 import nl.markpost.demo.weather.model.Weather;
 import nl.markpost.demo.weather.model.WeatherCode;
-import nl.markpost.demo.weather.security.JwtAuthenticationFilter;
+import nl.markpost.demo.weather.filter.JwtAuthenticationFilter;
 import nl.markpost.demo.weather.service.WeatherService;
 import nl.markpost.demo.weather.util.ObjectMapperUtil;
 import org.junit.jupiter.api.DisplayName;

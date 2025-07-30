@@ -1,10 +1,9 @@
-package nl.markpost.demo.weather.security;
+package nl.markpost.demo.weather.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,7 +25,6 @@ import nl.markpost.demo.common.exception.UnauthorizedException;
 import nl.markpost.demo.common.model.Error;
 import nl.markpost.demo.weather.exception.CustomExceptionHandler;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -92,6 +90,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private void handleAuthentication(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain) throws Exception {
     String path = request.getRequestURI();
+    String contextPath = request.getContextPath();
+    if (contextPath != null && !contextPath.isEmpty() && path.startsWith(contextPath)) {
+      path = path.substring(contextPath.length());
+    }
     if (excludedPaths != null && List.of(excludedPaths).contains(path) || isPreflightRequest(
         request)) {
       filterChain.doFilter(request, response);
