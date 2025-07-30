@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+git pull
+
 # Build all Maven modules (parent POM)
 echo "[1/3] Building all Maven modules..."
 mvn clean package
@@ -13,3 +15,9 @@ docker compose up -d
 
 echo "All services are up and running!"
 
+sudo apt update
+sudo apt install -y wget apt-transport-https
+wget -qO - https://repos.azul.com/azul-repo.key | sudo apt-key add -
+echo "deb https://repos.azul.com/zulu/deb stable main" | sudo tee /etc/apt/sources.list.d/zulu.list
+sudo apt update
+sudo apt install -y zulu21-jdk

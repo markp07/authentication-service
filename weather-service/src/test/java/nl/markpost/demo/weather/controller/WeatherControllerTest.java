@@ -60,7 +60,7 @@ class WeatherControllerTest {
     when(weatherService.getWeather(52.0, 4.0)).thenReturn(weather);
 
     MvcResult result = mockMvc.perform(
-            get("/api/v1/weather")
+            get("/v1/forecast")
                 .param("latitude", "52.0")
                 .param("longitude", "4.0")
                 .accept(MediaType.APPLICATION_JSON))
@@ -77,7 +77,7 @@ class WeatherControllerTest {
   @Test
   @DisplayName("Should return 400 Bad Request if latitude is missing")
   void getWeather_missingLatitude() throws Exception {
-    mockMvc.perform(get("/api/v1/weather")
+    mockMvc.perform(get("/v1/forecast")
             .param("longitude", "4.0"))
         .andExpect(status().isBadRequest());
   }
@@ -85,7 +85,7 @@ class WeatherControllerTest {
   @Test
   @DisplayName("Should return 400 Bad Request if longitude is missing")
   void getWeather_missingLongitude() throws Exception {
-    mockMvc.perform(get("/api/v1/weather")
+    mockMvc.perform(get("/v1/forecast")
             .param("latitude", "52.0"))
         .andExpect(status().isBadRequest());
   }

@@ -35,11 +35,6 @@ weather:
   cors:
     allowed-origin-patterns: "http://localhost:3000"
 
-logging:
-  level:
-    root: DEBUG
-    nl.markpost.demo: DEBUG
-
 ---
 # UT environment profile
 spring:
@@ -49,4 +44,4 @@ spring:
 
 
 security:
-  excluded-paths: /actuator/health,/actuator/info,/swagger-ui.html,/swagger-ui/**,/*/api-docs,/api/v1/weather
+  excluded-paths: /actuator/health,/actuator/info,/swagger-ui.html,/swagger-ui/**,/*/api-docs,/v1/forecast
