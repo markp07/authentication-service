@@ -5,6 +5,7 @@ import static nl.markpost.demo.authentication.util.MessageResponseUtil.createMes
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.authentication.api.v1.controller.Manage2faApi;
+import nl.markpost.demo.authentication.api.v1.model.BackupCodeResponse;
 import nl.markpost.demo.authentication.api.v1.model.Message;
 import nl.markpost.demo.authentication.api.v1.model.PasswordRequest;
 import nl.markpost.demo.authentication.api.v1.model.TOTPCode;
@@ -16,6 +17,7 @@ import nl.markpost.demo.authentication.service.Manage2faService;
 import nl.markpost.demo.authentication.util.MessageResponseUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -81,5 +83,33 @@ public class Manage2faController implements Manage2faApi {
     log.info("Verifying 2FA");
     manage2faService.verify2fa(request);
     return ResponseEntity.status(HttpStatus.OK).body(createMessageResponse(Messages.LOGIN_SUCCESS));
+  }
+
+  /**
+   * Endpoint to generate a new 2FA backup code for the current user.
+   * @return ResponseEntity containing the backup code
+   */
+  @RequestMapping("/2fa/backup-code")
+  public ResponseEntity<BackupCodeResponse> generateBackupCode() {
+    log.info("Generating 2FA backup code for user");
+    String backupCode = manage2faService.generateBackupCode();
+    return ResponseEntity.ok(new BackupCodeResponse(backupCode));
+  }
+
+  /**
+   * Endpoint to reset (disable) 2FA using the backup code.
+   * @param backupCode the backup code provided by the user
+   * @return ResponseEntity with a message indicating success or failure
+   */
+  @RequestMapping("/2fa/reset")
+  public ResponseEntity<Message> reset2FA(@RequestBody BackupCodeResponse backupCode) {
+    log.info("Resetting 2FA using backup code");
+    boolean success = manage2faService.reset2faWithBackupCode(backupCode.getBackupCode());
+    if (success) {
+      loginService.logout();
+      return ResponseEntity.status(HttpStatus.OK).body(createMessageResponse(Messages.TWO_FA_DISABLED));
+    } else {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).body(createMessageResponse(Messages.TWO_FA_BACKUP_CODE_INVALID));
+    }
   }
 }

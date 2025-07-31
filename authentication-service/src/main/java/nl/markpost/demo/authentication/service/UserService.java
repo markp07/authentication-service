@@ -2,12 +2,9 @@ package nl.markpost.demo.authentication.service;
 
 import lombok.RequiredArgsConstructor;
 import nl.markpost.demo.authentication.api.v1.model.UserDetails;
-import nl.markpost.demo.authentication.api.v1.model.Message;
 import nl.markpost.demo.authentication.model.User;
 import nl.markpost.demo.authentication.repository.UserRepository;
-import nl.markpost.demo.authentication.util.MessageResponseUtil;
 import nl.markpost.demo.common.exception.UnauthorizedException;
-import nl.markpost.demo.authentication.constant.Messages;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -50,7 +47,7 @@ public class UserService {
   /**
    * Deletes the account of the given user after verifying the password.
    *
-   * @param user    the user whose account is to be deleted
+   * @param user     the user whose account is to be deleted
    * @param password the password to verify
    */
   public void deleteAccount(User user, String password) {

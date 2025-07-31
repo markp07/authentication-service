@@ -39,9 +39,18 @@ spring:
   config:
     activate:
       on-profile: local
+  cache:
+    type: redis
+  data:
+    redis:
+      host: localhost
+      port: 12005
 weather:
   cors:
     allowed-origin-patterns: "http://localhost:3000"
+
+jwt:
+  public-key-url: http://localhost:12002/api/auth/v1/public-key
 
 ---
 # UT environment profile
@@ -49,9 +58,6 @@ spring:
   config:
     activate:
       on-profile: ut
-
-jwt:
-  public-key-url: http://localhost:12002/v1/public-key
 
 security:
   excluded-paths: /actuator/health,/actuator/info,/swagger-ui.html,/swagger-ui/**,/*/api-docs,/v1/forecast

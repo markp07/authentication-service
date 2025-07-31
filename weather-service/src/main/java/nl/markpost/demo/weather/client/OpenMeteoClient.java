@@ -18,8 +18,19 @@ public interface OpenMeteoClient {
    * @param longitude the longitude
    * @return a Mono emitting the raw JSON response
    */
-  @GetMapping("/v1/forecast?daily=weather_code,temperature_2m_max,precipitation_probability_max,temperature_2m_min,precipitation_sum,sunrise,sunset&hourly=temperature_2m,weather_code,precipitation_probability&current=temperature_2m,weather_code,wind_speed_10m,wind_direction_10m&timezone=Europe%2FBerlin&forecast_days=14")
-  WeatherResponse getWeather(@RequestParam("latitude") double latitude,
+  @GetMapping("/v1/forecast?daily=weather_code,temperature_2m_max,precipitation_probability_max,temperature_2m_min,precipitation_sum,sunrise,sunset&timezone=Europe%2FBerlin&forecast_days=14")
+  WeatherResponse getWeatherDaily(@RequestParam("latitude") double latitude,
+      @RequestParam("longitude") double longitude);
+
+  /**
+   * Calls the Open-Meteo API for the given coordinates.
+   *
+   * @param latitude  the latitude
+   * @param longitude the longitude
+   * @return a Mono emitting the raw JSON response
+   */
+  @GetMapping("/v1/forecast?hourly=temperature_2m,weather_code,precipitation_probability&current=temperature_2m,weather_code,wind_speed_10m,wind_direction_10m&timezone=Europe%2FBerlin&forecast_days=1")
+  WeatherResponse getWeatherHourly(@RequestParam("latitude") double latitude,
       @RequestParam("longitude") double longitude);
 
 }

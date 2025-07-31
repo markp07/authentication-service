@@ -4,14 +4,15 @@ interface LoginProps {
   onSuccess: () => void;
   onRegister: () => void;
   onForgot: () => void;
+  onClose: () => void;
 }
 
 const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
 const AUTH_API_BASE = isDev
-  ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:12002/v1")
+  ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:12002")
   : "https://demo.markpost.dev";
 
-export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
+export default function Login({ onSuccess, onRegister, onForgot, onClose }: LoginProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -113,7 +114,7 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
           <label htmlFor="totp-code" className="font-semibold">Enter your 2FA code:</label>
           <input
             id="totp-code"
-            autocomplete="one-time-code"
+            autoComplete="one-time-code"
             type="text"
             inputMode="numeric"
             pattern="\d{6}"
@@ -130,6 +131,12 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
           >
             {loading ? "Verifying..." : "Verify"}
           </button>
+          <div className="flex justify-between text-sm mt-2">
+            <button type="button" className="text-blue-600 hover:underline" onClick={() => setStep('login')}>
+              ← Back to Login
+            </button>
+            <button type="button" className="text-blue-600 hover:underline" onClick={() => window.open('mailto:support@markpost.dev?subject=Lost 2FA', '_blank')}>Lost 2FA?</button>
+          </div>
         </>
       )}
     </form>

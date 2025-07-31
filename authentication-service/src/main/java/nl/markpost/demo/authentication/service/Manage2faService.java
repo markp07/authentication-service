@@ -21,6 +21,8 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
@@ -86,13 +88,14 @@ public class Manage2faService {
     String base32Secret = new Base32().encodeToString(secret).replace("=", "");
     user.setTotpSecret(base32Secret);
     user.set2faEnabled(false);
+    user.setTotpSetupCreatedAt(LocalDateTime.now());
     userRepository.save(user);
     String otpauth = String.format(
         "otpauth://totp/%s:%s?secret=%s&issuer=%s&algorithm=SHA1&digits=6&period=30",
-        URLEncoder.encode(ISSUER, StandardCharsets.UTF_8),
-        URLEncoder.encode(email, StandardCharsets.UTF_8),
+        ISSUER,
+        email,
         base32Secret,
-        URLEncoder.encode(ISSUER, StandardCharsets.UTF_8)
+        ISSUER
     );
 
     return TOTPSetupResponse.builder()
@@ -117,9 +120,12 @@ public class Manage2faService {
       throw new BadRequestException(
           "User not found or 2FA not set up"); //TODO: Use a more specific message
     }
-
+    if (user.getTotpSetupCreatedAt() == null || Duration.between(user.getTotpSetupCreatedAt(), LocalDateTime.now()).toMinutes() > 5) {
+      throw new BadRequestException("2FA setup expired. Please set up 2FA again.");
+    }
     if (verifyTotpCode(user.getTotpSecret(), code.getCode())) {
       user.set2faEnabled(true);
+      user.setTotpSetupCreatedAt(null);
       userRepository.save(user);
     } else {
       throw new ForbiddenException();
@@ -222,5 +228,60 @@ public class Manage2faService {
     user.set2faEnabled(false);
     user.setTotpSecret(null);
     userRepository.save(user);
+  }
+
+  /**
+   * Generates and stores a new 2FA backup code for the current user.
+   * @return the generated backup code
+   */
+  public String generateBackupCode() {
+    HttpServletRequest request = getCurrentRequest();
+    String email = getEmailFromClaims(request);
+    User user = userRepository.findByEmail(email);
+    if (user == null) {
+      throw new BadRequestException("User not found");
+    }
+    String backupCode = generateRandomBackupCode();
+    String hashedBackupCode = passwordEncoder.encode(backupCode);
+    user.setBackupCode(hashedBackupCode);
+    userRepository.save(user);
+    return backupCode;
+  }
+
+  private String generateRandomBackupCode() {
+    String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    int groupSize = 6;
+    int groups = 4;
+    StringBuilder code = new StringBuilder();
+    for (int g = 0; g < groups; g++) {
+      for (int i = 0; i < groupSize; i++) {
+        int idx = (int) (Math.random() * chars.length());
+        code.append(chars.charAt(idx));
+      }
+      if (g < groups - 1) code.append("-");
+    }
+    return code.toString();
+  }
+
+  /**
+   * Resets (disables) 2FA for the current user using the backup code.
+   * @param backupCode the backup code provided by the user
+   * @return true if successful, false otherwise
+   */
+  public boolean reset2faWithBackupCode(String backupCode) {
+    HttpServletRequest request = getCurrentRequest();
+    String email = getEmailFromClaims(request);
+    User user = userRepository.findByEmail(email);
+    if (user == null || user.getBackupCode() == null) {
+      return false;
+    }
+    if (!passwordEncoder.matches(backupCode, user.getBackupCode())) {
+      return false;
+    }
+    user.set2faEnabled(false);
+    user.setTotpSecret(null);
+    user.setBackupCode(null);
+    userRepository.save(user);
+    return true;
   }
 }

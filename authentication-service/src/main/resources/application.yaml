@@ -15,6 +15,12 @@ jwt:
   public-key: classpath:keys/public_key.pem
 
 spring:
+  cache:
+    type: redis
+  data:
+    redis:
+      host: redis
+      port: 12005
   datasource:
     url: jdbc:postgresql://postgres:5432/authentication_service?useUnicode=true&characterEncoding=UTF-8
     username: authentication_service
@@ -65,6 +71,12 @@ spring:
   config:
     activate:
       on-profile: local
+  cache:
+    type: redis
+  data:
+    redis:
+      host: localhost
+      port: 12005
   datasource:
     url: jdbc:postgresql://localhost:12004/authentication_service
   jpa:

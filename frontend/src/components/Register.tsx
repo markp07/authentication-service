@@ -3,6 +3,7 @@ import React, { useState } from "react";
 interface RegisterProps {
   onSuccess: () => void;
   onLogin: () => void;
+  onClose: () => void;
 }
 
 const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
@@ -10,7 +11,7 @@ const AUTH_API_BASE = isDev
   ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:12002")
   : "https://demo.markpost.dev";
 
-export default function Register({ onSuccess, onLogin }: RegisterProps) {
+export default function Register({ onSuccess, onLogin, onClose }: RegisterProps) {
   const [email, setEmail] = useState("");
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
@@ -97,12 +98,13 @@ export default function Register({ onSuccess, onLogin }: RegisterProps) {
       >
         {loading ? "Registering..." : "Register"}
       </button>
-      <div className="flex justify-between text-sm mt-2">
-        <button type="button" className="text-blue-600 hover:underline" onClick={onLogin}>
-          Back to Login
-        </button>
-      </div>
+      <button
+        type="button"
+        className="text-blue-600 hover:underline text-sm mt-2"
+        onClick={onLogin}
+      >
+        ← Back to Login
+      </button>
     </form>
   );
 }
-

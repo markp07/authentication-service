@@ -9,6 +9,7 @@ import ResetPassword from "../components/ResetPassword";
 import Profile from "../components/Profile";
 import Setup2FA from "../components/Setup2FA";
 import ChangePassword from "../components/ChangePassword";
+import DeleteAccountModal from "../components/DeleteAccountModal";
 import { IconTrash, IconShieldLock, IconSun, IconLogout, IconUser } from "@tabler/icons-react";
 import type { Weather } from "../types/Weather";
 import { weatherCodeMap } from "../types/WeatherCodeMap";
@@ -30,14 +31,16 @@ function getWeatherLabel(code: string) {
 
 interface UserMenuProps {
   username: string | null;
+  twoFAEnabled: boolean;
   onProfile: () => void;
-  on2FA: () => void;
+  onEnable2FA: () => void;
+  onDisable2FA: () => void;
   onChangePassword: () => void;
   onDelete: () => void;
   onLogout: () => void;
 }
 
-function UserMenu({ username, onProfile, on2FA, onChangePassword, onDelete, onLogout }: UserMenuProps) {
+function UserMenu({ username, twoFAEnabled, onProfile, onEnable2FA, onDisable2FA, onChangePassword, onDelete, onLogout }: UserMenuProps) {
   const [open, setOpen] = React.useState(false);
   return (
     <div className="fixed top-1 right-1 z-50">
@@ -53,7 +56,14 @@ function UserMenu({ username, onProfile, on2FA, onChangePassword, onDelete, onLo
         <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-800 flex flex-col">
           <button className="px-4 py-2 text-left hover:bg-blue-50 dark:hover:bg-gray-800" onClick={onProfile}><IconUser size={18} className="inline mr-2" />Profile</button>
           <button className="px-4 py-2 text-left hover:bg-blue-50 dark:hover:bg-gray-800" onClick={onChangePassword}><IconShieldLock size={18} className="inline mr-2" />Change Password</button>
-          <button className="px-4 py-2 text-left hover:bg-blue-50 dark:hover:bg-gray-800" onClick={on2FA}><IconShieldLock size={18} className="inline mr-2" />Enable 2FA</button>
+          {twoFAEnabled ? (
+            <>
+              <button className="px-4 py-2 text-left hover:bg-blue-50 dark:hover:bg-gray-800" onClick={onDisable2FA}><IconShieldLock size={18} className="inline mr-2" />Disable 2FA</button>
+              <button className="px-4 py-2 text-left hover:bg-blue-50 dark:hover:bg-gray-800" onClick={() => openModal("regenerateBackupCode")}><IconShieldLock size={18} className="inline mr-2" />Regenerate 2FA Backup Code</button>
+            </>
+          ) : (
+            <button className="px-4 py-2 text-left hover:bg-blue-50 dark:hover:bg-gray-800" onClick={onEnable2FA}><IconShieldLock size={18} className="inline mr-2" />Enable 2FA</button>
+          )}
           <button className="px-4 py-2 text-left hover:bg-blue-50 dark:hover:bg-gray-800" onClick={onDelete}><IconTrash size={18} className="inline mr-2" />Delete Account</button>
           <button className="px-4 py-2 text-left hover:bg-blue-50 dark:hover:bg-gray-800" onClick={onLogout}><IconLogout size={18} className="inline mr-2" />Logout</button>
         </div>
@@ -80,6 +90,7 @@ export default function Home() {
   const [weather, setWeather] = React.useState<Weather | null>(null);
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [username, setUsername] = React.useState<string | null>(null);
+  const [twoFAEnabled, setTwoFAEnabled] = React.useState(false);
   const [checkingLogin, setCheckingLogin] = React.useState(true);
 
   // Modal open/close helpers
@@ -101,12 +112,15 @@ export default function Home() {
         if (res.ok) {
           const data = await res.json();
           setUsername(data.userName || null);
+          setTwoFAEnabled(data.twoFAEnabled || false);
         } else {
           setUsername(null);
+          setTwoFAEnabled(false);
         }
       } catch {
         setLoggedIn(false);
         setUsername(null);
+        setTwoFAEnabled(false);
       }
       setCheckingLogin(false);
     }
@@ -187,8 +201,10 @@ export default function Home() {
       {loggedIn && (
         <UserMenu
           username={username}
+          twoFAEnabled={twoFAEnabled}
           onProfile={() => openModal("profile")}
-          on2FA={() => openModal("2fa")}
+          onEnable2FA={() => openModal("2fa")}
+          onDisable2FA={() => openModal("2fa")}
           onChangePassword={() => openModal("changePassword")}
           onDelete={() => openModal("deleteAccount")}
           onLogout={handleLogout}
@@ -207,7 +223,7 @@ export default function Home() {
                 <div className="flex flex-row justify-between items-center gap-2 sm:gap-4 my-3">
                   <div className="flex flex-col items-start gap-1 w-full sm:w-auto">
                     <div className="text-lg sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Gouda</div>
-                    <div className="text-4xl sm:text-5xl font-extrabold leading-none">{weather.current.temperature}°C</div>
+                    <div className="text-4xl sm:text-5xl font-extrabold leading-none">{Math.round(weather.current.temperature)}°C</div>
                     <div className="text-base sm:text-lg font-medium text-gray-600 dark:text-gray-300">{getWeatherLabel(weather.current.weatherCode)}</div>
                     <div className="flex flex-row gap-4 sm:gap-6 mt-1 sm:mt-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
                       <div>Wind: {weather.current.windSpeed} km/h {weather.current.windDirection}°</div>
@@ -245,9 +261,9 @@ export default function Home() {
                               {i === 0 ? "Today" : new Date(d.time).toLocaleDateString("en-GB", { weekday: "short" })}
                             </td>
                             <td className="py-1 pr-1 sm:pr-2 text-center">{getWeatherIcon(d.weatherCode, 32)}</td>
-                            <td className="py-1 pr-1 sm:pr-2 text-right font-bold">{d.temperatureMax}°C</td>
-                            <td className="py-1 pr-1 sm:pr-2 text-right text-gray-500 dark:text-gray-400">{d.temperatureMin}°C</td>
-                            <td className="py-1 pr-1 sm:pr-2 text-right" style={{ minWidth: 32, maxWidth: 48, width: 48 }}>
+                            <td className="py-1 pr-1 sm:pr-2 text-center font-bold">{Math.round(d.temperatureMax)}°C</td>
+                            <td className="py-1 pr-1 sm:pr-2 text-center text-gray-500 dark:text-gray-400">{Math.round(d.temperatureMin)}°C</td>
+                            <td className="py-1 pr-1 sm:pr-2 text-center" style={{ minWidth: 32, maxWidth: 48, width: 48 }}>
                               {d.precipitationProbabilityMax != null ? `${Math.round(d.precipitationProbabilityMax)}%` : "-"}
                             </td>
                             <td className="py-1 pr-1 sm:pr-2 text-right whitespace-nowrap" style={{ minWidth: 32, maxWidth: 48, width: 48 }}>
@@ -279,6 +295,7 @@ export default function Home() {
           }}
           onRegister={() => openModal("register")}
           onForgot={() => openModal("forgot")}
+          onClose={closeModal}
         />
       </Modal>
       <Modal open={modal === "register"} onClose={closeModal}>
@@ -288,6 +305,7 @@ export default function Home() {
             openModal("login");
           }}
           onLogin={() => openModal("login")}
+          onClose={closeModal}
         />
       </Modal>
       <Modal open={modal === "forgot"} onClose={closeModal}>
@@ -312,12 +330,14 @@ export default function Home() {
         <ChangePassword onClose={closeModal} />
       </Modal>
       <Modal open={modal === "deleteAccount"} onClose={closeModal}>
-        <div className="flex flex-col gap-4 items-center p-6">
-          <h2 className="text-xl font-bold mb-2 text-red-700">Delete Account</h2>
-          <p className="text-center">Are you sure you want to delete your account? This action cannot be undone.</p>
-          <button className="bg-red-600 text-white rounded px-4 py-2 font-semibold" onClick={handleDeleteAccount}>Delete Account</button>
-          <button className="bg-gray-600 text-white rounded px-4 py-2 font-semibold" onClick={closeModal}>Cancel</button>
-        </div>
+        <DeleteAccountModal
+          onSuccess={() => {
+            setGlobalMessage("Account deleted.");
+            handleLogout();
+          }}
+          onCancel={closeModal}
+          AUTH_API_BASE={AUTH_API_BASE}
+        />
       </Modal>
     </div>
   );

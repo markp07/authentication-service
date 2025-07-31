@@ -5,6 +5,54 @@ interface ProfileProps {
   onClose: () => void;
 }
 
+function Disable2FAModal({ onSuccess, onCancel }: { onSuccess: () => void; onCancel: () => void }) {
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  async function handleDisable() {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${AUTH_API_BASE}/v1/2fa/disable`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      if (res.ok) {
+        onSuccess();
+      } else {
+        const data = await res.json();
+        setError(data.message || "Failed to disable 2FA.");
+      }
+    } catch {
+      setError("Network error. Please try again.");
+    }
+    setLoading(false);
+  }
+
+  return (
+    <div className="flex flex-col gap-4 items-center p-6">
+      <h2 className="text-xl font-bold mb-2 text-red-700">Disable 2FA</h2>
+      <p className="text-center">Disabling 2FA requires password verification.</p>
+      <input
+        type="password"
+        className="border rounded px-3 py-2 w-full max-w-xs"
+        placeholder="Enter your password"
+        value={password}
+        onChange={e => setPassword(e.target.value)}
+        disabled={loading}
+      />
+      {error && <div className="text-red-600 text-sm">{error}</div>}
+      <button className="bg-red-600 text-white rounded px-4 py-2 font-semibold w-full max-w-xs" onClick={handleDisable} disabled={loading || !password}>
+        {loading ? "Disabling..." : "Disable 2FA"}
+      </button>
+      <button className="bg-gray-600 text-white rounded px-4 py-2 font-semibold w-full max-w-xs" onClick={onCancel} disabled={loading}>Cancel</button>
+    </div>
+  );
+}
+
 const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
 const AUTH_API_BASE = isDev
   ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:12002")
@@ -18,6 +66,7 @@ export default function Profile({ onClose }: ProfileProps) {
   const [userName, setuserName] = useState("");
   const [userNameError, setuserNameError] = useState<string | null>(null);
   const [userNameSuccess, setuserNameSuccess] = useState<string | null>(null);
+  const [showDisable2FA, setShowDisable2FA] = useState(false);
 
   useEffect(() => {
     async function fetchUser() {
@@ -103,11 +152,27 @@ export default function Profile({ onClose }: ProfileProps) {
           {userNameError && <div className="text-red-600 text-xs mt-1">{userNameError}</div>}
           {userNameSuccess && <div className="text-green-600 text-xs mt-1">{userNameSuccess}</div>}
           <div><span className="font-semibold">2FA Enabled:</span> {user.twoFAEnabled ? "Yes" : "No"}</div>
+          {user.twoFAEnabled && (
+            <button className="bg-red-600 text-white rounded px-4 py-2 font-semibold mt-2" onClick={() => setShowDisable2FA(true)}>
+              Disable 2FA
+            </button>
+          )}
         </div>
       ) : null}
       <button className="bg-gray-600 text-white rounded px-4 py-2 font-semibold" onClick={onClose}>
         Close
       </button>
+      {showDisable2FA && (
+        <Modal open={showDisable2FA} onClose={() => setShowDisable2FA(false)}>
+          <Disable2FAModal
+            onSuccess={() => {
+              setShowDisable2FA(false);
+              if (user) setUser({ ...user, twoFAEnabled: false });
+            }}
+            onCancel={() => setShowDisable2FA(false)}
+          />
+        </Modal>
+      )}
     </div>
   );
 }

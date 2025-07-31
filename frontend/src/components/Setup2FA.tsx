@@ -7,7 +7,7 @@ interface Setup2FAProps {
 
 const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
 const AUTH_API_BASE = isDev
-  ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:12002/v1")
+  ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:12002")
   : "https://demo.markpost.dev";
 
 export default function Setup2FA({ onClose }: Setup2FAProps) {
@@ -18,7 +18,7 @@ export default function Setup2FA({ onClose }: Setup2FAProps) {
   const [code, setCode] = useState("");
   const [otpUri, setOtpUri] = useState<string | null>(null);
   const [step, setStep] = useState<"setup" | "confirm" | "done">("setup");
-  const [backupCodes, setBackupCodes] = useState<string[]>([]); // Placeholder
+  const [backupCode, setBackupCode] = useState<string | null>(null);
 
   async function setup2fa() {
     setError(null);
@@ -38,6 +38,20 @@ export default function Setup2FA({ onClose }: Setup2FAProps) {
     }
   }
 
+  async function fetchBackupCode() {
+    try {
+      const res = await fetch(`${AUTH_API_BASE}/api/auth/v1/2fa/backup-code`, { method: "POST", credentials: "include" });
+      if (res.ok) {
+        const data = await res.json();
+        setBackupCode(data.backupCode || null);
+      } else {
+        setBackupCode(null);
+      }
+    } catch {
+      setBackupCode(null);
+    }
+  }
+
   async function confirm2fa(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -52,8 +66,7 @@ export default function Setup2FA({ onClose }: Setup2FAProps) {
       if (res.ok) {
         const data = await res.json();
         if (data.code === "TWO_FA_SETUP_SUCCESS") {
-          // Placeholder: set backup codes if returned by backend
-          setBackupCodes(["ABC123", "DEF456", "GHI789"]); // TODO: Replace with real codes from backend
+          await fetchBackupCode();
           setStep("done");
         } else {
           setError("Invalid code. Try again.");
@@ -110,19 +123,18 @@ export default function Setup2FA({ onClose }: Setup2FAProps) {
         <div className="flex flex-col gap-4 items-center">
           <div className="text-green-700 font-bold text-lg">2FA setup complete!</div>
           <div className="bg-yellow-100 dark:bg-yellow-900 text-yellow-900 dark:text-yellow-100 rounded px-3 py-2 text-center">
-            <span className="font-semibold">Important:</span> Store your backup codes in a safe place. You will need them if you lose access to your authenticator app.
+            <span className="font-semibold">Important:</span> Store your backup code in a safe place. You will need it if you lose access to your authenticator app.
           </div>
-          <div className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white rounded px-3 py-2 text-center">
-            <span className="font-semibold">Backup Codes:</span>
-            <ul className="mt-2 space-y-1">
-              {backupCodes.map(code => (
-                <li key={code} className="font-mono text-base">{code}</li>
-              ))}
-            </ul>
-          </div>
+          {backupCode && (
+            <div className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-white rounded px-3 py-2 text-center">
+              <span className="font-semibold">Backup Code:</span>
+              <div className="font-mono text-base mt-2">
+                {backupCode.match(/.{1,6}/g)?.join("-")}
+              </div>
+            </div>
+          )}
         </div>
       )}
-      <button className="mt-6 px-4 py-2 rounded bg-gray-300 dark:bg-gray-700" onClick={onClose}>Close</button>
     </div>
   );
 }
