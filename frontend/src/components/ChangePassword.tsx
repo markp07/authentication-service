@@ -1,13 +1,9 @@
 import React, { useState } from "react";
+import { AUTH_API_BASE, fetchWithAuthRetry } from "../utils/api";
 
 interface ChangePasswordProps {
   onClose: () => void;
 }
-
-const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
-const AUTH_API_BASE = isDev
-  ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:12002")
-  : "https://demo.markpost.dev";
 
 export default function ChangePassword({ onClose }: ChangePasswordProps) {
   const [oldPassword, setOldPassword] = useState("");
@@ -28,10 +24,9 @@ export default function ChangePassword({ onClose }: ChangePasswordProps) {
       return;
     }
     try {
-      const res = await fetch(`${AUTH_API_BASE}/api/auth/v1/password/change`, {
+      const res = await fetchWithAuthRetry(`${AUTH_API_BASE}/api/auth/v1/password/change`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ oldPassword, newPassword }),
       });
       if (res.ok) {

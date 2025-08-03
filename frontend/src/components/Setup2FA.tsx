@@ -1,11 +1,8 @@
 import React, { useState } from "react";
 import Image from "next/image";
+import { AUTH_API_BASE, fetchWithAuthRetry } from "../utils/api";
 
-interface Setup2FAProps {
-  AUTH_API_BASE: string;
-}
-
-export default function Setup2FA({ AUTH_API_BASE }: Setup2FAProps) {
+export default function Setup2FA() {
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [secret, setSecret] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +16,7 @@ export default function Setup2FA({ AUTH_API_BASE }: Setup2FAProps) {
     setError(null);
     setSuccess(null);
     try {
-      const res = await fetch(`${AUTH_API_BASE}/api/auth/v1/2fa/setup`, { method: "POST", credentials: "include" });
+      const res = await fetchWithAuthRetry(`${AUTH_API_BASE}/api/auth/v1/2fa/setup`, { method: "POST" });
       if (res.ok) {
         const data = await res.json();
         setQrCodeUrl(data.qrCodeImage || null);
@@ -31,11 +28,11 @@ export default function Setup2FA({ AUTH_API_BASE }: Setup2FAProps) {
     } catch {
       setError("Network error.");
     }
-  }, [AUTH_API_BASE]);
+  }, []);
 
   async function fetchBackupCode() {
     try {
-      const res = await fetch(`${AUTH_API_BASE}/api/auth/v1/2fa/backup-code`, { method: "POST", credentials: "include" });
+      const res = await fetchWithAuthRetry(`${AUTH_API_BASE}/api/auth/v1/2fa/backup-code`, { method: "POST" });
       if (res.ok) {
         const data = await res.json();
         setBackupCode(data.backupCode || null);
@@ -52,10 +49,9 @@ export default function Setup2FA({ AUTH_API_BASE }: Setup2FAProps) {
     setError(null);
     setSuccess(null);
     try {
-      const res = await fetch(`${AUTH_API_BASE}/api/auth/v1/2fa/confirm`, {
+      const res = await fetchWithAuthRetry(`${AUTH_API_BASE}/api/auth/v1/2fa/confirm`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ code }),
       });
       if (res.ok) {

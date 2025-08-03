@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { User } from "../types/User";
 import Modal from "./Modal";
+import { AUTH_API_BASE, fetchWithAuthRetry } from "../utils/api";
 
 interface ProfileProps {
   onClose: () => void;
@@ -15,9 +16,8 @@ function Disable2FAModal({ onSuccess, onCancel }: { onSuccess: () => void; onCan
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${AUTH_API_BASE}/v1/2fa/disable`, {
+      const res = await fetchWithAuthRetry(`${AUTH_API_BASE}/v1/2fa/disable`, {
         method: "POST",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
       });
@@ -54,11 +54,6 @@ function Disable2FAModal({ onSuccess, onCancel }: { onSuccess: () => void; onCan
   );
 }
 
-const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
-const AUTH_API_BASE = isDev
-  ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:12002")
-  : "https://demo.markpost.dev";
-
 export default function Profile({ onClose }: ProfileProps) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -74,7 +69,7 @@ export default function Profile({ onClose }: ProfileProps) {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`${AUTH_API_BASE}/api/auth/v1/user`, { credentials: "include" });
+        const res = await fetchWithAuthRetry(`${AUTH_API_BASE}/api/auth/v1/user`);
         if (res.ok) {
           setUser(await res.json());
         } else {
@@ -100,10 +95,9 @@ export default function Profile({ onClose }: ProfileProps) {
       return;
     }
     try {
-      const res = await fetch(`${AUTH_API_BASE}/api/auth/v1/user`, {
+      const res = await fetchWithAuthRetry(`${AUTH_API_BASE}/api/auth/v1/user`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
         body: JSON.stringify({ userName }),
       });
       if (res.ok) {

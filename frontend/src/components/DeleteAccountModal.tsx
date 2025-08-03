@@ -1,12 +1,12 @@
 import React from "react";
+import { AUTH_API_BASE, fetchWithAuthRetry } from "../utils/api";
 
 interface DeleteAccountModalProps {
   onSuccess: () => void;
   onCancel: () => void;
-  AUTH_API_BASE?: string;
 }
 
-const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({ onSuccess, onCancel, AUTH_API_BASE }) => {
+const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({ onSuccess, onCancel }) => {
   const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
@@ -15,9 +15,8 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({ onSuccess, onCa
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${AUTH_API_BASE}/api/auth/v1/user`, {
+      const res = await fetchWithAuthRetry(`${AUTH_API_BASE}/api/auth/v1/user`, {
         method: "DELETE",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
       });
@@ -55,4 +54,3 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({ onSuccess, onCa
 };
 
 export default DeleteAccountModal;
-
