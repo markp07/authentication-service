@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { User } from "../types/User";
+import Modal from "./Modal";
 
 interface ProfileProps {
   onClose: () => void;

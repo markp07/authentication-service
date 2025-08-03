@@ -181,12 +181,6 @@ export default function Home() {
     setModal("login");
   }
 
-  async function handleDeleteAccount() {
-    await fetch(`${AUTH_API_BASE}/api/auth/v1/delete`, { method: "POST", credentials: "include" });
-    setGlobalMessage("Account deleted.");
-    handleLogout();
-  }
-
   if (checkingLogin) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen w-full">

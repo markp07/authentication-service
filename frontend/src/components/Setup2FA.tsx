@@ -1,16 +1,14 @@
 import React, { useState } from "react";
 import Image from "next/image";
 
-interface Setup2FAProps {
-  onClose: () => void;
-}
+interface Setup2FAProps {}
 
 const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
 const AUTH_API_BASE = isDev
   ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:12002")
   : "https://demo.markpost.dev";
 
-export default function Setup2FA({ onClose }: Setup2FAProps) {
+export default function Setup2FA({ }: Setup2FAProps) {
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [secret, setSecret] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
