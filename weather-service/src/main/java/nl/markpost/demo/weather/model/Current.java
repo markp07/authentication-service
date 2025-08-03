@@ -23,6 +23,6 @@ public class Current {
 
     private Integer windSpeed;
 
-    private Integer windDirection;
+    private WindDirection windDirection;
 
 }

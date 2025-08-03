@@ -218,15 +218,15 @@ export default function Home() {
           if (!loggedIn) return null;
           if (showWeather && weather) {
             return (
-              <div className="w-full max-w-xl mx-auto gap-6 sm:gap-8 bg-white/80 dark:bg-gray-900/80 p-2 sm:p-4 md:p-6">
+              <div className="w-full max-w-xl mx-auto gap-6 sm:gap-8 bg-gradient-to-br from-blue-30 to-indigo-100 dark:bg-gray-900/80 p-2 sm:p-4 md:p-6">
                 {/* Current Weather Section */}
                 <div className="flex flex-row justify-between items-center gap-2 sm:gap-4 my-3">
                   <div className="flex flex-col items-start gap-1 w-full sm:w-auto">
-                    <div className="text-lg sm:text-3xl font-bold text-gray-900 dark:text-gray-100">Gouda</div>
+                    <div className="text-lg sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{weather.location}</div>
                     <div className="text-4xl sm:text-5xl font-extrabold leading-none">{Math.round(weather.current.temperature)}°C</div>
                     <div className="text-base sm:text-lg font-medium text-gray-600 dark:text-gray-300">{getWeatherLabel(weather.current.weatherCode)}</div>
                     <div className="flex flex-row gap-4 sm:gap-6 mt-1 sm:mt-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
-                      <div>Wind: {weather.current.windSpeed} km/h {weather.current.windDirection}°</div>
+                      <div>Wind: {weather.current.windSpeed} km/h - {weather.current.windDirection}</div>
                     </div>
                   </div>
                   <div className="flex flex-col items-end justify-center flex-1 w-full sm:w-auto mr-5">

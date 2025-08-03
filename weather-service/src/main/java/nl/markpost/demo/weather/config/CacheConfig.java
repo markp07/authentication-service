@@ -26,8 +26,16 @@ public class CacheConfig {
     cacheConfigurations.put("weatherDaily",
         RedisCacheConfiguration.defaultCacheConfig()
             .entryTtl(Duration.ofSeconds(secondsUntilMidnight)));
+
+    // Calculate TTL until the next full hour
+    LocalDateTime nextHour = now.plusHours(1).withMinute(0).withSecond(0).withNano(0);
+    long secondsUntilNextHour = java.time.Duration.between(now, nextHour).getSeconds();
+
     cacheConfigurations.put("weatherHourly",
-        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofHours(1)));
+        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(secondsUntilNextHour)));
+
+    cacheConfigurations.put("location",
+        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofDays(365)));
 
     return RedisCacheManager.builder(redisConnectionFactory)
         .withInitialCacheConfigurations(cacheConfigurations)

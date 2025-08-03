@@ -10,6 +10,7 @@ import nl.markpost.demo.weather.model.Daily;
 import nl.markpost.demo.weather.model.DailyResponse;
 import nl.markpost.demo.weather.model.Hourly;
 import nl.markpost.demo.weather.model.HourlyResponse;
+import nl.markpost.demo.weather.model.ReverseGeocodeResponse;
 import nl.markpost.demo.weather.model.Weather;
 import nl.markpost.demo.weather.model.WeatherCode;
 import nl.markpost.demo.weather.model.WeatherResponse;
@@ -35,14 +36,16 @@ class WeatherMapperTest {
     DailyResponse dailyResponse = getDailyResponse();
     HourlyResponse hourlyResponse = getHourlyResponse();
     WeatherResponse response = getWeatherResponse(dailyResponse, hourlyResponse);
+    ReverseGeocodeResponse location = getReverseGeocodeResponse();
 
-    Weather weather = mapper.toWeather(response);
+    Weather weather = mapper.toWeather(response, location);
 
     assertNotNull(weather);
     assertEquals(52.0, weather.getLatitude());
     assertEquals(4.0, weather.getLongitude());
     assertEquals("Europe/Berlin", weather.getTimezone());
     assertEquals(10.0, weather.getElevation());
+    assertEquals("TestCity", weather.getLocation());
     assertNotNull(weather.getCurrent());
     assertEquals(LocalDateTime.parse("2025-07-23T12:00:00"), weather.getCurrent().getTime());
     assertEquals(22.5, weather.getCurrent().getTemperature());
@@ -124,5 +127,11 @@ class WeatherMapperTest {
     response.setDaily(dailyResponse);
     response.setHourly(hourlyResponse);
     return response;
+  }
+
+  private static ReverseGeocodeResponse getReverseGeocodeResponse() {
+    ReverseGeocodeResponse location = new ReverseGeocodeResponse();
+    location.setCity("TestCity");
+    return location;
   }
 }

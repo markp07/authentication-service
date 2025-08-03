@@ -23,7 +23,7 @@ public interface CurrentMapper {
     @Mapping(target = "weatherCode", expression = "java(nl.markpost.demo.weather.model.WeatherCode.fromCode(current.getWeather_code()))")
     @Mapping(source = "temperature_2m", target = "temperature")
     @Mapping(source = "wind_speed_10m", target = "windSpeed")
-    @Mapping(source = "wind_direction_10m", target = "windDirection")
+    @Mapping(target = "windDirection", expression = "java(nl.markpost.demo.weather.model.WindDirection.fromDegree(current.getWind_direction_10m()))")
     Current toCurrent(CurrentResponse current);
 
 }

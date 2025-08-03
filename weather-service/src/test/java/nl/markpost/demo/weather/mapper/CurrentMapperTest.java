@@ -33,4 +33,30 @@ class CurrentMapperTest {
     assertEquals(5, current.getWindSpeed());
     assertEquals(270, current.getWindDirection());
   }
+
+  @Test
+  @DisplayName("Should map wind direction degrees to correct WindDirection enum")
+  void toCurrent_windDirectionMapping() {
+    CurrentResponse response = new CurrentResponse();
+    response.setTime("2025-07-23T12:00:00");
+    response.setWeather_code(1);
+    response.setTemperature_2m(22.5);
+    response.setWind_speed_10m(5);
+
+    response.setWind_direction_10m(45); // NE
+    Current current = mapper.toCurrent(response);
+    assertEquals(nl.markpost.demo.weather.model.WindDirection.NE, current.getWindDirection());
+
+    response.setWind_direction_10m(90); // E
+    current = mapper.toCurrent(response);
+    assertEquals(nl.markpost.demo.weather.model.WindDirection.E, current.getWindDirection());
+
+    response.setWind_direction_10m(200); // S_SW
+    current = mapper.toCurrent(response);
+    assertEquals(nl.markpost.demo.weather.model.WindDirection.S_SW, current.getWindDirection());
+
+    response.setWind_direction_10m(310); // NW
+    current = mapper.toCurrent(response);
+    assertEquals(nl.markpost.demo.weather.model.WindDirection.NW, current.getWindDirection());
+  }
 }

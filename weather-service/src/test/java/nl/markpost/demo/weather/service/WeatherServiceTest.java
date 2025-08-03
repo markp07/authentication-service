@@ -7,9 +7,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import nl.markpost.demo.weather.client.OpenMeteoClient;
+import nl.markpost.demo.weather.client.ReverseGeocodeClient;
 import nl.markpost.demo.weather.mapper.WeatherMapper;
 import nl.markpost.demo.weather.model.Weather;
 import nl.markpost.demo.weather.model.WeatherResponse;
+import nl.markpost.demo.weather.model.ReverseGeocodeResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,25 +28,33 @@ class WeatherServiceTest {
   @Mock
   private WeatherMapper weatherMapper;
 
+  @Mock
+  private ReverseGeocodeClient reverseGeocodeClient;
+
   @InjectMocks
   private WeatherService weatherService;
 
   @Test
-  @DisplayName("Should call OpenMeteoClient and WeatherMapper and return mapped Weather")
+  @DisplayName("Should call OpenMeteoClient, ReverseGeocodeClient, and WeatherMapper and return mapped Weather")
   void getWeather_success() {
     double latitude = 52.0;
     double longitude = 4.0;
     WeatherResponse weatherResponse = mock(WeatherResponse.class);
+    ReverseGeocodeResponse reverseGeocodeResponse = mock(ReverseGeocodeResponse.class);
     Weather expectedWeather = mock(Weather.class);
 
-    when(openMeteoClient.getWeather(latitude, longitude)).thenReturn(weatherResponse);
-    when(weatherMapper.toWeather(weatherResponse)).thenReturn(expectedWeather);
+    when(openMeteoClient.getWeatherDaily(latitude, longitude)).thenReturn(weatherResponse);
+    when(openMeteoClient.getWeatherHourly(latitude, longitude)).thenReturn(weatherResponse);
+    when(reverseGeocodeClient.getLocation(latitude, longitude)).thenReturn(reverseGeocodeResponse);
+    when(weatherMapper.toWeather(weatherResponse, reverseGeocodeResponse)).thenReturn(expectedWeather);
 
     Weather result = weatherService.getWeather(latitude, longitude);
 
     assertSame(expectedWeather, result);
-    verify(openMeteoClient).getWeather(latitude, longitude);
-    verify(weatherMapper).toWeather(weatherResponse);
+    verify(openMeteoClient).getWeatherDaily(latitude, longitude);
+    verify(openMeteoClient).getWeatherHourly(latitude, longitude);
+    verify(reverseGeocodeClient).getLocation(latitude, longitude);
+    verify(weatherMapper).toWeather(weatherResponse, reverseGeocodeResponse);
   }
 
   @Test
@@ -52,11 +62,15 @@ class WeatherServiceTest {
   void getWeather_nullResponse() {
     double latitude = 52.0;
     double longitude = 4.0;
-    when(openMeteoClient.getWeather(latitude, longitude)).thenReturn(null);
-    when(weatherMapper.toWeather(null)).thenReturn(null);
+    when(openMeteoClient.getWeatherDaily(latitude, longitude)).thenReturn(null);
+    when(openMeteoClient.getWeatherHourly(latitude, longitude)).thenReturn(null);
+    when(reverseGeocodeClient.getLocation(latitude, longitude)).thenReturn(null);
+    when(weatherMapper.toWeather(null, null)).thenReturn(null);
     Weather result = weatherService.getWeather(latitude, longitude);
     assertNull(result);
-    verify(openMeteoClient).getWeather(latitude, longitude);
-    verify(weatherMapper).toWeather(null);
+    verify(openMeteoClient).getWeatherDaily(latitude, longitude);
+    verify(openMeteoClient).getWeatherHourly(latitude, longitude);
+    verify(reverseGeocodeClient).getLocation(latitude, longitude);
+    verify(weatherMapper).toWeather(null, null);
   }
 }

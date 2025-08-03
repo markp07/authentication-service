@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import nl.markpost.demo.weather.model.Daily;
 import nl.markpost.demo.weather.model.DailyResponse;
+import nl.markpost.demo.weather.model.ReverseGeocodeResponse;
 import nl.markpost.demo.weather.model.Weather;
 import nl.markpost.demo.weather.model.WeatherCode;
 import nl.markpost.demo.weather.model.WeatherResponse;
@@ -24,15 +25,16 @@ public interface WeatherMapper {
    * Maps a WeatherResponse object to a Weather model.
    */
   @Mappings({
-      @Mapping(source = "latitude", target = "latitude"),
-      @Mapping(source = "longitude", target = "longitude"),
-      @Mapping(source = "timezone", target = "timezone"),
-      @Mapping(source = "elevation", target = "elevation"),
-      @Mapping(source = "current", target = "current"),
-      @Mapping(target = "daily", expression = "java(toDailyList(response.getDaily()))"),
-      @Mapping(target = "hourly", expression = "java(toHourlyList(response.getHourly()))")
+      @Mapping(target = "latitude", source = "weather.latitude"),
+      @Mapping(target = "longitude", source = "weather.longitude"),
+      @Mapping(target = "timezone", source = "weather.timezone"),
+      @Mapping(target = "elevation", source = "weather.elevation"),
+      @Mapping(target = "current", source = "weather.current"),
+      @Mapping(target = "location", source = "location.city"),
+      @Mapping(target = "daily", expression = "java(toDailyList(weather.getDaily()))"),
+      @Mapping(target = "hourly", expression = "java(toHourlyList(weather.getHourly()))")
   })
-  Weather toWeather(WeatherResponse response);
+  Weather toWeather(WeatherResponse weather, ReverseGeocodeResponse location);
 
   /**
    * Maps a date or date-time string to a LocalDateTime object.

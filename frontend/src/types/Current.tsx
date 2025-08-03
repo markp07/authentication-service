@@ -3,5 +3,5 @@ export interface Current {
   weatherCode: string;
   temperature: number;
   windSpeed: number;
-  windDirection: number;
+  windDirection: string;
 }

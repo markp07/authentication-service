@@ -5,6 +5,7 @@ import {Hourly} from './Hourly';
 export interface Weather {
   latitude: number;
   longitude: number;
+  location: string;
   timezone: string;
   elevation: number;
   current: Current;

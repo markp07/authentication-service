@@ -14,6 +14,8 @@ public class Weather {
 
   private double longitude;
 
+  private String location;
+
   private String timezone;
 
   private double elevation;
@@ -25,4 +27,3 @@ public class Weather {
   private List<Hourly> hourly;
 
 }
-
