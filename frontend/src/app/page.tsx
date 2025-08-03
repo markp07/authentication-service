@@ -211,7 +211,7 @@ export default function Home() {
           if (!loggedIn) return null;
           if (showWeather && weather) {
             return (
-              <div className="w-full max-w-xl mx-auto gap-6 sm:gap-8 bg-gradient-to-br from-blue-30 to-indigo-100 dark:bg-gray-900/80 p-2 sm:p-4 md:p-6">
+              <div className="w-full max-w-xl mx-auto gap-6 sm:gap-8 bg-gradient-to-br from-blue-30 to-indigo-100 dark:from-gray-900/80 dark:to-gray-900/80 p-2 sm:p-4 md:p-6">
                 {/* Current Weather Section */}
                 <div className="flex flex-row justify-between items-center gap-2 sm:gap-4 my-3">
                   <div className="flex flex-col items-start gap-1 w-full sm:w-auto">
@@ -231,7 +231,7 @@ export default function Home() {
                   <div className="text-base sm:text-lg font-semibold">Hourly Forecast</div>
                   <div className="flex flex-row gap-2 sm:gap-4 overflow-x-auto pb-2 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                     {weather.hourly.slice(0, 24).map((h, i) => (
-                      <div key={i} className="flex flex-col items-center min-w-[48px] sm:min-w-[64px] p-1 sm:p-2 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                      <div key={i} className="flex flex-col items-center min-w-[48px] sm:min-w-[64px] p-1 sm:p-2 rounded-lg bg-white/80 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                         <div className="text-[10px] sm:text-xs font-medium text-gray-500 dark:text-gray-300 mb-0.5 sm:mb-1">
                           {i === 0 ? "Now" : new Date(h.time).toLocaleTimeString([], { hour: "2-digit", hour12: false })}
                         </div>
@@ -250,16 +250,16 @@ export default function Home() {
                       <tbody>
                         {weather.daily.slice(0, 14).map((d, i) => (
                           <tr key={i} className="border-b border-gray-200 dark:border-gray-700 last:border-0">
-                            <td className="py-1 pr-1 sm:pr-2 font-medium text-gray-700 dark:text-gray-200 text-left">
+                            <td className="py-1 pr-1 sm:pr-2 w-16 font-medium text-gray-700 dark:text-gray-200 text-left">
                               {i === 0 ? "Today" : new Date(d.time).toLocaleDateString("en-GB", { weekday: "short" })}
                             </td>
-                            <td className="py-1 pr-1 sm:pr-2 text-center">{getWeatherIcon(d.weatherCode, 32)}</td>
-                            <td className="py-1 pr-1 sm:pr-2 text-center font-bold">{Math.round(d.temperatureMax)}°C</td>
-                            <td className="py-1 pr-1 sm:pr-2 text-center text-gray-500 dark:text-gray-400">{Math.round(d.temperatureMin)}°C</td>
-                            <td className="py-1 pr-1 sm:pr-2 text-center" style={{ minWidth: 32, maxWidth: 48, width: 48 }}>
+                            <td className="py-1 pr-1 sm:pr-2 w-16 text-center">{getWeatherIcon(d.weatherCode, 32)}</td>
+                            <td className="py-1 pr-1 sm:pr-2 w-10 text-center font-bold">{Math.round(d.temperatureMax)}°C</td>
+                            <td className="py-1 pr-1 sm:pr-2 w-24 text-center text-gray-500 dark:text-gray-400">{Math.round(d.temperatureMin)}°C</td>
+                            <td className="py-1 pr-1 sm:pr-2 text-center">
                               {d.precipitationProbabilityMax != null ? `${Math.round(d.precipitationProbabilityMax)}%` : "-"}
                             </td>
-                            <td className="py-1 pr-1 sm:pr-2 text-right whitespace-nowrap" style={{ minWidth: 32, maxWidth: 48, width: 48 }}>
+                            <td className="py-1 pr-1 sm:pr-2 text-right whitespace-nowrap">
                               {d.precipitation != null ? `${d.precipitation.toFixed(1)} mm` : "-"}
                             </td>
                           </tr>
