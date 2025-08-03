@@ -59,7 +59,6 @@ function UserMenu({ username, twoFAEnabled, onProfile, onEnable2FA, onDisable2FA
           {twoFAEnabled ? (
             <>
               <button className="px-4 py-2 text-left hover:bg-blue-50 dark:hover:bg-gray-800" onClick={onDisable2FA}><IconShieldLock size={18} className="inline mr-2" />Disable 2FA</button>
-              <button className="px-4 py-2 text-left hover:bg-blue-50 dark:hover:bg-gray-800" onClick={() => openModal("regenerateBackupCode")}><IconShieldLock size={18} className="inline mr-2" />Regenerate 2FA Backup Code</button>
             </>
           ) : (
             <button className="px-4 py-2 text-left hover:bg-blue-50 dark:hover:bg-gray-800" onClick={onEnable2FA}><IconShieldLock size={18} className="inline mr-2" />Enable 2FA</button>
@@ -289,7 +288,6 @@ export default function Home() {
           }}
           onRegister={() => openModal("register")}
           onForgot={() => openModal("forgot")}
-          onClose={closeModal}
         />
       </Modal>
       <Modal open={modal === "register"} onClose={closeModal}>
@@ -299,7 +297,6 @@ export default function Home() {
             openModal("login");
           }}
           onLogin={() => openModal("login")}
-          onClose={closeModal}
         />
       </Modal>
       <Modal open={modal === "forgot"} onClose={closeModal}>
@@ -318,7 +315,7 @@ export default function Home() {
         <Profile onClose={closeModal} />
       </Modal>
       <Modal open={modal === "2fa"} onClose={closeModal}>
-        <Setup2FA onClose={closeModal} />
+        <Setup2FA AUTH_API_BASE={AUTH_API_BASE} />
       </Modal>
       <Modal open={modal === "changePassword"} onClose={closeModal}>
         <ChangePassword onClose={closeModal} />

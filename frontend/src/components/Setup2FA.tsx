@@ -1,14 +1,11 @@
 import React, { useState } from "react";
 import Image from "next/image";
 
-interface Setup2FAProps {}
+interface Setup2FAProps {
+  AUTH_API_BASE: string;
+}
 
-const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
-const AUTH_API_BASE = isDev
-  ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:12002")
-  : "https://demo.markpost.dev";
-
-export default function Setup2FA({ }: Setup2FAProps) {
+export default function Setup2FA({ AUTH_API_BASE }: Setup2FAProps) {
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [secret, setSecret] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +15,7 @@ export default function Setup2FA({ }: Setup2FAProps) {
   const [step, setStep] = useState<"setup" | "confirm" | "done">("setup");
   const [backupCode, setBackupCode] = useState<string | null>(null);
 
-  async function setup2fa() {
+  const setup2fa = React.useCallback(async () => {
     setError(null);
     setSuccess(null);
     try {
@@ -34,7 +31,7 @@ export default function Setup2FA({ }: Setup2FAProps) {
     } catch {
       setError("Network error.");
     }
-  }
+  }, [AUTH_API_BASE]);
 
   async function fetchBackupCode() {
     try {
@@ -79,7 +76,7 @@ export default function Setup2FA({ }: Setup2FAProps) {
 
   React.useEffect(() => {
     setup2fa();
-  }, []);
+  }, [setup2fa]);
 
   return (
     <div className="p-6">
