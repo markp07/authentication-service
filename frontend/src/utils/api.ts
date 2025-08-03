@@ -14,7 +14,7 @@ export async function fetchWithAuthRetry(input: RequestInfo, init?: RequestInit)
   if (res.status !== 401) return res;
 
   // Try to refresh token
-  const refreshRes = await fetch(`${AUTH_API_BASE}/api/auth/v1/refresh`, { credentials: "include" });
+  const refreshRes = await fetch(`${AUTH_API_BASE}/api/auth/v1/refresh`, { method: "POST", credentials: "include" });
   if (refreshRes.status === 401) {
     // Redirect to login
     if (typeof window !== "undefined") {

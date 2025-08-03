@@ -14,7 +14,6 @@ import nl.markpost.demo.authentication.api.v1.model.TOTPVerifyRequest;
 import nl.markpost.demo.authentication.constant.Messages;
 import nl.markpost.demo.authentication.service.LoginService;
 import nl.markpost.demo.authentication.service.Manage2faService;
-import nl.markpost.demo.authentication.util.MessageResponseUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -69,7 +68,8 @@ public class Manage2faController implements Manage2faApi {
   public ResponseEntity<Message> disable2FA(PasswordRequest passwordRequest) {
     manage2faService.disable2fa(passwordRequest);
     loginService.logout();
-    return ResponseEntity.status(HttpStatus.OK).body(createMessageResponse(Messages.TWO_FA_DISABLED));
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(createMessageResponse(Messages.TWO_FA_DISABLED));
   }
 
   /**
@@ -87,6 +87,7 @@ public class Manage2faController implements Manage2faApi {
 
   /**
    * Endpoint to generate a new 2FA backup code for the current user.
+   *
    * @return ResponseEntity containing the backup code
    */
   @RequestMapping("/2fa/backup-code")
@@ -98,6 +99,7 @@ public class Manage2faController implements Manage2faApi {
 
   /**
    * Endpoint to reset (disable) 2FA using the backup code.
+   *
    * @param backupCode the backup code provided by the user
    * @return ResponseEntity with a message indicating success or failure
    */
@@ -107,9 +109,11 @@ public class Manage2faController implements Manage2faApi {
     boolean success = manage2faService.reset2faWithBackupCode(backupCode.getBackupCode());
     if (success) {
       loginService.logout();
-      return ResponseEntity.status(HttpStatus.OK).body(createMessageResponse(Messages.TWO_FA_DISABLED));
+      return ResponseEntity.status(HttpStatus.OK)
+          .body(createMessageResponse(Messages.TWO_FA_DISABLED));
     } else {
-      return ResponseEntity.status(HttpStatus.FORBIDDEN).body(createMessageResponse(Messages.TWO_FA_BACKUP_CODE_INVALID));
+      return ResponseEntity.status(HttpStatus.FORBIDDEN)
+          .body(createMessageResponse(Messages.TWO_FA_BACKUP_CODE_INVALID));
     }
   }
 }

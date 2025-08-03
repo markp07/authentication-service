@@ -10,7 +10,9 @@ import Profile from "../components/Profile";
 import Setup2FA from "../components/Setup2FA";
 import ChangePassword from "../components/ChangePassword";
 import DeleteAccountModal from "../components/DeleteAccountModal";
-import { IconTrash, IconShieldLock, IconSun, IconLogout, IconUser } from "@tabler/icons-react";
+import ProfilePage from "../components/ProfilePage";
+import SecurityPage from "../components/SecurityPage";
+import { IconSun, IconUser } from "@tabler/icons-react";
 import type { Weather } from "../types/Weather";
 import { weatherCodeMap } from "../types/WeatherCodeMap";
 
@@ -27,48 +29,6 @@ function getWeatherIcon(code: string, size = 32) {
 }
 function getWeatherLabel(code: string) {
   return weatherCodeMap[code]?.label || code;
-}
-
-interface UserMenuProps {
-  username: string | null;
-  twoFAEnabled: boolean;
-  onProfile: () => void;
-  onEnable2FA: () => void;
-  onDisable2FA: () => void;
-  onChangePassword: () => void;
-  onDelete: () => void;
-  onLogout: () => void;
-}
-
-function UserMenu({ username, twoFAEnabled, onProfile, onEnable2FA, onDisable2FA, onChangePassword, onDelete, onLogout }: UserMenuProps) {
-  const [open, setOpen] = React.useState(false);
-  return (
-    <div className="fixed top-1 right-1 z-50">
-      <button
-        className="flex items-center gap-2 bg-blue-600 text-white rounded-full px-3 py-1 shadow-lg hover:bg-blue-700 focus:outline-none"
-        onClick={() => setOpen((v) => !v)}
-        aria-label="User menu"
-      >
-        <IconUser size={18} />
-        <span className="text-sm font-semibold">{username || "User"}</span>
-      </button>
-      {open && (
-        <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-900 rounded-lg shadow-lg border border-gray-200 dark:border-gray-800 flex flex-col">
-          <button className="px-4 py-2 text-left hover:bg-blue-50 dark:hover:bg-gray-800" onClick={onProfile}><IconUser size={18} className="inline mr-2" />Profile</button>
-          <button className="px-4 py-2 text-left hover:bg-blue-50 dark:hover:bg-gray-800" onClick={onChangePassword}><IconShieldLock size={18} className="inline mr-2" />Change Password</button>
-          {twoFAEnabled ? (
-            <>
-              <button className="px-4 py-2 text-left hover:bg-blue-50 dark:hover:bg-gray-800" onClick={onDisable2FA}><IconShieldLock size={18} className="inline mr-2" />Disable 2FA</button>
-            </>
-          ) : (
-            <button className="px-4 py-2 text-left hover:bg-blue-50 dark:hover:bg-gray-800" onClick={onEnable2FA}><IconShieldLock size={18} className="inline mr-2" />Enable 2FA</button>
-          )}
-          <button className="px-4 py-2 text-left hover:bg-blue-50 dark:hover:bg-gray-800" onClick={onDelete}><IconTrash size={18} className="inline mr-2" />Delete Account</button>
-          <button className="px-4 py-2 text-left hover:bg-blue-50 dark:hover:bg-gray-800" onClick={onLogout}><IconLogout size={18} className="inline mr-2" />Logout</button>
-        </div>
-      )}
-    </div>
-  );
 }
 
 export default function Home() {
@@ -91,6 +51,7 @@ export default function Home() {
   const [username, setUsername] = React.useState<string | null>(null);
   const [twoFAEnabled, setTwoFAEnabled] = React.useState(false);
   const [checkingLogin, setCheckingLogin] = React.useState(true);
+  const [activePage, setActivePage] = React.useState<null | "profile" | "security">(null);
 
   // Modal open/close helpers
   const openModal = (name: typeof modal) => setModal(name);
@@ -192,17 +153,18 @@ export default function Home() {
   return (
     <div className="flex flex-row gap-8 w-full min-h-screen">
       {loggedIn && (
-        <UserMenu
-          username={username}
-          twoFAEnabled={twoFAEnabled}
-          onProfile={() => openModal("profile")}
-          onEnable2FA={() => openModal("2fa")}
-          onDisable2FA={() => openModal("2fa")}
-          onChangePassword={() => openModal("changePassword")}
-          onDelete={() => openModal("deleteAccount")}
-          onLogout={handleLogout}
-        />
+        <div className="fixed top-1 right-1 z-50">
+          <button
+            className="flex items-center gap-2 bg-blue-600 text-white rounded-full px-3 py-1 shadow-lg hover:bg-blue-700 focus:outline-none"
+            onClick={() => setActivePage("profile")}
+            aria-label="Profile"
+          >
+            <IconUser size={18} />
+            <span className="text-sm font-semibold">{username || "User"}</span>
+          </button>
+        </div>
       )}
+      {/* Main weather view */}
       <main className="flex-1 flex flex-col items-center w-full">
         {globalMessage && modal !== "login" && (
           <div className="text-green-600 text-sm bg-green-100 dark:bg-green-900 rounded px-2 py-1 mb-4">{globalMessage}</div>
@@ -279,6 +241,27 @@ export default function Home() {
           return null;
         })()}
       </main>
+      {/* ProfilePage overlay */}
+      {activePage === "profile" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <ProfilePage
+            onBack={() => setActivePage(null)}
+            onSecurity={() => setActivePage("security")}
+            onDeleteAccount={() => setModal("deleteAccount")}
+            onLogout={handleLogout}
+          />
+        </div>
+      )}
+      {/* SecurityPage overlay */}
+      {activePage === "security" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <SecurityPage
+            onBack={() => setActivePage("profile")}
+            onChangePassword={() => setModal("changePassword")}
+            onToggle2FA={() => setModal("2fa")}
+          />
+        </div>
+      )}
       <Modal open={!loggedIn && modal === "login"} onClose={closeModal}>
         <Login
           onSuccess={() => {
@@ -315,7 +298,7 @@ export default function Home() {
         <Profile onClose={closeModal} />
       </Modal>
       <Modal open={modal === "2fa"} onClose={closeModal}>
-        <Setup2FA AUTH_API_BASE={AUTH_API_BASE} />
+        <Setup2FA />
       </Modal>
       <Modal open={modal === "changePassword"} onClose={closeModal}>
         <ChangePassword onClose={closeModal} />
@@ -327,7 +310,6 @@ export default function Home() {
             handleLogout();
           }}
           onCancel={closeModal}
-          AUTH_API_BASE={AUTH_API_BASE}
         />
       </Modal>
     </div>

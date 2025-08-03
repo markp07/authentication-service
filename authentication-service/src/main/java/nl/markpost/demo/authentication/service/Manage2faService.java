@@ -40,6 +40,7 @@ import nl.markpost.demo.authentication.util.MessageResponseUtil;
 import nl.markpost.demo.authentication.util.RequestUtil;
 import nl.markpost.demo.common.exception.BadRequestException;
 import nl.markpost.demo.common.exception.ForbiddenException;
+import nl.markpost.demo.common.exception.NotFoundException;
 import nl.markpost.demo.common.exception.UnauthorizedException;
 import org.apache.commons.codec.binary.Base32;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -239,7 +240,10 @@ public class Manage2faService {
     String email = getEmailFromClaims(request);
     User user = userRepository.findByEmail(email);
     if (user == null) {
-      throw new BadRequestException("User not found");
+      throw new NotFoundException("User not found");
+    }
+    if(!user.is2faEnabled()) {
+      throw new BadRequestException("2FA is not enabled for this user.");
     }
     String backupCode = generateRandomBackupCode();
     String hashedBackupCode = passwordEncoder.encode(backupCode);
@@ -250,15 +254,11 @@ public class Manage2faService {
 
   private String generateRandomBackupCode() {
     String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    int groupSize = 6;
-    int groups = 4;
+    int length = 24;
     StringBuilder code = new StringBuilder();
-    for (int g = 0; g < groups; g++) {
-      for (int i = 0; i < groupSize; i++) {
-        int idx = (int) (Math.random() * chars.length());
-        code.append(chars.charAt(idx));
-      }
-      if (g < groups - 1) code.append("-");
+    for (int i = 0; i < length; i++) {
+      int idx = (int) (Math.random() * chars.length());
+      code.append(chars.charAt(idx));
     }
     return code.toString();
   }
