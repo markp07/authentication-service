@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import nl.markpost.demo.weather.model.Current;
 import nl.markpost.demo.weather.model.CurrentResponse;
 import nl.markpost.demo.weather.model.WeatherCode;
+import nl.markpost.demo.weather.model.WindDirection;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +32,7 @@ class CurrentMapperTest {
     assertEquals(WeatherCode.MAINLY_CLEAR, current.getWeatherCode());
     assertEquals(22.5, current.getTemperature());
     assertEquals(5, current.getWindSpeed());
-    assertEquals(270, current.getWindDirection());
+    assertEquals(WindDirection.W, current.getWindDirection());
   }
 
   @Test

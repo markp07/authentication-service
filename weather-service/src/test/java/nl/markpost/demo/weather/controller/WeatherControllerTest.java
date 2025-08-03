@@ -14,6 +14,7 @@ import nl.markpost.demo.weather.model.Current;
 import nl.markpost.demo.weather.model.Weather;
 import nl.markpost.demo.weather.model.WeatherCode;
 import nl.markpost.demo.weather.filter.JwtAuthenticationFilter;
+import nl.markpost.demo.weather.model.WindDirection;
 import nl.markpost.demo.weather.service.WeatherService;
 import nl.markpost.demo.weather.util.ObjectMapperUtil;
 import org.junit.jupiter.api.DisplayName;
@@ -46,11 +47,12 @@ class WeatherControllerTest {
         WeatherCode.FOG,
         1.0,
         6,
-        180
+        WindDirection.S
     );
     Weather weather = new Weather(
         52.0,
         4.0,
+        "Gouda",
         "Europe/Berlin",
         10.0,
         current,

@@ -30,7 +30,9 @@ public class WeatherService {
     WeatherResponse dailyWeatherResponse = getWeatherDaily(latitude, longitude);
     WeatherResponse hourlyWeatherResponse = getWeatherHourly(latitude, longitude);
     ReverseGeocodeResponse reverseGeocodeResponse = getLocation(latitude, longitude);
-    hourlyWeatherResponse.setDaily(dailyWeatherResponse.getDaily());
+    if (dailyWeatherResponse != null && hourlyWeatherResponse != null) {
+      hourlyWeatherResponse.setDaily(dailyWeatherResponse.getDaily());
+    }
     return weatherMapper.toWeather(hourlyWeatherResponse, reverseGeocodeResponse);
   }
 

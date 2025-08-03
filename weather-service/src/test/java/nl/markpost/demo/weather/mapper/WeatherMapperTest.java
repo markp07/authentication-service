@@ -14,6 +14,7 @@ import nl.markpost.demo.weather.model.ReverseGeocodeResponse;
 import nl.markpost.demo.weather.model.Weather;
 import nl.markpost.demo.weather.model.WeatherCode;
 import nl.markpost.demo.weather.model.WeatherResponse;
+import nl.markpost.demo.weather.model.WindDirection;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,7 +51,7 @@ class WeatherMapperTest {
     assertEquals(LocalDateTime.parse("2025-07-23T12:00:00"), weather.getCurrent().getTime());
     assertEquals(22.5, weather.getCurrent().getTemperature());
     assertEquals(5, weather.getCurrent().getWindSpeed());
-    assertEquals(270, weather.getCurrent().getWindDirection());
+    assertEquals(WindDirection.W, weather.getCurrent().getWindDirection());
     assertEquals(WeatherCode.MAINLY_CLEAR, weather.getCurrent().getWeatherCode());
     assertNotNull(weather.getDaily());
     assertEquals(2, weather.getDaily().size());
