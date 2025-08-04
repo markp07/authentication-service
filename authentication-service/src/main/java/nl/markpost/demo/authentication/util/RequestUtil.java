@@ -7,12 +7,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.common.exception.BadRequestException;
 import nl.markpost.demo.common.exception.InternalServerErrorException;
+import nl.markpost.demo.common.model.CustomError;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
- * Utility class to retrieve the current HTTP request and response objects,
- * and to extract email from JWT claims.
+ * Utility class to retrieve the current HTTP request and response objects, and to extract email
+ * from JWT claims.
  */
 @Slf4j
 public class RequestUtil {
@@ -25,7 +26,7 @@ public class RequestUtil {
    */
   public static HttpServletRequest getCurrentRequest() {
     ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-    if( attrs == null || attrs.getResponse() == null) {
+    if (attrs == null || attrs.getResponse() == null) {
       log.error("No request object found in the current request context.");
       throw new InternalServerErrorException();
     }
@@ -40,7 +41,7 @@ public class RequestUtil {
    */
   public static HttpServletResponse getCurrentResponse() {
     ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-    if( attrs == null || attrs.getResponse() == null) {
+    if (attrs == null || attrs.getResponse() == null) {
       log.error("No response object found in the current request context.");
       throw new InternalServerErrorException();
     }
@@ -58,7 +59,12 @@ public class RequestUtil {
     if (claims != null) {
       return claims.getSubject();
     }
-    throw new BadRequestException(); //TODO: Use a more specific message
+    log.error("JWT claims not found in the request attributes.");
+    CustomError customError = CustomError.builder()
+        .code("AUTHENTICATION_ERROR")
+        .message("JWT is invalid.")
+        .build();
+    throw new BadRequestException(customError);
   }
 
 }

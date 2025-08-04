@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import nl.markpost.demo.common.constant.GenericErrorCodes;
 import nl.markpost.demo.common.exception.GenericException;
+import nl.markpost.demo.common.model.CustomError;
 import nl.markpost.demo.common.model.Error;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -60,6 +61,21 @@ class BaseCustomExceptionHandlerTest {
     assertNotNull(response.getBody());
     assertEquals(GenericErrorCodes.BAD_REQUEST.getCode(), response.getBody().getCode());
     assertEquals(GenericErrorCodes.BAD_REQUEST.getMessage(), response.getBody().getMessage());
+  }
+
+  @Test
+  void testHandleGenericExceptionWithCustomError() {
+    CustomError customError = new CustomError("CUSTOM_CODE", "Custom error message");
+    GenericException exception = mock(GenericException.class);
+    when(exception.getCustomError()).thenReturn(customError);
+    when(exception.getHttpStatus()).thenReturn(HttpStatus.BAD_REQUEST);
+
+    ResponseEntity<Error> response = baseCustomExceptionHandler.handleGenericExceptionException(exception);
+
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    assertNotNull(response.getBody());
+    assertEquals("CUSTOM_CODE", response.getBody().getCode());
+    assertEquals("Custom error message", response.getBody().getMessage());
   }
 
 }

@@ -38,7 +38,6 @@ public class Manage2faController implements Manage2faApi {
    *
    * @return ResponseEntity containing the TOTP setup response
    */
-  @Override
   public ResponseEntity<TOTPSetupResponse> setup2FA() {
     log.info("Setting up 2FA for user");
     return ResponseEntity.ok(manage2faService.setup2fa());
@@ -50,7 +49,6 @@ public class Manage2faController implements Manage2faApi {
    * @param code the TOTP code provided by the user
    * @return ResponseEntity with a message indicating success
    */
-  @Override
   public ResponseEntity<Message> enable2FA(TOTPCode code) {
     log.info("Enabling 2FA for user with code: {}", code.getCode());
     manage2faService.enable2fa(code);
@@ -64,7 +62,6 @@ public class Manage2faController implements Manage2faApi {
    * @param passwordRequest the request containing the user's password for verification
    * @return ResponseEntity with a message indicating success
    */
-  @Override
   public ResponseEntity<Message> disable2FA(PasswordRequest passwordRequest) {
     manage2faService.disable2fa(passwordRequest);
     loginService.logout();
@@ -78,7 +75,6 @@ public class Manage2faController implements Manage2faApi {
    * @param request the request containing the TOTP code to verify
    * @return ResponseEntity with a message indicating success
    */
-  @Override
   public ResponseEntity<Message> verify2FA(TOTPVerifyRequest request) {
     log.info("Verifying 2FA");
     manage2faService.verify2fa(request);
@@ -90,11 +86,9 @@ public class Manage2faController implements Manage2faApi {
    *
    * @return ResponseEntity containing the backup code
    */
-  @RequestMapping("/2fa/backup-code")
   public ResponseEntity<BackupCodeResponse> generateBackupCode() {
     log.info("Generating 2FA backup code for user");
-    String backupCode = manage2faService.generateBackupCode();
-    return ResponseEntity.ok(new BackupCodeResponse(backupCode));
+    return ResponseEntity.ok(manage2faService.generateBackupCode());
   }
 
   /**
@@ -103,7 +97,6 @@ public class Manage2faController implements Manage2faApi {
    * @param backupCode the backup code provided by the user
    * @return ResponseEntity with a message indicating success or failure
    */
-  @RequestMapping("/2fa/reset")
   public ResponseEntity<Message> reset2FA(@RequestBody BackupCodeResponse backupCode) {
     log.info("Resetting 2FA using backup code");
     boolean success = manage2faService.reset2faWithBackupCode(backupCode.getBackupCode());

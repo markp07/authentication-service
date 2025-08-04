@@ -33,7 +33,6 @@ public class UserController implements UserApi {
    * @param passwordRequest the request containing the user's password for verification
    * @return ResponseEntity with a message indicating success
    */
-  @Override
   public ResponseEntity<Message> deleteAccount(PasswordRequest passwordRequest) {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     userService.deleteAccount(user, passwordRequest.getPassword());
@@ -46,7 +45,6 @@ public class UserController implements UserApi {
    *
    * @return ResponseEntity containing UserDetails of the authenticated user
    */
-  @Override
   public ResponseEntity<UserDetails> getUserDetails() {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     UserDetails userDetails = userService.getUserDetails(user);
@@ -59,7 +57,6 @@ public class UserController implements UserApi {
    * @param updateUserNameRequest (required)
    * @return ResponseEntity with a message indicating success
    */
-  @Override
   public ResponseEntity<Message> updateUserName(UpdateUserNameRequest updateUserNameRequest) {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     userService.updateUserName(user, updateUserNameRequest.getUsername());

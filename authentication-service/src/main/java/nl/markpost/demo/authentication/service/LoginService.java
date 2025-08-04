@@ -44,6 +44,8 @@ public class LoginService {
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
+  private final PasswordService passwordService;
+  private final UserService userService;
 
   /**
    * Handles user login.
@@ -129,12 +131,22 @@ public class LoginService {
       throw new BadRequestException(); //TODO: Use a more specific message
     }
 
-    //TODO: validate user name and email format
+    String password = registerRequest.getPassword();
+    if (passwordService.isPasswordStrong(password)) {
+      //TODO: Use codes for exception
+      throw new BadRequestException("New password does not meet strength requirements");
+    }
+
+    String userName = registerRequest.getUserName();
+    userService.checkIfUserExists(userName);
+
+    String email = registerRequest.getEmail();
+    userService.checkIfEmailExists(email);
 
     User user = User.builder()
-        .userName(registerRequest.getUserName())
-        .email(registerRequest.getEmail())
-        .password(passwordEncoder.encode(registerRequest.getPassword()))
+        .userName(userName)
+        .email(email)
+        .password(passwordEncoder.encode(password))
         .roles(Collections.singleton("USER"))
         .build();
     userRepository.save(user);

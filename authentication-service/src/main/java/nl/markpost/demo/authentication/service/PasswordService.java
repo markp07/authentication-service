@@ -46,14 +46,14 @@ public class PasswordService {
       throw new BadRequestException("Old password is incorrect");
     }
 
-    if (passwordEncoder.matches(newPassword, user.getPassword())) {
-      //TODO: Use codes for exception
-      throw new BadRequestException("New password cannot be the same as the old password");
-    }
-
     if (isPasswordStrong(newPassword)) {
       //TODO: Use codes for exception
       throw new BadRequestException("New password does not meet strength requirements");
+    }
+
+    if (passwordEncoder.matches(newPassword, user.getPassword())) {
+      //TODO: Use codes for exception
+      throw new BadRequestException("New password cannot be the same as the old password");
     }
 
     user.setPassword(passwordEncoder.encode(newPassword));

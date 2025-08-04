@@ -8,9 +8,11 @@ import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.common.constant.GenericErrorCodes;
 import nl.markpost.demo.common.exception.GenericException;
 import nl.markpost.demo.common.exception.NotFoundException;
+import nl.markpost.demo.common.model.CustomError;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import nl.markpost.demo.common.model.Error;
@@ -41,6 +43,11 @@ public class BaseCustomExceptionHandler {
   @ExceptionHandler(GenericException.class)
   public ResponseEntity<Error> handleGenericExceptionException(GenericException exception) {
     log.error("An error occurred", exception);
+    if (exception.getCustomError() != null) {
+      return ResponseEntity.status(exception.getHttpStatus())
+          .body(createError(exception.getCustomError(), exception.getHttpStatus()));
+    }
+
     return ResponseEntity.status(exception.getHttpStatus())
         .body(createError(exception.getErrorCode(), exception.getHttpStatus()));
   }
@@ -72,6 +79,14 @@ public class BaseCustomExceptionHandler {
         .body(createError(GenericErrorCodes.BAD_REQUEST));
   }
 
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  ResponseEntity<Error> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    log.error("Invalid method argument", e);
+    return ResponseEntity.badRequest()
+        .body(createError(GenericErrorCodes.BAD_REQUEST));
+  }
+
+
   /**
    * Creates an error response using the provided error code and its default HTTP status.
    *
@@ -90,6 +105,24 @@ public class BaseCustomExceptionHandler {
    * @return Error object with details
    */
   private Error createError(GenericErrorCodes errorCode, HttpStatus status) {
+    String traceparent = MDC.get(TRACE_PARENT);
+    return Error.builder()
+        .timestamp(Instant.now().atOffset(ZoneOffset.UTC))
+        .status(status.value())
+        .code(errorCode.getCode())
+        .message(errorCode.getMessage())
+        .traceparent(traceparent)
+        .build();
+  }
+
+  /**
+   * Creates an error response using the provided error code and HTTP status.
+   *
+   * @param errorCode the error code
+   * @param status the HTTP status
+   * @return Error object with details
+   */
+  private Error createError(CustomError errorCode, HttpStatus status) {
     String traceparent = MDC.get(TRACE_PARENT);
     return Error.builder()
         .timestamp(Instant.now().atOffset(ZoneOffset.UTC))

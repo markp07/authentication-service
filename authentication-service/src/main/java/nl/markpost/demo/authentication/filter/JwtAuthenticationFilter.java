@@ -34,7 +34,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * Servlet filter for authenticating requests using JWT access tokens.
  */
 @Component
-@Profile("!ut")
 @Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {

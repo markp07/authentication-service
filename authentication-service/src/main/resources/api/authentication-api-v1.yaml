@@ -385,6 +385,54 @@ paths:
                 $ref: '#/components/schemas/Error'
       security:
         - AccessCookie: []
+  /2fa/backup-code:
+    post:
+      operationId: generateBackupCode
+      summary: Generate a new 2FA backup code for the current user
+      tags:
+        - manage-2fa
+      responses:
+        '200':
+          description: Backup code generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupCodeResponse'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: []
+  /2fa/reset:
+    post:
+      operationId: reset2FA
+      summary: Reset (disable) 2FA using backup code
+      tags:
+        - manage-2fa
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BackupCodeResponse'
+      responses:
+        '200':
+          description: 2FA disabled using backup code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '403':
+          description: Invalid backup code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: []
 
 components:
   securitySchemes:
@@ -520,3 +568,8 @@ components:
           format: password
       required:
         - password
+    BackupCodeResponse:
+      type: object
+      properties:
+        backupCode:
+          type: string

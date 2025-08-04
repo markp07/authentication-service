@@ -53,6 +53,7 @@ public class SecurityConfig {
   }
 
   @Bean
+  @Profile("!ut")
   public SecurityFilterChain filterChain(HttpSecurity http,
       @Value("${security.excluded-paths:}") String[] excludedPaths) throws Exception {
     http
@@ -65,6 +66,16 @@ public class SecurityConfig {
             .requestMatchers(excludedPaths).permitAll()
             .anyRequest().authenticated()
         );
+    return http.build();
+  }
+
+  @Bean
+  @Profile("ut")
+  public SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
+    http
+        .csrf(AbstractHttpConfigurer::disable)
+        .cors(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(authz -> authz.anyRequest().permitAll());
     return http.build();
   }
 

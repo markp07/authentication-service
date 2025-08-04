@@ -28,6 +28,7 @@ import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import nl.markpost.demo.authentication.api.v1.model.BackupCodeResponse;
 import nl.markpost.demo.authentication.api.v1.model.Message;
 import nl.markpost.demo.authentication.api.v1.model.PasswordRequest;
 import nl.markpost.demo.authentication.api.v1.model.TOTPCode;
@@ -235,7 +236,7 @@ public class Manage2faService {
    * Generates and stores a new 2FA backup code for the current user.
    * @return the generated backup code
    */
-  public String generateBackupCode() {
+  public BackupCodeResponse generateBackupCode() {
     HttpServletRequest request = getCurrentRequest();
     String email = getEmailFromClaims(request);
     User user = userRepository.findByEmail(email);
@@ -249,7 +250,10 @@ public class Manage2faService {
     String hashedBackupCode = passwordEncoder.encode(backupCode);
     user.setBackupCode(hashedBackupCode);
     userRepository.save(user);
-    return backupCode;
+
+    return BackupCodeResponse.builder()
+        .backupCode(backupCode)
+        .build();
   }
 
   private String generateRandomBackupCode() {

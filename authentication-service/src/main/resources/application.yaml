@@ -93,3 +93,12 @@ authentication:
 
 cookie:
   secure: false
+---
+# UT environment profile
+spring:
+  config:
+    activate:
+      on-profile: ut
+
+security:
+  excluded-paths: /actuator/health,/actuator/info,/swagger-ui.html,/swagger-ui/**,/*/api-docs,/v1/login,/v1/register,/v1/refresh,/v1/2fa/verify,/v1/password/forgot,/v1/password/reset,/v1/public-key
