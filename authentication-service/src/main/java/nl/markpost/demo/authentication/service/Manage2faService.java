@@ -199,7 +199,7 @@ public class Manage2faService {
    * @param code         the TOTP code to verify
    * @return true if the code is valid, false otherwise
    */
-  private boolean verifyTotpCode(String base32Secret, String code) {
+  protected boolean verifyTotpCode(String base32Secret, String code) {
     try {
       byte[] secret = base32Secret.getBytes(StandardCharsets.UTF_8);
       TOTPGenerator totp = new TOTPGenerator.Builder(secret).build();

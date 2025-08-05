@@ -32,7 +32,7 @@ target/
 *.iws
 out/
 
-# Ignore RSA key files
+# Ignore RSA key files except test keys
 *.pem
 src/main/resources/keys/*.pem
 **/keys/*.pem

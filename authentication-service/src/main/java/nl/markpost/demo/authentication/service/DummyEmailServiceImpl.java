@@ -9,10 +9,13 @@ import org.springframework.stereotype.Service;
 @Profile("local")
 @Slf4j
 public class DummyEmailServiceImpl implements EmailService {
+
   @Value("${email.from}")
   private String from;
+
   @Value("${email.subject.reset-password}")
   private String resetPasswordSubject;
+
   @Value("${email.body.reset-password}")
   private String resetPasswordBody;
 

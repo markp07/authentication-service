@@ -132,7 +132,7 @@ public class LoginService {
     }
 
     String password = registerRequest.getPassword();
-    if (passwordService.isPasswordStrong(password)) {
+    if (!passwordService.isPasswordStrong(password)) {
       //TODO: Use codes for exception
       throw new BadRequestException("New password does not meet strength requirements");
     }
