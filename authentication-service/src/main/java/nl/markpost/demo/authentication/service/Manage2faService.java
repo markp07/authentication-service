@@ -19,7 +19,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -29,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.authentication.api.v1.model.BackupCodeResponse;
-import nl.markpost.demo.authentication.api.v1.model.Message;
 import nl.markpost.demo.authentication.api.v1.model.PasswordRequest;
 import nl.markpost.demo.authentication.api.v1.model.TOTPCode;
 import nl.markpost.demo.authentication.api.v1.model.TOTPSetupResponse;
@@ -37,7 +35,6 @@ import nl.markpost.demo.authentication.api.v1.model.TOTPVerifyRequest;
 import nl.markpost.demo.authentication.model.User;
 import nl.markpost.demo.authentication.repository.UserRepository;
 import nl.markpost.demo.authentication.util.CookieUtil;
-import nl.markpost.demo.authentication.util.MessageResponseUtil;
 import nl.markpost.demo.authentication.util.RequestUtil;
 import nl.markpost.demo.common.exception.BadRequestException;
 import nl.markpost.demo.common.exception.ForbiddenException;
@@ -112,7 +109,7 @@ public class Manage2faService {
    *
    * @param code the TOTP code to verify
    *             <p>
-   *             TODO: need check what time enabling 2FA was triggered. Only allow enabling 2FA within a certain time frame (e.g., 5 minutes).
+   *                         TODO: need check what time enabling 2FA was triggered. Only allow enabling 2FA within a certain time frame (e.g., 5 minutes).
    */
   public void enable2fa(TOTPCode code) {
     HttpServletRequest request = getCurrentRequest();
@@ -122,7 +119,8 @@ public class Manage2faService {
       throw new BadRequestException(
           "User not found or 2FA not set up"); //TODO: Use a more specific message
     }
-    if (user.getTotpSetupCreatedAt() == null || Duration.between(user.getTotpSetupCreatedAt(), LocalDateTime.now()).toMinutes() > 5) {
+    if (user.getTotpSetupCreatedAt() == null
+        || Duration.between(user.getTotpSetupCreatedAt(), LocalDateTime.now()).toMinutes() > 5) {
       throw new BadRequestException("2FA setup expired. Please set up 2FA again.");
     }
     if (verifyTotpCode(user.getTotpSecret(), code.getCode())) {
@@ -234,6 +232,7 @@ public class Manage2faService {
 
   /**
    * Generates and stores a new 2FA backup code for the current user.
+   *
    * @return the generated backup code
    */
   public BackupCodeResponse generateBackupCode() {
@@ -243,7 +242,7 @@ public class Manage2faService {
     if (user == null) {
       throw new NotFoundException("User not found");
     }
-    if(!user.is2faEnabled()) {
+    if (!user.is2faEnabled()) {
       throw new BadRequestException("2FA is not enabled for this user.");
     }
     String backupCode = generateRandomBackupCode();
@@ -269,6 +268,7 @@ public class Manage2faService {
 
   /**
    * Resets (disables) 2FA for the current user using the backup code.
+   *
    * @param backupCode the backup code provided by the user
    * @return true if successful, false otherwise
    */

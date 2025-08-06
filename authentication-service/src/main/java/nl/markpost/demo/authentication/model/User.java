@@ -5,12 +5,15 @@ import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
@@ -26,7 +29,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"password","resetToken","totpSecret"})
+@ToString(exclude = {"password", "resetToken", "totpSecret"})
 @Entity
 @Table(name = "users")
 @Builder(toBuilder = true)
@@ -76,6 +79,9 @@ public class User implements UserDetails {
 
   @UpdateTimestamp
   private LocalDateTime updatedAt;
+
+  @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = jakarta.persistence.CascadeType.ALL, orphanRemoval = true)
+  private List<PasskeyCredential> passkeyCredentials;
 
   @Override
   public Set<SimpleGrantedAuthority> getAuthorities() {

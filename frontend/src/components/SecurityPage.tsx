@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { AUTH_API_BASE, fetchWithAuthRetry } from "../utils/api";
 import { User } from "../types/User";
 import BackupCodesModal from "./BackupCodesModal";
+import PasskeyModal from "./PasskeyModal";
 
 interface SecurityPageProps {
   onBack: () => void;
@@ -14,6 +15,7 @@ export default function SecurityPage({ onBack, onChangePassword, onToggle2FA }: 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showBackupCodes, setShowBackupCodes] = useState(false);
+  const [showPasskeyModal, setShowPasskeyModal] = useState(false);
 
   useEffect(() => {
     async function fetchUser() {
@@ -59,16 +61,16 @@ export default function SecurityPage({ onBack, onChangePassword, onToggle2FA }: 
         <div className="flex flex-col gap-4">
           <button className="bg-blue-600 text-white rounded px-4 py-2 font-semibold" onClick={onChangePassword}>Change password</button>
           <button className="bg-blue-600 text-white rounded px-4 py-2 font-semibold" onClick={onToggle2FA}>{user?.twoFAEnabled ? "Disable 2FA" : "Enable 2FA"}</button>
-          <button className="bg-gray-400 text-white rounded px-4 py-2 font-semibold cursor-not-allowed" disabled>Configure passkey</button>
+          <button className="bg-gray-400 text-white rounded px-4 py-2 font-semibold" onClick={() => setShowPasskeyModal(true)}>Configure passkey</button>
           <button
             className={`rounded px-4 py-2 font-semibold ${user?.twoFAEnabled ? "bg-blue-600 text-white" : "bg-gray-400 text-white cursor-not-allowed"}`}
             onClick={() => user?.twoFAEnabled && setShowBackupCodes(true)}
-            disabled={!user?.twoFAEnabled}
           >
             Generate backup codes
           </button>
         </div>
         <BackupCodesModal open={showBackupCodes} onClose={() => setShowBackupCodes(false)} />
+        <PasskeyModal open={showPasskeyModal} onClose={() => setShowPasskeyModal(false)} />
       </div>
     </div>
   );

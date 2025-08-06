@@ -18,6 +18,8 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState<'login' | '2fa'>('login');
   const [totpCode, setTotpCode] = useState('');
+  const [passkeyLoading, setPasskeyLoading] = useState(false);
+  const [passkeyError, setPasskeyError] = useState<string | null>(null);
 
   async function apiFetch(url: string, options: RequestInit) {
     return fetch(url, { ...options, credentials: "include" });
@@ -69,6 +71,44 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
     setLoading(false);
   }
 
+  async function handlePasskeyLogin() {
+    setPasskeyLoading(true);
+    setPasskeyError(null);
+    try {
+      // 1. Get email from input
+      if (!email) {
+        setPasskeyError("Please enter your email.");
+        setPasskeyLoading(false);
+        return;
+      }
+      // 2. Get assertion options from backend
+      const res = await apiFetch(`${AUTH_API_BASE}/v1/passkey/login/start?email=${encodeURIComponent(email)}`, { method: "POST" });
+      if (!res.ok) throw new Error("Failed to start passkey login");
+      const options = await res.json();
+      options.challenge = Uint8Array.from(atob(options.challenge), c => c.charCodeAt(0));
+      if (options.allowCredentials) {
+        options.allowCredentials = options.allowCredentials.map((cred: any) => ({ ...cred, id: Uint8Array.from(atob(cred.id), c => c.charCodeAt(0)) }));
+      }
+      // 3. Call WebAuthn API
+      const assertion = await navigator.credentials.get({ publicKey: options });
+      // 4. Send assertion to backend
+      const finishRes = await apiFetch(`${AUTH_API_BASE}/v1/passkey/login/finish?email=${encodeURIComponent(email)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(assertion),
+      });
+      const finishData = await finishRes.json();
+      if (finishRes.status === 200 && finishData.code === "LOGIN_SUCCESS") {
+        onSuccess();
+      } else {
+        setPasskeyError("Passkey login failed.");
+      }
+    } catch (err) {
+      setPasskeyError("Passkey login failed.");
+    }
+    setPasskeyLoading(false);
+  }
+
   return (
     <form className="flex flex-col gap-4" onSubmit={step === 'login' ? handleLogin : handle2fa}>
       <h2 className="text-xl font-bold mb-2">Login</h2>
@@ -98,6 +138,15 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
           >
             {loading ? "Logging in..." : "Login"}
           </button>
+          <button
+            type="button"
+            className="bg-green-600 text-white rounded px-4 py-2 font-semibold hover:bg-green-700 shadow mt-2"
+            onClick={handlePasskeyLogin}
+            disabled={passkeyLoading}
+          >
+            {passkeyLoading ? "Logging in with Passkey..." : "Login with Passkey"}
+          </button>
+          {passkeyError && <div className="text-red-600 text-xs mt-1">{passkeyError}</div>}
           <div className="flex justify-between text-sm mt-2">
             <button type="button" className="text-blue-600 hover:underline" onClick={onRegister}>
               Register

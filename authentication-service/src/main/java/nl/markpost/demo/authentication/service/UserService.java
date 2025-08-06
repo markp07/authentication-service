@@ -66,6 +66,7 @@ public class UserService {
       throw new BadRequestException("Username already exists");
     }
   }
+
   public void checkIfEmailExists(String email) {
     User existingUser = userRepository.findByEmail(email);
     if (existingUser != null) {

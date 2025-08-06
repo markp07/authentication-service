@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Controller for handling authentication-related requests such as login, logout, refresh, and registration.
+ * Controller for handling authentication-related requests such as login, logout, refresh, and
+ * registration.
  */
 @RestController
 @RequestMapping("/v1")
@@ -48,7 +49,8 @@ public class AuthenticationController implements LoginApi {
   public ResponseEntity<Message> logout() {
     log.info("Logout request received");
     loginService.logout();
-    return ResponseEntity.status(HttpStatus.OK).body(createMessageResponse(Messages.LOGOUT_SUCCESS));
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(createMessageResponse(Messages.LOGOUT_SUCCESS));
   }
 
   /**
@@ -60,7 +62,8 @@ public class AuthenticationController implements LoginApi {
   public ResponseEntity<Message> refresh() {
     log.info("Refresh token request received");
     loginService.refresh();
-    return ResponseEntity.status(HttpStatus.OK).body(createMessageResponse(Messages.REFRESH_SUCCESS));
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(createMessageResponse(Messages.REFRESH_SUCCESS));
   }
 
   /**

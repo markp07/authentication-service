@@ -61,7 +61,7 @@ export default function Register({ onSuccess, onLogin }: RegisterProps) {
       <input
         type="email"
         placeholder="Email"
-        className="border rounded px-3 py-2 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         required
         value={email}
         onChange={e => setEmail(e.target.value)}
@@ -69,7 +69,7 @@ export default function Register({ onSuccess, onLogin }: RegisterProps) {
       <input
         type="text"
         placeholder="Username"
-        className="border rounded px-3 py-2 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         required
         value={userName}
         onChange={e => setUserName(e.target.value)}
@@ -77,7 +77,7 @@ export default function Register({ onSuccess, onLogin }: RegisterProps) {
       <input
         type="password"
         placeholder="Password"
-        className="border rounded px-3 py-2 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         required
         value={password}
         onChange={e => setPassword(e.target.value)}
@@ -85,7 +85,7 @@ export default function Register({ onSuccess, onLogin }: RegisterProps) {
       <input
         type="password"
         placeholder="Confirm Password"
-        className="border rounded px-3 py-2 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         required
         value={confirm}
         onChange={e => setConfirm(e.target.value)}

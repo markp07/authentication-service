@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,11 +14,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.authentication.exception.CustomExceptionHandler;
 import nl.markpost.demo.authentication.security.JwtKeyProvider;
-import nl.markpost.demo.authentication.service.JwtService;
 import nl.markpost.demo.common.exception.UnauthorizedException;
 import nl.markpost.demo.common.model.Error;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -58,7 +55,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       handleAuthentication(request, response, filterChain);
     } catch (UnauthorizedException e) {
       log.info("Unauthorized access attempt: {}", e.getMessage());
-      ResponseEntity<nl.markpost.demo.common.model.Error> errorResponse = customExceptionHandler.handleGenericExceptionException(e);
+      ResponseEntity<nl.markpost.demo.common.model.Error> errorResponse = customExceptionHandler.handleGenericExceptionException(
+          e);
       response.setContentType("application/json");
       response.setStatus(e.getHttpStatus().value());
       addCorsHeaders(request, response);
@@ -133,7 +131,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
    * Checks if the request is a CORS preflight (OPTIONS) request.
    */
   boolean isPreflightRequest(HttpServletRequest request) {
-    return "OPTIONS".equalsIgnoreCase(request.getMethod());
+    return "OPTIONS" .equalsIgnoreCase(request.getMethod());
   }
 
   /**
@@ -144,7 +142,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       return null;
     }
     for (Cookie cookie : request.getCookies()) {
-      if ("access_token".equals(cookie.getName())) {
+      if ("access_token" .equals(cookie.getName())) {
         return cookie.getValue();
       }
     }

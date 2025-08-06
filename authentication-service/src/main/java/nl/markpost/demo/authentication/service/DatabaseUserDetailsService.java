@@ -9,22 +9,22 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
- * Service to load user details from the database.
- * Implements UserDetailsService to integrate with Spring Security.
+ * Service to load user details from the database. Implements UserDetailsService to integrate with
+ * Spring Security.
  */
 @Service
 @RequiredArgsConstructor
 public class DatabaseUserDetailsService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+  private final UserRepository userRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
-            throw new UsernameNotFoundException("User '" + email + "' not found");
-        }
-        return user;
+  @Override
+  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    User user = userRepository.findByEmail(email);
+    if (user == null) {
+      throw new UsernameNotFoundException("User '" + email + "' not found");
     }
+    return user;
+  }
 }
 

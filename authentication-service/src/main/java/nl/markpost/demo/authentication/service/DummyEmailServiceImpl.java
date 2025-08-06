@@ -1,7 +1,7 @@
 package nl.markpost.demo.authentication.service;
 
-import org.springframework.beans.factory.annotation.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +21,8 @@ public class DummyEmailServiceImpl implements EmailService {
 
   @Override
   public void sendResetPasswordEmail(String to, String resetToken, String userName) {
-    String body = resetPasswordBody.replace("{resetToken}", resetToken).replace("{userName}", userName);
+    String body = resetPasswordBody.replace("{resetToken}", resetToken)
+        .replace("{userName}", userName);
     log.info("[DUMMY EMAIL] To: {}\nSubject: {}\nBody: {}", to, resetPasswordSubject, body);
   }
 }

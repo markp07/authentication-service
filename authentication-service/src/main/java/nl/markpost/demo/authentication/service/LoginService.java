@@ -6,7 +6,6 @@ import static nl.markpost.demo.authentication.constant.Constants.MINUTES_15;
 import static nl.markpost.demo.authentication.constant.Constants.MINUTES_5;
 import static nl.markpost.demo.authentication.constant.Constants.REFRESH_TOKEN;
 import static nl.markpost.demo.authentication.constant.Constants.TEMPORARY_TOKEN;
-import static nl.markpost.demo.authentication.constant.Messages.TWO_FA_REQUIRED;
 import static nl.markpost.demo.authentication.util.MessageResponseUtil.createMessageResponse;
 
 import jakarta.servlet.http.Cookie;
@@ -22,7 +21,6 @@ import nl.markpost.demo.authentication.constant.Messages;
 import nl.markpost.demo.authentication.model.User;
 import nl.markpost.demo.authentication.repository.UserRepository;
 import nl.markpost.demo.authentication.util.CookieUtil;
-import nl.markpost.demo.authentication.util.MessageResponseUtil;
 import nl.markpost.demo.authentication.util.RequestUtil;
 import nl.markpost.demo.common.exception.BadRequestException;
 import nl.markpost.demo.common.exception.InternalServerErrorException;
@@ -60,11 +58,12 @@ public class LoginService {
     }
     HttpServletResponse response = RequestUtil.getCurrentResponse();
 
-    if(user.is2faEnabled()) {
+    if (user.is2faEnabled()) {
       String temporaryToken = jwtService.generateAccessToken(user);
       response.addCookie(CookieUtil.buildCookie(TEMPORARY_TOKEN, temporaryToken, MINUTES_5));
 
-      return ResponseEntity.status(HttpStatus.ACCEPTED).body(createMessageResponse(Messages.TWO_FA_REQUIRED));
+      return ResponseEntity.status(HttpStatus.ACCEPTED)
+          .body(createMessageResponse(Messages.TWO_FA_REQUIRED));
     } else {
       String accessToken = jwtService.generateAccessToken(user);
       response.addCookie(CookieUtil.buildCookie(ACCESS_TOKEN, accessToken, MINUTES_15));
@@ -72,7 +71,8 @@ public class LoginService {
       String refreshToken = jwtService.generateRefreshToken(user);
       response.addCookie(CookieUtil.buildCookie(REFRESH_TOKEN, refreshToken, DAYS_7));
 
-      return ResponseEntity.status(HttpStatus.OK).body(createMessageResponse(Messages.LOGIN_SUCCESS));
+      return ResponseEntity.status(HttpStatus.OK)
+          .body(createMessageResponse(Messages.LOGIN_SUCCESS));
     }
   }
 
