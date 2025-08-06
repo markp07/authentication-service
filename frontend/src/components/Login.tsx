@@ -87,7 +87,7 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
       const options = await res.json();
       options.challenge = Uint8Array.from(atob(options.challenge), c => c.charCodeAt(0));
       if (options.allowCredentials) {
-        options.allowCredentials = options.allowCredentials.map((cred: any) => ({ ...cred, id: Uint8Array.from(atob(cred.id), c => c.charCodeAt(0)) }));
+        options.allowCredentials = options.allowCredentials.map((cred: { id: string } & Record<string, unknown>) => ({ ...cred, id: Uint8Array.from(atob(cred.id), c => c.charCodeAt(0)) }));
       }
       // 3. Call WebAuthn API
       const assertion = await navigator.credentials.get({ publicKey: options });

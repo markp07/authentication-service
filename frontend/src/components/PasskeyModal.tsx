@@ -98,7 +98,7 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
       const res = await fetchWithAuthRetry(`${AUTH_API_BASE}/api/auth/v1/passkey/login/start?email=`, { method: "POST" });
       const options = await res.json();
       options.challenge = Uint8Array.from(atob(options.challenge), c => c.charCodeAt(0));
-      options.allowCredentials = options.allowCredentials?.map((cred: any) => ({ ...cred, id: Uint8Array.from(atob(cred.id), c => c.charCodeAt(0)) }));
+      options.allowCredentials = options.allowCredentials?.map((cred: { id: string } & Record<string, unknown>) => ({ ...cred, id: Uint8Array.from(atob(cred.id), c => c.charCodeAt(0)) }));
       // 2. Call WebAuthn API
       const assertion = await navigator.credentials.get({ publicKey: options });
       // 3. Send assertion to backend
