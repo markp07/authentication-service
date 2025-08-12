@@ -192,7 +192,7 @@ export default function Home() {
                 <div className="py-3 border-t border-gray-400 dark:border-gray-300">
                   <div className="text-base sm:text-lg font-semibold">Hourly Forecast</div>
                   <div className="flex flex-row gap-2 sm:gap-4 overflow-x-auto pb-2 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                    {weather.hourly.slice(0, 24).map((h, i) => (
+                    {weather.hourly.slice(0, 48).map((h, i) => (
                       <div key={i} className="flex flex-col items-center min-w-[48px] sm:min-w-[64px] p-1 sm:p-2 rounded-lg bg-white/80 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                         <div className="text-[10px] sm:text-xs font-medium text-gray-500 dark:text-gray-300 mb-0.5 sm:mb-1">
                           {i === 0 ? "Now" : new Date(h.time).toLocaleTimeString([], { hour: "2-digit", hour12: false })}
