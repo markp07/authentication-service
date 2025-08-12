@@ -29,7 +29,7 @@ public interface OpenMeteoClient {
    * @param longitude the longitude
    * @return a Mono emitting the raw JSON response
    */
-  @GetMapping("/v1/forecast?hourly=temperature_2m,weather_code,precipitation_probability&current=temperature_2m,weather_code,wind_speed_10m,wind_direction_10m&timezone=Europe%2FBerlin&forecast_days=1")
+  @GetMapping("/v1/forecast?hourly=temperature_2m,weather_code,precipitation_probability&current=temperature_2m,weather_code,wind_speed_10m,wind_direction_10m&timezone=Europe%2FBerlin&forecast_days=3")
   WeatherResponse getWeatherHourly(@RequestParam("latitude") double latitude,
       @RequestParam("longitude") double longitude);
 

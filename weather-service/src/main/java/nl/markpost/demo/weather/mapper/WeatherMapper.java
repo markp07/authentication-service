@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import nl.markpost.demo.weather.model.Daily;
 import nl.markpost.demo.weather.model.DailyResponse;
+import nl.markpost.demo.weather.model.Hourly;
+import nl.markpost.demo.weather.model.HourlyResponse;
 import nl.markpost.demo.weather.model.ReverseGeocodeResponse;
 import nl.markpost.demo.weather.model.Weather;
 import nl.markpost.demo.weather.model.WeatherCode;
@@ -90,11 +92,12 @@ public interface WeatherMapper {
 
   /**
    * Converts a HourlyResponse object to a List of Hourly models.
+   * Skips hours before current hour, then adds next 48 hours.
    *
    * @param hourly the HourlyResponse object to convert
    * @return the converted List of Hourly models
    */
-  default List<nl.markpost.demo.weather.model.Hourly> toHourlyList(nl.markpost.demo.weather.model.HourlyResponse hourly) {
+  default List<Hourly> toHourlyList(HourlyResponse hourly) {
     if (hourly == null) {
       return null;
     }
@@ -102,14 +105,25 @@ public interface WeatherMapper {
     List<Integer> codes = hourly.getWeather_code();
     List<Double> temps = hourly.getTemperature_2m();
     List<Integer> precipProbs = hourly.getPrecipitation_probability();
-    List<nl.markpost.demo.weather.model.Hourly> result = new ArrayList<>();
+    List<Hourly> result = new ArrayList<>();
     int size = times != null ? times.size() : 0;
+    LocalDateTime now = LocalDateTime.now();
+    int startIdx = 0;
+    // Find first index where time >= now
     for (int i = 0; i < size; i++) {
+      LocalDateTime time = mapToLocalDateTime(times.get(i));
+      if (!time.isBefore(now)) {
+        startIdx = i;
+        break;
+      }
+    }
+    int endIdx = Math.min(startIdx + 48, size);
+    for (int i = startIdx; i < endIdx; i++) {
       LocalDateTime time = i < times.size() ? mapToLocalDateTime(times.get(i)) : null;
-      nl.markpost.demo.weather.model.WeatherCode weatherCode = codes != null && i < codes.size() ? nl.markpost.demo.weather.model.WeatherCode.fromCode(codes.get(i)) : nl.markpost.demo.weather.model.WeatherCode.CLEAR_SKY;
+      WeatherCode weatherCode = codes != null && i < codes.size() ? WeatherCode.fromCode(codes.get(i)) : WeatherCode.CLEAR_SKY;
       double temperature = temps != null && i < temps.size() ? temps.get(i) : 0.0;
       int precipitationProbability = precipProbs != null && i < precipProbs.size() ? precipProbs.get(i) : 0;
-      result.add(new nl.markpost.demo.weather.model.Hourly(time, weatherCode, temperature, precipitationProbability));
+      result.add(new Hourly(time, weatherCode, temperature, precipitationProbability));
     }
     return result;
   }
