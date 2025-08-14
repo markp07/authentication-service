@@ -1,5 +1,5 @@
 services:
-  redis:
+  auth-redis:
     image: redis:latest
     restart: always
     ports:
@@ -8,8 +8,10 @@ services:
     hostname: cache
     volumes:
       - cache:/data
+    networks:
+      - monitoring
 
-  postgres:
+  auth-postgres:
     image: postgres:latest
     restart: always
     environment:
@@ -20,17 +22,8 @@ services:
       - '12004:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: mark@markpost.nl
-      PGADMIN_DEFAULT_PASSWORD: ${PG_ADMIN_DEFAULT_PASSWORD}
-    ports:
-      - '12003:80'
-    depends_on:
-      - postgres
+    networks:
+      - monitoring
 
   authentication-service:
     image: authentication-service:latest
@@ -47,6 +40,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - authentication_service_data:/data
+    networks:
+      - monitoring
 
   weather-service:
     image: weather-service:latest
@@ -61,8 +56,10 @@ services:
       - '12001:12001'
     volumes:
       - weather_service_data:/data
+    networks:
+      - monitoring
 
-  frontend:
+  auth-frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -74,6 +71,8 @@ services:
       - weather-service
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:12002
+    networks:
+      - monitoring
 
 volumes:
   cache:
@@ -84,3 +83,7 @@ volumes:
     driver: local
   weather_service_data:
     driver: local
+
+networks:
+  monitoring:
+    external: true
