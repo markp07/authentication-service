@@ -1,5 +1,5 @@
 services:
-  auth-redis:
+  redis:
     image: redis:latest
     restart: always
     ports:
@@ -11,7 +11,7 @@ services:
     networks:
       - default-network
 
-  auth-postgres:
+  postgres:
     image: postgres:latest
     restart: always
     environment:
@@ -32,8 +32,8 @@ services:
       context: ./authentication-service
       dockerfile: Dockerfile
     depends_on:
-      - auth-redis
-      - auth-postgres
+      - redis
+      - postgres
     ports:
       - '12002:12002'
     environment:
@@ -50,8 +50,8 @@ services:
       context: ./weather-service
       dockerfile: Dockerfile
     depends_on:
-      - auth-redis
-      - auth-postgres
+      - redis
+      - postgres
     ports:
       - '12001:12001'
     volumes:
@@ -59,7 +59,7 @@ services:
     networks:
       - default-network
 
-  auth-frontend:
+  frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
