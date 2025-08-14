@@ -106,7 +106,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     String accessToken = extractAccessToken(request);
     if (accessToken == null) {
-      log.info("No access token found in request");
+      log.info("No access token found in request - {}", path);
       response.setStatus(401);
       throw new UnauthorizedException();
     }
