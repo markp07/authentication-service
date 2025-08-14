@@ -32,8 +32,8 @@ services:
       context: ./authentication-service
       dockerfile: Dockerfile
     depends_on:
-      - redis
-      - postgres
+      - auth-redis
+      - auth-postgres
     ports:
       - '12002:12002'
     environment:
@@ -50,8 +50,8 @@ services:
       context: ./weather-service
       dockerfile: Dockerfile
     depends_on:
-      - redis
-      - postgres
+      - auth-redis
+      - auth-postgres
     ports:
       - '12001:12001'
     volumes:
