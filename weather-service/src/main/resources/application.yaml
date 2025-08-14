@@ -23,7 +23,7 @@ spring:
       port: 12005
 
 security:
-  excluded-paths: /actuator/health,/actuator/info,/swagger-ui.html,/swagger-ui/**,/*/api-docs
+  excluded-paths: /api/weather/actuator/health,/api/weather/actuator/info,/api/weather/actuator/prometheus,/swagger-ui.html,/swagger-ui/**,/*/api-docs
 
 authentication:
   cors:
