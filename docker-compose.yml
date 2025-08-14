@@ -9,7 +9,7 @@ services:
     volumes:
       - cache:/data
     networks:
-      - monitoring
+      - default-network
 
   auth-postgres:
     image: postgres:latest
@@ -23,7 +23,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - monitoring
+      - default-network
 
   authentication-service:
     image: authentication-service:latest
@@ -41,7 +41,7 @@ services:
     volumes:
       - authentication_service_data:/data
     networks:
-      - monitoring
+      - default-network
 
   weather-service:
     image: weather-service:latest
@@ -57,7 +57,7 @@ services:
     volumes:
       - weather_service_data:/data
     networks:
-      - monitoring
+      - default-network
 
   auth-frontend:
     build:
@@ -72,7 +72,7 @@ services:
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:12002
     networks:
-      - monitoring
+      - default-network
 
 volumes:
   cache:
@@ -85,5 +85,5 @@ volumes:
     driver: local
 
 networks:
-  monitoring:
+  default-network:
     external: true
