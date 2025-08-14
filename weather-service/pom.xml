@@ -50,6 +50,19 @@
       <artifactId>spring-boot-starter-data-redis</artifactId>
     </dependency>
 
+    <!-- Micrometer dependencies -->
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-tracing</artifactId>
+      <version>${micrometer-tracing.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-prometheus</artifactId>
+      <version>${micrometer-registry-prometheus.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+
     <!-- Other dependencies -->
     <dependency>
       <groupId>io.github.openfeign</groupId>

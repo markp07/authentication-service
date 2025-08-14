@@ -132,12 +132,23 @@
 			<artifactId>otp-java</artifactId>
 			<version>2.1.0</version>
 		</dependency>
-
-		<!-- WebAuthn/FIDO2 dependency -->
 		<dependency>
 			<groupId>com.yubico</groupId>
 			<artifactId>webauthn-server-core</artifactId>
 			<version>2.7.0</version>
+		</dependency>
+
+		<!-- Micrometer dependencies -->
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-tracing</artifactId>
+			<version>${micrometer-tracing.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+			<version>${micrometer-registry-prometheus.version}</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<!-- Test dependencies -->
