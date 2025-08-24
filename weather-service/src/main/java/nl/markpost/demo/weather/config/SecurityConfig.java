@@ -2,8 +2,8 @@ package nl.markpost.demo.weather.config;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import nl.markpost.demo.weather.filter.TraceparentFilter;
 import nl.markpost.demo.weather.filter.JwtAuthenticationFilter;
+import nl.markpost.demo.weather.filter.TraceparentFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -71,9 +71,9 @@ public class SecurityConfig {
   @Profile("ut")
   public SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
     http
-      .csrf(AbstractHttpConfigurer::disable)
-      .cors(AbstractHttpConfigurer::disable)
-      .authorizeHttpRequests(authz -> authz.anyRequest().permitAll());
+        .csrf(AbstractHttpConfigurer::disable)
+        .cors(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(authz -> authz.anyRequest().permitAll());
     return http.build();
   }
 

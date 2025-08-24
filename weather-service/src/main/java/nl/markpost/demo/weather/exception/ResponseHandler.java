@@ -39,7 +39,7 @@ public class ResponseHandler implements ErrorDecoder {
    * Decodes the HTTP response and maps it to a custom exception based on the status code.
    *
    * @param methodKey the Feign client method key
-   * @param response the HTTP response from the downstream service
+   * @param response  the HTTP response from the downstream service
    * @return the mapped exception
    */
   @Override

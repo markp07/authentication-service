@@ -1,8 +1,6 @@
 package nl.markpost.demo.weather.model;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,14 +13,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Current {
 
-    private LocalDateTime time;
+  private LocalDateTime time;
 
-    private WeatherCode weatherCode;
+  private WeatherCode weatherCode;
 
-    private Double temperature;
+  private Double temperature;
 
-    private Integer windSpeed;
+  private Integer windSpeed;
 
-    private WindDirection windDirection;
+  private WindDirection windDirection;
 
 }

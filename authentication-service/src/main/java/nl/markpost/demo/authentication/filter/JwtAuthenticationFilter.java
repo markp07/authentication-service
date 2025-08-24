@@ -131,7 +131,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
    * Checks if the request is a CORS preflight (OPTIONS) request.
    */
   boolean isPreflightRequest(HttpServletRequest request) {
-    return "OPTIONS" .equalsIgnoreCase(request.getMethod());
+    return "OPTIONS".equalsIgnoreCase(request.getMethod());
   }
 
   /**
@@ -142,7 +142,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       return null;
     }
     for (Cookie cookie : request.getCookies()) {
-      if ("access_token" .equals(cookie.getName())) {
+      if ("access_token".equals(cookie.getName())) {
         return cookie.getValue();
       }
     }

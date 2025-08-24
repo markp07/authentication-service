@@ -32,7 +32,8 @@ public class CacheConfig {
     long secondsUntilNextHour = java.time.Duration.between(now, nextHour).getSeconds();
 
     cacheConfigurations.put("weatherHourly",
-        RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(secondsUntilNextHour)));
+        RedisCacheConfiguration.defaultCacheConfig()
+            .entryTtl(Duration.ofSeconds(secondsUntilNextHour)));
 
     cacheConfigurations.put("location",
         RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofDays(365)));

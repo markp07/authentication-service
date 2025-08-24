@@ -12,17 +12,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CurrentResponse {
 
-    private String time;
+  private String time;
 
-    private Integer interval;
+  private Integer interval;
 
-    private Integer weather_code;
+  private Integer weather_code;
 
-    private Double temperature_2m;
+  private Double temperature_2m;
 
-    private Integer wind_speed_10m;
+  private Integer wind_speed_10m;
 
-    private Integer wind_direction_10m;
+  private Integer wind_direction_10m;
 
 }
 

@@ -9,4 +9,5 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RequiredArgsConstructor
 public class CustomExceptionHandler extends BaseCustomExceptionHandler {
+
 }

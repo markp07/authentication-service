@@ -70,6 +70,14 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
       const options = await res.json();
       options.challenge = base64urlToUint8Array(options.challenge);
       options.user.id = base64urlToUint8Array(options.user.id);
+      // Sanitize extensions: remove keys with null/undefined values
+      if (options.extensions && typeof options.extensions === "object") {
+        Object.keys(options.extensions).forEach(key => {
+          if (options.extensions[key] == null) {
+            delete options.extensions[key];
+          }
+        });
+      }
       // 2. Call WebAuthn API
       const credential = await navigator.credentials.create({ publicKey: options });
       // 3. Send credential to backend
@@ -85,6 +93,7 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
         setError("Failed to register passkey.");
       }
     } catch (err) {
+      console.error(err);
       setError("Passkey registration failed.");
     }
     setRegistering(false);
@@ -98,7 +107,14 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
       const res = await fetchWithAuthRetry(`${AUTH_API_BASE}/api/auth/v1/passkey/login/start?email=`, { method: "POST" });
       const options = await res.json();
       options.challenge = Uint8Array.from(atob(options.challenge), c => c.charCodeAt(0));
-      options.allowCredentials = options.allowCredentials?.map((cred: { id: string } & Record<string, unknown>) => ({ ...cred, id: Uint8Array.from(atob(cred.id), c => c.charCodeAt(0)) }));
+      options.allowCredentials = options.allowCredentials?.map((cred: { id: string, transports?: any } & Record<string, unknown>) => {
+        const decodedId = base64urlToUint8Array(cred.id);
+        const newCred: any = { ...cred, id: decodedId };
+        if (!Array.isArray(cred.transports)) {
+          delete newCred.transports;
+        }
+        return newCred;
+      });
       // 2. Call WebAuthn API
       const assertion = await navigator.credentials.get({ publicKey: options });
       // 3. Send assertion to backend

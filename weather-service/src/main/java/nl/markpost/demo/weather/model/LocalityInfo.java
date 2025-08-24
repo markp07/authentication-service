@@ -1,8 +1,8 @@
 package nl.markpost.demo.weather.model;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.util.List;
 import lombok.NoArgsConstructor;
 
 
@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LocalityInfo {
-    private List<Administrative> administrative;
-    private List<Informative> informative;
+
+  private List<Administrative> administrative;
+  private List<Informative> informative;
 }
 

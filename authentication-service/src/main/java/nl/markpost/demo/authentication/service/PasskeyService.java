@@ -25,10 +25,10 @@ import com.yubico.webauthn.data.UserIdentity;
 import jakarta.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.authentication.api.v1.model.Message;
 import nl.markpost.demo.authentication.constant.Messages;
 import nl.markpost.demo.authentication.model.PasskeyCredential;
@@ -45,6 +45,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PasskeyService {
 
   private final PasskeyCredentialRepository passkeyCredentialRepository;
@@ -70,30 +71,34 @@ public class PasskeyService {
 
   public PublicKeyCredentialCreationOptions startRegistration() {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    String email = user.getEmail();
-    String encodedEmail = Base64.getEncoder()
-        .encodeToString(email.getBytes(StandardCharsets.UTF_8));
-    return relyingParty.startRegistration(
+    String uuid = user.getId().toString();
+    ByteArray userIdBytes = new ByteArray(uuid.getBytes(StandardCharsets.UTF_8));
+    PublicKeyCredentialCreationOptions options = relyingParty.startRegistration(
         StartRegistrationOptions.builder()
             .user(UserIdentity.builder()
-                .name(email)
+                .name(user.getEmail())
                 .displayName(user.getUsername())
-                .id(ByteArray.fromBase64(encodedEmail))
+                .id(userIdBytes)
                 .build())
             .build()
     );
+    log.info("[WebAuthn] Registration options credentialId: " + options);
+    return options;
   }
 
   @SneakyThrows
-  public void finishRegistration(PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> credential,
-      String name) {
+  public void finishRegistration(
+      PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> credential,
+      String name,
+      PublicKeyCredentialCreationOptions registrationOptions) {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     RegistrationResult result = relyingParty.finishRegistration(
         FinishRegistrationOptions.builder()
-            .request(startRegistration())
+            .request(registrationOptions)
             .response(credential)
             .build()
     );
+    log.info("[WebAuthn] Registered credentialId: " + result.getKeyId().getId().getBase64Url());
     PasskeyCredential passkey = PasskeyCredential.builder()
         .user(user)
         .credentialId(result.getKeyId().getId().getBase64Url())
@@ -109,16 +114,20 @@ public class PasskeyService {
     if (user == null) {
       throw new IllegalArgumentException("User not found");
     }
-    return relyingParty.startAssertion(
+    AssertionRequest assertionRequest = relyingParty.startAssertion(
         StartAssertionOptions.builder()
             .username(email)
             .build()
     );
+    log.info("[WebAuthn] AssertionRequest allowCredentials: "
+        + assertionRequest.getPublicKeyCredentialRequestOptions().getAllowCredentials());
+    return assertionRequest;
   }
 
   @SneakyThrows
   public ResponseEntity<Message> finishAuthentication(String email,
       PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> credential) {
+    log.info("[WebAuthn] finishAuthentication credentialId: " + credential.getId().getBase64Url());
     AssertionResult result = relyingParty.finishAssertion(
         FinishAssertionOptions.builder()
             .request(startAuthentication(email))

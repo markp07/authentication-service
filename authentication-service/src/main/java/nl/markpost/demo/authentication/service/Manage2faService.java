@@ -109,7 +109,7 @@ public class Manage2faService {
    *
    * @param code the TOTP code to verify
    *             <p>
-   *                         TODO: need check what time enabling 2FA was triggered. Only allow enabling 2FA within a certain time frame (e.g., 5 minutes).
+   *                                     TODO: need check what time enabling 2FA was triggered. Only allow enabling 2FA within a certain time frame (e.g., 5 minutes).
    */
   public void enable2fa(TOTPCode code) {
     HttpServletRequest request = getCurrentRequest();

@@ -71,6 +71,24 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
     setLoading(false);
   }
 
+  function base64urlToBase64(base64url: string) {
+    let base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
+    while (base64.length % 4) base64 += '=';
+    return base64;
+  }
+
+  function sanitizeExtensions(extensions: Record<string, any>) {
+    if (!extensions || typeof extensions !== "object") return extensions;
+    const sanitized: Record<string, any> = {};
+    for (const key in extensions) {
+      const value = extensions[key];
+      if (value !== null && value !== undefined && value !== "") {
+        sanitized[key] = value;
+      }
+    }
+    return sanitized;
+  }
+
   async function handlePasskeyLogin() {
     setPasskeyLoading(true);
     setPasskeyError(null);
@@ -82,17 +100,27 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
         return;
       }
       // 2. Get assertion options from backend
-      const res = await apiFetch(`${AUTH_API_BASE}/v1/passkey/login/start?email=${encodeURIComponent(email)}`, { method: "POST" });
+      const res = await apiFetch(`${AUTH_API_BASE}/api/auth/v1/passkey/login/start?email=${encodeURIComponent(email)}`, { method: "POST" });
       if (!res.ok) throw new Error("Failed to start passkey login");
       const options = await res.json();
-      options.challenge = Uint8Array.from(atob(options.challenge), c => c.charCodeAt(0));
+      options.challenge = Uint8Array.from(atob(base64urlToBase64(options.challenge)), c => c.charCodeAt(0));
       if (options.allowCredentials) {
-        options.allowCredentials = options.allowCredentials.map((cred: { id: string } & Record<string, unknown>) => ({ ...cred, id: Uint8Array.from(atob(cred.id), c => c.charCodeAt(0)) }));
+        options.allowCredentials = options.allowCredentials.map((cred: { id: string, transports?: any } & Record<string, unknown>) => {
+          const decodedId = Uint8Array.from(atob(base64urlToBase64(cred.id)), c => c.charCodeAt(0));
+          const newCred: any = { ...cred, id: decodedId };
+          if (!Array.isArray(cred.transports)) {
+            delete newCred.transports;
+          }
+          return newCred;
+        });
+      }
+      if (options.extensions) {
+        options.extensions = sanitizeExtensions(options.extensions);
       }
       // 3. Call WebAuthn API
       const assertion = await navigator.credentials.get({ publicKey: options });
       // 4. Send assertion to backend
-      const finishRes = await apiFetch(`${AUTH_API_BASE}/v1/passkey/login/finish?email=${encodeURIComponent(email)}`, {
+      const finishRes = await apiFetch(`${AUTH_API_BASE}/api/auth/v1/passkey/login/finish?email=${encodeURIComponent(email)}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(assertion),
@@ -104,6 +132,7 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
         setPasskeyError("Passkey login failed.");
       }
     } catch (err) {
+      console.error(err);
       setPasskeyError("Passkey login failed.");
     }
     setPasskeyLoading(false);

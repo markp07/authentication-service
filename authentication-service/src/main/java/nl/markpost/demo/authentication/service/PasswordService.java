@@ -65,7 +65,7 @@ public class PasswordService {
    * email.
    *
    * @param email the email address of the user requesting a password reset
-   *                           TODO: add time in DB for token expiration
+   *                                        TODO: add time in DB for token expiration
    */
   @Transactional
   public void forgotPassword(String email) {
@@ -87,7 +87,7 @@ public class PasswordService {
    *
    * @param resetToken  the token sent to the user's email for password reset
    * @param newPassword the new password to set for the user
-   *                                       TODO: check time in DB for token expiration
+   *                                                          TODO: check time in DB for token expiration
    */
   @Transactional
   public void resetPassword(String resetToken, String newPassword) {

@@ -9,13 +9,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Administrative {
-    private String name;
-    private String description;
-    private String isoName;
-    private int order;
-    private int adminLevel;
-    private String isoCode;
-    private String wikidataId;
-    private long geonameId;
+
+  private String name;
+  private String description;
+  private String isoName;
+  private int order;
+  private int adminLevel;
+  private String isoCode;
+  private String wikidataId;
+  private long geonameId;
 }
 

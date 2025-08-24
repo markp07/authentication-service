@@ -9,11 +9,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Informative {
-    private String name;
-    private String description;
-    private int order;
-    private String isoCode;
-    private String wikidataId;
-    private long geonameId;
+
+  private String name;
+  private String description;
+  private int order;
+  private String isoCode;
+  private String wikidataId;
+  private long geonameId;
 }
 

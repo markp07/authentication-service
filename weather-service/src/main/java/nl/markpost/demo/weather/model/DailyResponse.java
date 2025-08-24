@@ -1,10 +1,9 @@
 package nl.markpost.demo.weather.model;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 /**
  * Model representing the daily weather data.
@@ -14,21 +13,21 @@ import java.util.List;
 @AllArgsConstructor
 public class DailyResponse {
 
-    private List<String> time;
+  private List<String> time;
 
-    private List<Integer> weather_code;
+  private List<Integer> weather_code;
 
-    private List<Double> temperature_2m_max;
+  private List<Double> temperature_2m_max;
 
-    private List<Double> temperature_2m_min;
+  private List<Double> temperature_2m_min;
 
-    private List<String> sunrise;
+  private List<String> sunrise;
 
-    private List<String> sunset;
+  private List<String> sunset;
 
-    private List<Double> precipitation_sum;
+  private List<Double> precipitation_sum;
 
-    private List<Integer> precipitation_probability_max;
+  private List<Integer> precipitation_probability_max;
 
 }
 

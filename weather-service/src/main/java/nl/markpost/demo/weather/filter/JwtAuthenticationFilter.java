@@ -64,7 +64,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       handleAuthentication(request, response, filterChain);
     } catch (UnauthorizedException e) {
       log.info("Unauthorized access attempt: {}", e.getMessage());
-      ResponseEntity<Error> errorResponse = customExceptionHandler.handleGenericExceptionException(e);
+      ResponseEntity<Error> errorResponse = customExceptionHandler.handleGenericExceptionException(
+          e);
       response.setContentType("application/json");
       response.setStatus(e.getHttpStatus().value());
       addCorsHeaders(request, response);

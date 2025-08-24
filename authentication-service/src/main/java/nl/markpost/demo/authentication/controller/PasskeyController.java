@@ -5,6 +5,9 @@ import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
 import com.yubico.webauthn.data.ClientAssertionExtensionOutputs;
 import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
 import com.yubico.webauthn.data.PublicKeyCredential;
+import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
+import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
+import jakarta.servlet.http.HttpSession;
 import java.security.Principal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -41,20 +44,29 @@ public class PasskeyController {
   }
 
   @PostMapping("/register/start")
-  public ResponseEntity<?> startRegistration() {
-    return ResponseEntity.ok(passkeyService.startRegistration());
+  public ResponseEntity<PublicKeyCredentialCreationOptions> startRegistration(HttpSession session) {
+    PublicKeyCredentialCreationOptions options = passkeyService.startRegistration();
+    session.setAttribute("webauthn_registration_options", options);
+    return ResponseEntity.ok(options);
   }
 
   @PostMapping("/register/finish")
   public ResponseEntity<Void> finishRegistration(@RequestParam String name,
-      @RequestBody PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> credential) {
-    passkeyService.finishRegistration(credential, name);
+      @RequestBody PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> credential,
+      HttpSession session) {
+    PublicKeyCredentialCreationOptions options = (PublicKeyCredentialCreationOptions) session.getAttribute(
+        "webauthn_registration_options");
+    passkeyService.finishRegistration(credential, name, options);
+    session.removeAttribute("webauthn_registration_options");
     return ResponseEntity.ok().build();
   }
 
   @PostMapping("/login/start")
-  public ResponseEntity<?> startAuthentication(@RequestParam String email) {
-    return ResponseEntity.ok(passkeyService.startAuthentication(email));
+  public ResponseEntity<PublicKeyCredentialRequestOptions> startAuthentication(
+      @RequestParam String email) {
+    // Return only the PublicKeyCredentialRequestOptions object, not wrapped
+    return ResponseEntity.ok(
+        passkeyService.startAuthentication(email).getPublicKeyCredentialRequestOptions());
   }
 
   @PostMapping("/login/finish")

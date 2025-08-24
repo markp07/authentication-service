@@ -53,18 +53,18 @@ export default function SecurityPage({ onBack, onChangePassword, onToggle2FA }: 
         ) : user ? (
           <div className="mb-6">
             <div className="flex items-center gap-2">
-              <span className="font-semibold">2FA Status:</span>
-              <span className={user.twoFAEnabled ? "text-green-600" : "text-red-600"}>{user.twoFAEnabled ? "Enabled" : "Disabled"}</span>
+              <span className="font-semibold">2FA uStatus:</span>
+              <span className={user?.twoFactorEnabled ? "text-green-600" : "text-red-600"}>{user?.twoFactorEnabled ? "Enabled" : "Disabled"}</span>
             </div>
           </div>
         ) : null}
         <div className="flex flex-col gap-4">
           <button className="bg-blue-600 text-white rounded px-4 py-2 font-semibold" onClick={onChangePassword}>Change password</button>
-          <button className="bg-blue-600 text-white rounded px-4 py-2 font-semibold" onClick={onToggle2FA}>{user?.twoFAEnabled ? "Disable 2FA" : "Enable 2FA"}</button>
-          <button className="bg-gray-400 text-white rounded px-4 py-2 font-semibold" onClick={() => setShowPasskeyModal(true)}>Configure passkey</button>
+          <button className="bg-blue-600 text-white rounded px-4 py-2 font-semibold" onClick={onToggle2FA}>{user?.twolFactorEnabled ? "Disable 2FA" : "Enable 2FA"}</button>
+          <button className="bg-blue-600 text-white rounded px-4 py-2 font-semibold" onClick={() => setShowPasskeyModal(true)}>Configure passkey</button>
           <button
-            className={`rounded px-4 py-2 font-semibold ${user?.twoFAEnabled ? "bg-blue-600 text-white" : "bg-gray-400 text-white cursor-not-allowed"}`}
-            onClick={() => user?.twoFAEnabled && setShowBackupCodes(true)}
+            className={`rounded px-4 py-2 font-semibold ${user?.twoFactorEnabled ? "bg-blue-600 text-white" : "bg-gray-400 text-white cursor-not-allowed"}`}
+            onClick={() => user?.twoFactorEnabled && setShowBackupCodes(true)}
           >
             Generate backup codes
           </button>

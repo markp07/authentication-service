@@ -1,10 +1,9 @@
 package nl.markpost.demo.weather.model;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 /**
  * Model representing the hourly weather data.
@@ -14,13 +13,13 @@ import java.util.List;
 @AllArgsConstructor
 public class HourlyResponse {
 
-    private List<String> time;
+  private List<String> time;
 
-    private List<Integer> weather_code;
+  private List<Integer> weather_code;
 
-    private List<Double> temperature_2m;
+  private List<Double> temperature_2m;
 
-    private List<Integer> precipitation_probability;
+  private List<Integer> precipitation_probability;
 
 }
 

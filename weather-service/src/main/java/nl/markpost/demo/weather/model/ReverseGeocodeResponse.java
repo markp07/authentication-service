@@ -2,7 +2,6 @@ package nl.markpost.demo.weather.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import java.util.List;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -10,33 +9,33 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ReverseGeocodeResponse {
 
-    private String city;
+  private String city;
 
-    private String locality;
+  private String locality;
 
-    private String countryName;
+  private String countryName;
 
-    private double latitude;
+  private double latitude;
 
-    private String lookupSource;
+  private String lookupSource;
 
-    private double longitude;
+  private double longitude;
 
-    private String localityLanguageRequested;
+  private String localityLanguageRequested;
 
-    private String continent;
+  private String continent;
 
-    private String continentCode;
+  private String continentCode;
 
-    private String countryCode;
+  private String countryCode;
 
-    private String principalSubdivision;
+  private String principalSubdivision;
 
-    private String principalSubdivisionCode;
+  private String principalSubdivisionCode;
 
-    private String postcode;
+  private String postcode;
 
-    private String plusCode;
+  private String plusCode;
 
-    private LocalityInfo localityInfo;
+  private LocalityInfo localityInfo;
 }

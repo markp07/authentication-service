@@ -53,7 +53,7 @@ spring:
             enable: true
 
 security:
-  excluded-paths: /actuator/health,/actuator/info,/actuator/prometheus,/api/auth/actuator/health,/api/auth/actuator/info,/api/auth/actuator/prometheus,/swagger-ui.html,/swagger-ui/**,/*/api-docs,/v1/register,/v1/login,/v1/refresh,/v1/2fa/verify,/v1/password/forgot,/v1/password/reset,/v1/public-key
+  excluded-paths: /actuator/health,/actuator/info,/actuator/prometheus,/api/auth/actuator/health,/api/auth/actuator/info,/api/auth/actuator/prometheus,/swagger-ui.html,/swagger-ui/**,/*/api-docs,/v1/register,/v1/login,/v1/refresh,/v1/2fa/verify,/v1/password/forgot,/v1/password/reset,/v1/public-key,/v1/passkey/login/start,/v1/passkey/login/finish
 
 authentication:
   cors:
@@ -64,10 +64,16 @@ email:
   subject:
     reset-password: "Password Reset Request"
   body:
-    reset-password: "Hi {userName},\nTo reset your password, use the following link: http://localhost:3000/?token={resetToken}\nRegards,\nAuthentication Demo Service"
+    reset-password: "Hi {userName},\nTo reset your password, use the following link: https://demo.markpost.dev/?token={resetToken}\nRegards,\nAuthentication Demo Service"
 
 cookie:
   secure: true
+
+webauthn:
+    rp:
+        name: "Authentication Demo Service"
+        id: "AuthenticationDemoService"
+    origin: "https://demo.markpost.dev"
 
 ---
 # Local environment profile
@@ -97,6 +103,13 @@ authentication:
 
 cookie:
   secure: false
+
+webauthn:
+  rp:
+    name: "Authentication Demo Service"
+    id: "localhost"
+  origin: "http://localhost:3000"
+
 ---
 # UT environment profile
 spring:
