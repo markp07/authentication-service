@@ -71,15 +71,15 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
     setLoading(false);
   }
 
-  function base64urlToBase64(base64url: string) {
+  function base64urlToBase64(base64url: string): string {
     let base64 = base64url.replace(/-/g, '+').replace(/_/g, '/');
     while (base64.length % 4) base64 += '=';
     return base64;
   }
 
-  function sanitizeExtensions(extensions: Record<string, any>) {
+  function sanitizeExtensions(extensions: Record<string, unknown>): Record<string, unknown> {
     if (!extensions || typeof extensions !== "object") return extensions;
-    const sanitized: Record<string, any> = {};
+    const sanitized: Record<string, unknown> = {};
     for (const key in extensions) {
       const value = extensions[key];
       if (value !== null && value !== undefined && value !== "") {
@@ -105,13 +105,13 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
       const options = await res.json();
       options.challenge = Uint8Array.from(atob(base64urlToBase64(options.challenge)), c => c.charCodeAt(0));
       if (options.allowCredentials) {
-        options.allowCredentials = options.allowCredentials.map((cred: { id: string, transports?: any } & Record<string, unknown>) => {
+        options.allowCredentials = options.allowCredentials.map((cred: { id: string; transports?: string[]; type?: string }) => {
           const decodedId = Uint8Array.from(atob(base64urlToBase64(cred.id)), c => c.charCodeAt(0));
-          const newCred: any = { ...cred, id: decodedId };
-          if (!Array.isArray(cred.transports)) {
-            delete newCred.transports;
-          }
-          return newCred;
+          return {
+            type: cred.type || "public-key",
+            id: decodedId,
+            transports: Array.isArray(cred.transports) ? cred.transports : undefined,
+          };
         });
       }
       if (options.extensions) {

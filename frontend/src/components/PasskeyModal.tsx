@@ -107,12 +107,24 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
       const res = await fetchWithAuthRetry(`${AUTH_API_BASE}/api/auth/v1/passkey/login/start?email=`, { method: "POST" });
       const options = await res.json();
       options.challenge = Uint8Array.from(atob(options.challenge), c => c.charCodeAt(0));
-      options.allowCredentials = options.allowCredentials?.map((cred: { id: string, transports?: any } & Record<string, unknown>) => {
+      options.allowCredentials = options.allowCredentials?.map((cred: { id: string; transports?: string[] }) => {
         const decodedId = base64urlToUint8Array(cred.id);
-        const newCred: any = { ...cred, id: decodedId };
-        if (!Array.isArray(cred.transports)) {
-          delete newCred.transports;
-        }
+        // Only allow valid AuthenticatorTransport values
+        const validTransports = Array.isArray(cred.transports)
+          ? cred.transports.filter(t => [
+              "usb",
+              "nfc",
+              "ble",
+              "internal",
+              "cable",
+              "hybrid"
+            ].includes(t))
+          : undefined;
+        const newCred: PublicKeyCredentialDescriptor = {
+          type: "public-key",
+          id: decodedId,
+          transports: validTransports as AuthenticatorTransport[] | undefined,
+        };
         return newCred;
       });
       // 2. Call WebAuthn API
@@ -128,7 +140,7 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
       } else {
         setLoginError("Passkey login failed.");
       }
-    } catch (err) {
+    } catch {
       setLoginError("Passkey login failed.");
     }
     setLoginLoading(false);

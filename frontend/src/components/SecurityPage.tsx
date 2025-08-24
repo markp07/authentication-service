@@ -60,7 +60,7 @@ export default function SecurityPage({ onBack, onChangePassword, onToggle2FA }: 
         ) : null}
         <div className="flex flex-col gap-4">
           <button className="bg-blue-600 text-white rounded px-4 py-2 font-semibold" onClick={onChangePassword}>Change password</button>
-          <button className="bg-blue-600 text-white rounded px-4 py-2 font-semibold" onClick={onToggle2FA}>{user?.twolFactorEnabled ? "Disable 2FA" : "Enable 2FA"}</button>
+          <button className="bg-blue-600 text-white rounded px-4 py-2 font-semibold" onClick={onToggle2FA}>{user?.twoFactorEnabled ? "Disable 2FA" : "Enable 2FA"}</button>
           <button className="bg-blue-600 text-white rounded px-4 py-2 font-semibold" onClick={() => setShowPasskeyModal(true)}>Configure passkey</button>
           <button
             className={`rounded px-4 py-2 font-semibold ${user?.twoFactorEnabled ? "bg-blue-600 text-white" : "bg-gray-400 text-white cursor-not-allowed"}`}

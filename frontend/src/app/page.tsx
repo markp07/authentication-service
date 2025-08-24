@@ -6,7 +6,6 @@ import Login from "../components/Login";
 import Register from "../components/Register";
 import ForgotPassword from "../components/ForgotPassword";
 import ResetPassword from "../components/ResetPassword";
-import Profile from "../components/Profile";
 import Setup2FA from "../components/Setup2FA";
 import ChangePassword from "../components/ChangePassword";
 import DeleteAccountModal from "../components/DeleteAccountModal";
@@ -43,13 +42,11 @@ export default function Home() {
     | "deleteAccount"
     | null
   >("login");
-  const [globalMessage, setGlobalMessage] = React.useState<string | null>(null);
   const [showWeather, setShowWeather] = React.useState(false);
   const [weatherError, setWeatherError] = React.useState<string | null>(null);
   const [weather, setWeather] = React.useState<Weather | null>(null);
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [username, setUsername] = React.useState<string | null>(null);
-  const [twoFAEnabled, setTwoFAEnabled] = React.useState(false);
   const [checkingLogin, setCheckingLogin] = React.useState(true);
   const [activePage, setActivePage] = React.useState<null | "profile" | "security">(null);
 
@@ -72,15 +69,12 @@ export default function Home() {
         if (res.ok) {
           const data = await res.json();
           setUsername(data.userName || null);
-          setTwoFAEnabled(data.twoFAEnabled || false);
         } else {
           setUsername(null);
-          setTwoFAEnabled(false);
         }
       } catch {
         setLoggedIn(false);
         setUsername(null);
-        setTwoFAEnabled(false);
       }
       setCheckingLogin(false);
     }
@@ -205,16 +199,19 @@ export default function Home() {
                   <div className="py-3 border-t border-gray-400 dark:border-gray-300">
                     <div className="text-base sm:text-lg font-semibold">Hourly Forecast</div>
                     <div className="flex flex-row gap-2 sm:gap-4 overflow-x-auto pb-2 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                      {weather.hourly.slice(0, 48).map((h, i) => (
-                        <div key={i} className="flex flex-col items-center min-w-[48px] sm:min-w-[64px] p-1 sm:p-2 rounded-lg bg-white/80 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                          <div className="text-[10px] sm:text-xs font-medium text-gray-500 dark:text-gray-300 mb-0.5 sm:mb-1">
-                            {i === 0 ? "Now" : new Date(h.time).toLocaleTimeString([], { hour: "2-digit", hour12: false })}
+                      {weather.hourly
+                        .filter(h => new Date(h.time).getHours() >= new Date().getHours())
+                        .slice(0, 48)
+                        .map((h, i) => (
+                          <div key={i} className="flex flex-col items-center min-w-[48px] sm:min-w-[64px] p-1 sm:p-2 rounded-lg bg-white/80 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                            <div className="text-[10px] sm:text-xs font-medium text-gray-500 dark:text-gray-300 mb-0.5 sm:mb-1">
+                              {i === 0 ? "Now" : new Date(h.time).toLocaleTimeString([], { hour: "2-digit", hour12: false })}
+                            </div>
+                            <div className="text-xl sm:text-2xl mb-0.5 sm:mb-1">{getWeatherIcon(h.weatherCode, 32)}</div>
+                            <div className="font-bold text-base sm:text-lg">{Math.round(h.temperature)}°</div>
+                            <div className="text-[10px] sm:text-xs text-blue-700 dark:text-blue-300">{h.precipitationProbability}%</div>
                           </div>
-                          <div className="text-xl sm:text-2xl mb-0.5 sm:mb-1">{getWeatherIcon(h.weatherCode, 32)}</div>
-                          <div className="font-bold text-base sm:text-lg">{Math.round(h.temperature)}°</div>
-                          <div className="text-[10px] sm:text-xs text-blue-700 dark:text-blue-300">{h.precipitationProbability}%</div>
-                        </div>
-                      ))}
+                        ))}
                     </div>
                   </div>
                   {/* 14-Day Forecast Section */}
@@ -259,7 +256,6 @@ export default function Home() {
       <Modal open={!loggedIn && modal === "login"} onClose={closeModal}>
         <Login
           onSuccess={() => {
-            setGlobalMessage("Login successful!");
             setLoggedIn(true);
             closeModal();
           }}
@@ -270,7 +266,6 @@ export default function Home() {
       <Modal open={modal === "register"} onClose={closeModal}>
         <Register
           onSuccess={() => {
-            setGlobalMessage("Registration successful! You can now log in.");
             openModal("login");
           }}
           onLogin={() => openModal("login")}
@@ -297,7 +292,6 @@ export default function Home() {
       <Modal open={modal === "deleteAccount"} onClose={closeModal}>
         <DeleteAccountModal
           onSuccess={() => {
-            setGlobalMessage("Account deleted.");
             handleLogout();
           }}
           onCancel={closeModal}

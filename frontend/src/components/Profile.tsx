@@ -146,8 +146,8 @@ export default function Profile({ onClose }: ProfileProps) {
           </div>
           {userNameError && <div className="text-red-600 text-xs mt-1">{userNameError}</div>}
           {userNameSuccess && <div className="text-green-600 text-xs mt-1">{userNameSuccess}</div>}
-          <div><span className="font-semibold">2FA Enabled:</span> {user.twoFAEnabled ? "Yes" : "No"}</div>
-          {user.twoFAEnabled && (
+          <div><span className="font-semibold">2FA Enabled:</span> {user.twoFactorEnabled ? "Yes" : "No"}</div>
+          {user.twoFactorEnabled && (
             <button className="bg-red-600 text-white rounded px-4 py-2 font-semibold mt-2" onClick={() => setShowDisable2FA(true)}>
               Disable 2FA
             </button>
@@ -162,7 +162,7 @@ export default function Profile({ onClose }: ProfileProps) {
           <Disable2FAModal
             onSuccess={() => {
               setShowDisable2FA(false);
-              if (user) setUser({ ...user, twoFAEnabled: false });
+              if (user) setUser({ ...user, twoFactorEnabled: false });
             }}
             onCancel={() => setShowDisable2FA(false)}
           />
