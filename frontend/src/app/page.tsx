@@ -200,7 +200,6 @@ export default function Home() {
                     <div className="text-base sm:text-lg font-semibold">Hourly Forecast</div>
                     <div className="flex flex-row gap-2 sm:gap-4 overflow-x-auto pb-2 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                       {weather.hourly
-                        .filter(h => new Date(h.time).getHours() >= new Date().getHours())
                         .slice(0, 48)
                         .map((h, i) => (
                           <div key={i} className="flex flex-col items-center min-w-[48px] sm:min-w-[64px] p-1 sm:p-2 rounded-lg bg-white/80 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
