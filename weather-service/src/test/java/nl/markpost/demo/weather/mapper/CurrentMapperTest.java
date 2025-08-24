@@ -54,7 +54,7 @@ class CurrentMapperTest {
 
     response.setWind_direction_10m(200); // S_SW
     current = mapper.toCurrent(response);
-    assertEquals(nl.markpost.demo.weather.model.WindDirection.S_SW, current.getWindDirection());
+    assertEquals(nl.markpost.demo.weather.model.WindDirection.SSW, current.getWindDirection());
 
     response.setWind_direction_10m(310); // NW
     current = mapper.toCurrent(response);
