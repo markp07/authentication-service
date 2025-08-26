@@ -34,7 +34,7 @@ public class WebAuthnConfig {
         if (user == null) {
           return Set.of();
         }
-        return passkeyCredentialRepository.findByUser(user).stream()
+        return passkeyCredentialRepository.findByUserId(user.getId()).stream()
             .map(cred -> PublicKeyCredentialDescriptor.builder()
                 .id(new ByteArray(Base64.getUrlDecoder().decode(cred.getCredentialId())))
                 .build())
@@ -91,7 +91,7 @@ public class WebAuthnConfig {
         if (user == null) {
           return Set.of();
         }
-        return passkeyCredentialRepository.findByUser(user).stream()
+        return passkeyCredentialRepository.findByUserId(user.getId()).stream()
             .map(cred -> RegisteredCredential.builder()
                 .credentialId(new ByteArray(Base64.getUrlDecoder().decode(cred.getCredentialId())))
                 .userHandle(userHandle)

@@ -12,9 +12,12 @@ import java.security.Principal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import nl.markpost.demo.authentication.api.v1.model.Message;
+import nl.markpost.demo.authentication.api.v1.model.PasskeyInfoDto;
 import nl.markpost.demo.authentication.model.PasskeyCredential;
+import nl.markpost.demo.authentication.model.User;
 import nl.markpost.demo.authentication.service.PasskeyService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,14 +35,15 @@ public class PasskeyController {
   private final PasskeyService passkeyService;
 
   @GetMapping
-  public ResponseEntity<List<PasskeyCredential>> listPasskeys(Principal principal) {
-    return ResponseEntity.ok(passkeyService.listPasskeys(principal.getName()));
+  public ResponseEntity<List<PasskeyInfoDto>> listPasskeys() {
+    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    return ResponseEntity.ok(passkeyService.listPasskeys(user));
   }
 
   @DeleteMapping("/{credentialId}")
-  public ResponseEntity<Void> deletePasskey(@PathVariable String credentialId,
-      Principal principal) {
-    passkeyService.deletePasskey(principal.getName(), credentialId);
+  public ResponseEntity<Void> deletePasskey(@PathVariable String credentialId) {
+    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    passkeyService.deletePasskey(user, credentialId);
     return ResponseEntity.noContent().build();
   }
 

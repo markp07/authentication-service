@@ -30,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.authentication.api.v1.model.Message;
+import nl.markpost.demo.authentication.api.v1.model.PasskeyInfoDto;
 import nl.markpost.demo.authentication.constant.Messages;
 import nl.markpost.demo.authentication.model.PasskeyCredential;
 import nl.markpost.demo.authentication.model.User;
@@ -53,13 +54,16 @@ public class PasskeyService {
   private final RelyingParty relyingParty;
   private final JwtService jwtService;
 
-  public List<PasskeyCredential> listPasskeys(String email) {
-    User user = userRepository.findByEmail(email);
-    return user != null ? passkeyCredentialRepository.findByUser(user) : List.of();
+  public List<PasskeyInfoDto> listPasskeys(User user) {
+    if (user == null) return List.of();
+    List<PasskeyCredential> list = passkeyCredentialRepository.findByUserId(user.getId());
+    return list
+        .stream()
+        .map(pk -> new PasskeyInfoDto(pk.getCredentialId(), pk.getName(), pk.getCreatedAt()))
+        .toList();
   }
 
-  public void deletePasskey(String email, String credentialId) {
-    User user = userRepository.findByEmail(email);
+  public void deletePasskey(User user, String credentialId) {
     if (user == null) {
       return;
     }

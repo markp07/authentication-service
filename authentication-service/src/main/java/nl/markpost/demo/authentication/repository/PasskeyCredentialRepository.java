@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PasskeyCredentialRepository extends JpaRepository<PasskeyCredential, UUID> {
 
-  List<PasskeyCredential> findByUser(User user);
+  List<PasskeyCredential> findByUserId(UUID userId);
 
   PasskeyCredential findByCredentialId(String credentialId);
 

@@ -20,10 +20,21 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
   const [registerName, setRegisterName] = useState("");
   const [loginLoading, setLoginLoading] = useState(false);
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [user, setUser] = useState<{ email: string } | null>(null);
 
   useEffect(() => {
-    if (!open) return;
-    fetchPasskeys();
+    async function fetchUser() {
+      try {
+        const res = await fetchWithAuthRetry(`${AUTH_API_BASE}/api/auth/v1/user`);
+        if (res.ok) {
+          setUser(await res.json());
+        }
+      } catch {}
+    }
+    if (open) {
+      fetchUser();
+      fetchPasskeys();
+    }
   }, [open]);
 
   async function fetchPasskeys() {
@@ -68,8 +79,34 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
       // 1. Get registration options from backend
       const res = await fetchWithAuthRetry(`${AUTH_API_BASE}/api/auth/v1/passkey/register/start`, { method: "POST" });
       const options = await res.json();
+      // Decode challenge
       options.challenge = base64urlToUint8Array(options.challenge);
-      options.user.id = base64urlToUint8Array(options.user.id);
+      // Decode user.id
+      if (options.user && options.user.id) {
+        options.user.id = base64urlToUint8Array(options.user.id);
+      }
+      // Decode excludeCredentials[].id
+      if (Array.isArray(options.excludeCredentials)) {
+        options.excludeCredentials = options.excludeCredentials.map((cred: { id: string; type: string; transports?: string[] }) => {
+          const decodedId = base64urlToUint8Array(cred.id);
+          // Only allow valid AuthenticatorTransport values
+          const validTransports = Array.isArray(cred.transports)
+            ? cred.transports.filter(t => [
+                "usb",
+                "nfc",
+                "ble",
+                "internal",
+                "cable",
+                "hybrid"
+              ].includes(t))
+            : undefined;
+          return {
+            type: cred.type || "public-key",
+            id: decodedId,
+            transports: validTransports as AuthenticatorTransport[] | undefined,
+          };
+        });
+      }
       // Sanitize extensions: remove keys with null/undefined values
       if (options.extensions && typeof options.extensions === "object") {
         Object.keys(options.extensions).forEach(key => {
@@ -103,8 +140,13 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
     setLoginLoading(true);
     setLoginError(null);
     try {
+      if (!user?.email) {
+        setLoginError("User email not loaded.");
+        setLoginLoading(false);
+        return;
+      }
       // 1. Get authentication options from backend
-      const res = await fetchWithAuthRetry(`${AUTH_API_BASE}/api/auth/v1/passkey/login/start?email=`, { method: "POST" });
+      const res = await fetchWithAuthRetry(`${AUTH_API_BASE}/api/auth/v1/passkey/login/start?email=${encodeURIComponent(user.email)}`, { method: "POST" });
       const options = await res.json();
       options.challenge = Uint8Array.from(atob(options.challenge), c => c.charCodeAt(0));
       options.allowCredentials = options.allowCredentials?.map((cred: { id: string; transports?: string[] }) => {
@@ -130,7 +172,7 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
       // 2. Call WebAuthn API
       const assertion = await navigator.credentials.get({ publicKey: options });
       // 3. Send assertion to backend
-      const finishRes = await fetchWithAuthRetry(`${AUTH_API_BASE}/api/auth/v1/passkey/login/finish?email=`, {
+      const finishRes = await fetchWithAuthRetry(`${AUTH_API_BASE}/api/auth/v1/passkey/login/finish?email=${encodeURIComponent(user.email)}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(assertion),
