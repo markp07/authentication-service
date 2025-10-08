@@ -97,12 +97,12 @@
 		<dependency>
 			<groupId>com.google.zxing</groupId>
 			<artifactId>core</artifactId>
-			<version>3.5.1</version>
+			<version>${zxing.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.zxing</groupId>
 			<artifactId>javase</artifactId>
-			<version>3.5.1</version>
+			<version>${zxing.version}</version>
 		</dependency>
 
 		<!-- PosrgreSQL dependencies -->
@@ -130,12 +130,12 @@
 		<dependency>
 			<groupId>com.github.bastiaanjansen</groupId>
 			<artifactId>otp-java</artifactId>
-			<version>2.1.0</version>
+			<version>${otp-java.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.yubico</groupId>
 			<artifactId>webauthn-server-core</artifactId>
-			<version>2.7.0</version>
+			<version>${webauthn-server-core.version}</version>
 		</dependency>
 
 		<!-- Micrometer dependencies -->
