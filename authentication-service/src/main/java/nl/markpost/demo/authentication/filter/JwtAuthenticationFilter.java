@@ -101,11 +101,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     try {
       PublicKey publicKey = keyProvider.getPublicKey();
-      Claims claims = Jwts.parserBuilder()
-          .setSigningKey(publicKey)
+      Claims claims = Jwts.parser()
+          .verifyWith(publicKey)
           .build()
-          .parseClaimsJws(accessToken)
-          .getBody();
+          .parseSignedClaims(accessToken)
+          .getPayload();
       request.setAttribute("jwtClaims", claims);
       String email = claims.getSubject();
 

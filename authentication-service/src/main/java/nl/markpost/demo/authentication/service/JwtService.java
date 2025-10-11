@@ -19,9 +19,9 @@ public class JwtService {
     long minutes15 = Constants.MINUTES_15 * 1000;
     long expirationTime = System.currentTimeMillis() + minutes15;
     return Jwts.builder()
-        .setSubject(user.getEmail())
-        .setIssuedAt(new Date())
-        .setExpiration(new Date(expirationTime))
+        .subject(user.getEmail())
+        .issuedAt(new Date())
+        .expiration(new Date(expirationTime))
         .signWith(keyProvider.getPrivateKey(), SignatureAlgorithm.RS256)
         .compact();
   }
@@ -30,15 +30,18 @@ public class JwtService {
     long days7 = Constants.DAYS_7 * 1000;
     long expirationTime = System.currentTimeMillis() + days7;
     return Jwts.builder()
-        .setSubject(user.getEmail())
-        .setIssuedAt(new Date())
-        .setExpiration(new Date(expirationTime))
+        .subject(user.getEmail())
+        .issuedAt(new Date())
+        .expiration(new Date(expirationTime))
         .signWith(keyProvider.getPrivateKey(), SignatureAlgorithm.RS256)
         .compact();
   }
 
   public String getEmailFromToken(String token) {
-    return Jwts.parserBuilder().setSigningKey(keyProvider.getPublicKey()).build()
-        .parseClaimsJws(token).getBody().getSubject();
+    return Jwts.parser()
+        .verifyWith(keyProvider.getPublicKey()).build()
+        .parseSignedClaims(token)
+        .getPayload()
+        .getSubject();
   }
 }

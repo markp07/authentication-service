@@ -46,8 +46,8 @@ class JwtServiceTest {
     when(keyProvider.getPrivateKey()).thenReturn(privateKey);
     String token = jwtService.generateAccessToken(user);
     assertNotNull(token);
-    String email = Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(token)
-        .getBody().getSubject();
+    String email = Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(token)
+        .getPayload().getSubject();
     assertEquals(user.getEmail(), email);
   }
 
@@ -57,8 +57,8 @@ class JwtServiceTest {
     when(keyProvider.getPrivateKey()).thenReturn(privateKey);
     String token = jwtService.generateRefreshToken(user);
     assertNotNull(token);
-    String email = Jwts.parserBuilder().setSigningKey(publicKey).build().parseClaimsJws(token)
-        .getBody().getSubject();
+    String email = Jwts.parser().verifyWith(publicKey).build().parseSignedClaims(token)
+        .getPayload().getSubject();
     assertEquals(user.getEmail(), email);
   }
 
