@@ -9,7 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@tabler/icons-react": "^3.34.0",
+    "@tabler/icons-react": "^3.35.0",
     "next": "15.4.2",
     "qrcode.react": "^4.2.0",
     "react": "19.1.0",
