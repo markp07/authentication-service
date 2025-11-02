@@ -44,7 +44,7 @@
     <flatten-maven.version>1.7.0</flatten-maven.version>
     <maven-compiler.version>3.14.0</maven-compiler.version>
     <maven-resources.version>3.3.1</maven-resources.version>
-    <maven-surefire.version>3.5.3</maven-surefire.version>
+    <maven-surefire.version>3.5.4</maven-surefire.version>
     <openapi-generator-maven-plugin.version>7.12.0</openapi-generator-maven-plugin.version>
     <versions-maven-plugin.version>2.18.0</versions-maven-plugin.version>
     <maven-enforcer-plugin.version>3.0.0-M3</maven-enforcer-plugin.version>
