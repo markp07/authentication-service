@@ -32,7 +32,7 @@
     <springdoc-openapi-webmvc-core.version>2.8.13</springdoc-openapi-webmvc-core.version>
     <jjwt.version>0.13.0</jjwt.version>
     <postgresql.version>42.7.8</postgresql.version>
-    <micrometer-tracing.version>1.5.4</micrometer-tracing.version>
+    <micrometer-tracing.version>1.5.5</micrometer-tracing.version>
     <micrometer-registry-prometheus.version>1.15.4</micrometer-registry-prometheus.version>
     <zxing.version>3.5.3</zxing.version>
     <otp-java.version>2.1.0</otp-java.version>
