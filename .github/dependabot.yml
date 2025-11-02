@@ -14,6 +14,10 @@ updates:
     commit-message:
       prefix: "chore(maven)"
       include: "scope"
+    groups:
+      maven-dependencies:
+        patterns:
+          - "*"
 
   # npm dependencies for the frontend
   - package-ecosystem: "npm"
@@ -29,6 +33,10 @@ updates:
     commit-message:
       prefix: "chore(npm)"
       include: "scope"
+    groups:
+      npm-dependencies:
+        patterns:
+          - "*"
 
   # Docker images in docker-compose.yml
   - package-ecosystem: "docker"
@@ -44,6 +52,10 @@ updates:
     commit-message:
       prefix: "chore(docker)"
       include: "scope"
+    groups:
+      docker-dependencies:
+        patterns:
+          - "*"
 
   # Docker images in authentication-service Dockerfile
   - package-ecosystem: "docker"
@@ -59,6 +71,10 @@ updates:
     commit-message:
       prefix: "chore(docker)"
       include: "scope"
+    groups:
+      docker-dependencies:
+        patterns:
+          - "*"
 
   # Docker images in weather-service Dockerfile
   - package-ecosystem: "docker"
@@ -74,6 +90,10 @@ updates:
     commit-message:
       prefix: "chore(docker)"
       include: "scope"
+    groups:
+      docker-dependencies:
+        patterns:
+          - "*"
 
   # Docker images in frontend Dockerfile
   - package-ecosystem: "docker"
@@ -89,3 +109,7 @@ updates:
     commit-message:
       prefix: "chore(docker)"
       include: "scope"
+    groups:
+      docker-dependencies:
+        patterns:
+          - "*"
