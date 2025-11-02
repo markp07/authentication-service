@@ -28,7 +28,7 @@
     <lombok-mapstruct-bindings.version>0.2.0</lombok-mapstruct-bindings.version>
     <feign-jackson.version>13.6</feign-jackson.version>
     <jakarta.validation-api.version>3.1.0</jakarta.validation-api.version>
-    <jackson-databind-nullable.version>0.2.7</jackson-databind-nullable.version>
+    <jackson-databind-nullable.version>0.2.8</jackson-databind-nullable.version>
     <springdoc-openapi-webmvc-core.version>2.8.13</springdoc-openapi-webmvc-core.version>
     <jjwt.version>0.13.0</jjwt.version>
     <postgresql.version>42.7.8</postgresql.version>
