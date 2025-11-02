@@ -40,7 +40,7 @@
     <!-- Plugin versions -->
     <jacoco.version>0.8.13</jacoco.version>
     <fmt-maven-plugin.version>2.27</fmt-maven-plugin.version>
-    <maven-failsafe.version>3.5.3</maven-failsafe.version>
+    <maven-failsafe.version>3.5.4</maven-failsafe.version>
     <flatten-maven.version>1.7.0</flatten-maven.version>
     <maven-compiler.version>3.14.0</maven-compiler.version>
     <maven-resources.version>3.3.1</maven-resources.version>
