@@ -169,52 +169,106 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
     setPasskeyLoading(false);
   }
 
+  async function handleUsernamelessPasskeyLogin() {
+    setPasskeyLoading(true);
+    setPasskeyError(null);
+    try {
+      // 1. Get assertion options without email
+      const res = await apiFetch(`${AUTH_API_BASE}/api/auth/v1/passkey/login/usernameless/start`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+      });
+      if (!res.ok) throw new Error("Failed to start usernameless passkey login");
+
+      const options = await res.json();
+      options.challenge = Uint8Array.from(atob(base64urlToBase64(options.challenge)), c => c.charCodeAt(0));
+
+      // No allowCredentials means any passkey can be used
+      if (options.extensions) {
+        options.extensions = sanitizeExtensions(options.extensions);
+      }
+
+      // 2. Call WebAuthn API - browser will show all available passkeys
+      const assertion = await navigator.credentials.get({ publicKey: options });
+
+      // 3. Send assertion to backend (no email needed)
+      const finishRes = await apiFetch(`${AUTH_API_BASE}/api/auth/v1/passkey/login/usernameless/finish`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(assertion)
+      });
+
+      const finishData = await finishRes.json();
+      if (finishRes.status === 200 && finishData.code === "LOGIN_SUCCESS") {
+        onSuccess();
+      } else {
+        setPasskeyError("Passkey login failed.");
+      }
+    } catch (err) {
+      console.error(err);
+      setPasskeyError("Passkey login failed.");
+    }
+    setPasskeyLoading(false);
+  }
+
   return (
     <form className="flex flex-col gap-4" onSubmit={step === 'login' ? handleLogin : handle2fa}>
       <h2 className="text-xl font-bold mb-2">Login</h2>
       {error && <div className="text-red-600 text-sm bg-red-100 rounded px-2 py-1">{error}</div>}
       {step === 'login' && (
         <>
+          {/* Email input - now optional for usernameless flow */}
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Email (optional for passkey)"
             className="border rounded px-3 py-2 bg-blue-50 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-            required
             value={email}
             onChange={e => setEmail(e.target.value)}
           />
+
+          {/* Password input */}
           <input
             type="password"
             placeholder="Password"
             className="border rounded px-3 py-2 bg-blue-50 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-            required
+            required={!email} // Only required if no email for passkey
             value={password}
             onChange={e => setPassword(e.target.value)}
           />
+
+          {/* Traditional login button */}
           <button
             type="submit"
             className="bg-blue-600 text-white rounded px-4 py-2 font-semibold hover:bg-blue-700 shadow"
-            disabled={loading}
+            disabled={loading || !email || !password}
           >
             {loading ? "Logging in..." : "Login"}
           </button>
-          <button
-            type="button"
-            className="bg-green-600 text-white rounded px-4 py-2 font-semibold hover:bg-green-700 shadow mt-2"
-            onClick={handlePasskeyLogin}
-            disabled={passkeyLoading}
-          >
-            {passkeyLoading ? "Logging in with Passkey..." : "Login with Passkey"}
-          </button>
-          {passkeyError && <div className="text-red-600 text-xs mt-1">{passkeyError}</div>}
-          <div className="flex justify-between text-sm mt-2">
-            <button type="button" className="text-blue-600 hover:underline" onClick={onRegister}>
-              Register
-            </button>
-            <button type="button" className="text-blue-600 hover:underline" onClick={onForgot}>
-              Forgot Password?
+
+          {/* Passkey buttons */}
+          <div className="flex flex-col gap-2">
+            {email && (
+              <button
+                type="button"
+                className="bg-green-600 text-white rounded px-4 py-2 font-semibold hover:bg-green-700 shadow"
+                onClick={handlePasskeyLogin}
+                disabled={passkeyLoading}
+              >
+                {passkeyLoading ? "Logging in..." : "Login with Passkey (Email)"}
+              </button>
+            )}
+
+            <button
+              type="button"
+              className="bg-purple-600 text-white rounded px-4 py-2 font-semibold hover:bg-purple-700 shadow"
+              onClick={handleUsernamelessPasskeyLogin}
+              disabled={passkeyLoading}
+            >
+              {passkeyLoading ? "Logging in..." : "🔑 Login with Passkey"}
             </button>
           </div>
+
+          {passkeyError && <div className="text-red-600 text-xs mt-1">{passkeyError}</div>}
         </>
       )}
       {step === '2fa' && (

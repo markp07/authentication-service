@@ -128,6 +128,18 @@ public class PasskeyService {
     return assertionRequest;
   }
 
+  public AssertionRequest startUsernamelessAuthentication() {
+    // Start assertion without specifying a username
+    // This allows any registered passkey for this RP to be used
+    AssertionRequest assertionRequest = relyingParty.startAssertion(
+        StartAssertionOptions.builder()
+            // No username specified - allows discoverable credentials
+            .build()
+    );
+    log.info("[WebAuthn] Usernameless AssertionRequest started");
+    return assertionRequest;
+  }
+
   @SneakyThrows
   public ResponseEntity<Message> finishAuthentication(String email,
       PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> credential,
@@ -144,6 +156,43 @@ public class PasskeyService {
       if (user == null) {
         throw new UnauthorizedException();
       }
+
+      HttpServletResponse response = RequestUtil.getCurrentResponse();
+      String accessToken = jwtService.generateAccessToken(user);
+      response.addCookie(CookieUtil.buildCookie(ACCESS_TOKEN, accessToken, MINUTES_15));
+
+      String refreshToken = jwtService.generateRefreshToken(user);
+      response.addCookie(CookieUtil.buildCookie(REFRESH_TOKEN, refreshToken, DAYS_7));
+
+      return ResponseEntity.status(HttpStatus.OK)
+          .body(createMessageResponse(Messages.LOGIN_SUCCESS));
+    } else {
+      throw new UnauthorizedException();
+    }
+  }
+
+  public ResponseEntity<Message> finishUsernamelessAuthentication(
+      PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> credential,
+      AssertionRequest assertionRequest) {
+    log.info("[WebAuthn] finishUsernamelessAuthentication credentialId: " + credential.getId().getBase64Url());
+
+    AssertionResult result = relyingParty.finishAssertion(
+        FinishAssertionOptions.builder()
+            .request(assertionRequest)
+            .response(credential)
+            .build()
+    );
+
+    if (result.isSuccess()) {
+      // Find user by credential ID (since we don't have email)
+      PasskeyCredential passkeyCredential = passkeyCredentialRepository
+          .findByCredentialId(credential.getId().getBase64Url());
+
+      if (passkeyCredential == null) {
+        throw new UnauthorizedException();
+      }
+
+      User user = passkeyCredential.getUser();
 
       HttpServletResponse response = RequestUtil.getCurrentResponse();
       String accessToken = jwtService.generateAccessToken(user);
