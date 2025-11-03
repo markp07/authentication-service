@@ -171,6 +171,7 @@ public class PasskeyService {
     }
   }
 
+  @SneakyThrows
   public ResponseEntity<Message> finishUsernamelessAuthentication(
       PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> credential,
       AssertionRequest assertionRequest) {
