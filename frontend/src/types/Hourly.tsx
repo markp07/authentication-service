@@ -3,4 +3,7 @@ export interface Hourly {
   weatherCode: string;
   temperature: number;
   precipitationProbability: number;
+  precipitation: number;
+  windSpeed: number;
+  windDirection: string;
 }

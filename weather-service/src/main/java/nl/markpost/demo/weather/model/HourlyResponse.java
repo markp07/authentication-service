@@ -21,5 +21,10 @@ public class HourlyResponse {
 
   private List<Integer> precipitation_probability;
 
+  private List<Double> precipitation;
+
+  private List<Integer> wind_speed_10m;
+
+  private List<Integer> wind_direction_10m;
 }
 
