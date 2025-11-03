@@ -64,6 +64,8 @@ class WeatherMapperTest {
     assertEquals(25.5, d1.getTemperatureMax());
     assertEquals(0.0, d1.getPrecipitation());
     assertEquals(80, d1.getPrecipitationProbabilityMax());
+    assertEquals(10, d1.getWindSpeed());
+    assertEquals(WindDirection.N, d1.getWindDirection());
     Daily d2 = weather.getDaily().get(1);
     assertEquals(LocalDateTime.parse("2025-07-24T00:00:00"), d2.getTime());
     assertEquals(LocalDateTime.parse("2025-07-24T05:14:00"), d2.getSunRise());
@@ -73,6 +75,8 @@ class WeatherMapperTest {
     assertEquals(27.0, d2.getTemperatureMax());
     assertEquals(1.2, d2.getPrecipitation());
     assertEquals(90, d2.getPrecipitationProbabilityMax());
+    assertEquals(15, d2.getWindSpeed());
+    assertEquals(WindDirection.NE, d2.getWindDirection());
     // Hourly assertions
     assertNotNull(weather.getHourly());
     assertEquals(2, weather.getHourly().size());
@@ -80,12 +84,18 @@ class WeatherMapperTest {
     assertEquals(LocalDateTime.parse("2025-07-23T13:00:00"), h1.getTime());
     assertEquals(WeatherCode.MAINLY_CLEAR, h1.getWeatherCode());
     assertEquals(21.0, h1.getTemperature());
+    assertEquals(0.5, h1.getPrecipitation());
     assertEquals(10, h1.getPrecipitationProbability());
+    assertEquals(8, h1.getWindSpeed());
+    assertEquals(WindDirection.SW, h1.getWindDirection());
     Hourly h2 = weather.getHourly().get(1);
     assertEquals(LocalDateTime.parse("2025-07-23T14:00:00"), h2.getTime());
     assertEquals(WeatherCode.RAIN_SHOWERS_SLIGHT, h2.getWeatherCode());
     assertEquals(22.0, h2.getTemperature());
+    assertEquals(1.0, h2.getPrecipitation());
     assertEquals(20, h2.getPrecipitationProbability());
+    assertEquals(12, h2.getWindSpeed());
+    assertEquals(WindDirection.W, h2.getWindDirection());
   }
 
   private static DailyResponse getDailyResponse() {
@@ -98,6 +108,8 @@ class WeatherMapperTest {
     dailyResponse.setSunset(List.of("2025-07-23T21:12:00", "2025-07-24T21:11:00"));
     dailyResponse.setPrecipitation_sum(List.of(0.0, 1.2));
     dailyResponse.setPrecipitation_probability_max(List.of(80, 90));
+    dailyResponse.setWind_speed_10m_max(List.of(10, 15));
+    dailyResponse.setWind_direction_10m_dominant(List.of(0, 45)); // N and NE
     return dailyResponse;
   }
 
@@ -107,6 +119,9 @@ class WeatherMapperTest {
     hourlyResponse.setWeather_code(List.of(1, 80));
     hourlyResponse.setTemperature_2m(List.of(21.0, 22.0));
     hourlyResponse.setPrecipitation_probability(List.of(10, 20));
+    hourlyResponse.setPrecipitation(List.of(0.5, 1.0));
+    hourlyResponse.setWind_speed_10m(List.of(8, 12));
+    hourlyResponse.setWind_direction_10m(List.of(225, 270)); // SW and W
     return hourlyResponse;
   }
 

@@ -11,7 +11,7 @@ import ChangePassword from "../components/ChangePassword";
 import DeleteAccountModal from "../components/DeleteAccountModal";
 import ProfilePage from "../components/ProfilePage";
 import SecurityPage from "../components/SecurityPage";
-import { IconSun, IconUser, IconWind } from "@tabler/icons-react";
+import { IconSun, IconUser, IconWind, IconArrowUp, IconArrowUpLeft, IconArrowUpRight, IconArrowDown, IconArrowDownLeft, IconArrowDownRight, IconArrowRight, IconArrowLeft } from "@tabler/icons-react";
 import type { Weather } from "../types/Weather";
 import { weatherCodeMap } from "../types/WeatherCodeMap";
 
@@ -28,6 +28,21 @@ function getWeatherIcon(code: string, size = 32) {
 }
 function getWeatherLabel(code: string) {
   return weatherCodeMap[code]?.label || code;
+}
+function getWindDirectionIcon(direction: string, size = 22) {
+  const iconMap: { [key: string]: any } = {
+    S: IconArrowUp,
+    SE: IconArrowUpLeft,
+    SW: IconArrowUpRight,
+    N: IconArrowDown,
+    NE: IconArrowDownLeft,
+    NW: IconArrowDownRight,
+    W: IconArrowRight,
+    E: IconArrowLeft
+  };
+
+  const IconComponent = iconMap[direction] || IconArrowUp;
+  return <IconComponent size={size} />;
 }
 
 export default function Home() {
@@ -188,11 +203,11 @@ export default function Home() {
                       <div className="text-4xl sm:text-5xl font-extrabold leading-none">{Math.round(weather.current.temperature)}°C</div>
                       <div className="text-base sm:text-lg font-medium text-gray-600 dark:text-gray-300">{getWeatherLabel(weather.current.weatherCode)}</div>
                       <div className="flex flex-row gap-4 sm:gap-6 mt-1 sm:mt-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
-                        <div><IconWind className="float-left mr-1" size="20" /> {weather.current.windSpeed} km/h - {weather.current.windDirection}</div>
+                        <div className="text-center font-bold"><IconWind className="float-left mr-1" size="20" /> {weather.current.windSpeed} km/h - <span className="float-right mr-1">{getWindDirectionIcon(weather.current.windDirection)}</span></div>
                       </div>
                     </div>
                     <div className="flex flex-col items-end justify-center flex-1 w-full sm:w-auto mr-5">
-                      {getWeatherIcon(weather.current.weatherCode, 96)}
+                      {getWeatherIcon(weather.current.weatherCode, 112)}
                     </div>
                   </div>
                   {/* Hourly Forecast Section */}
@@ -202,13 +217,18 @@ export default function Home() {
                       {weather.hourly
                         .slice(0, 48)
                         .map((h, i) => (
-                          <div key={i} className="flex flex-col items-center min-w-[48px] sm:min-w-[64px] p-1 sm:p-2 rounded-lg bg-white/80 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+                          <div key={i} className="flex flex-col items-center min-w-[64px] sm:min-w-[80px] p-1 sm:p-2 rounded-lg bg-white/80 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                             <div className="text-[10px] sm:text-xs font-medium text-gray-500 dark:text-gray-300 mb-0.5 sm:mb-1">
                               {i === 0 ? "Now" : new Date(h.time).toLocaleTimeString([], { hour: "2-digit", hour12: false })}
                             </div>
                             <div className="text-xl sm:text-2xl mb-0.5 sm:mb-1">{getWeatherIcon(h.weatherCode, 32)}</div>
                             <div className="font-bold text-base sm:text-lg">{Math.round(h.temperature)}°</div>
                             <div className="text-[10px] sm:text-xs text-blue-700 dark:text-blue-300">{h.precipitationProbability}%</div>
+                            <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">{h.precipitation.toFixed(1)}mm</div>
+                            <div className="flex items-center gap-1 text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">
+                              <span>{h.windSpeed}km/h</span>
+                              <span className="inline-flex items-center">{getWindDirectionIcon(h.windDirection, 12)}</span>
+                            </div>
                           </div>
                         ))}
                     </div>
@@ -230,8 +250,14 @@ export default function Home() {
                               <td className="py-1 pr-1 sm:pr-2 text-center">
                                 {d.precipitationProbabilityMax != null ? `${Math.round(d.precipitationProbabilityMax)}%` : "-"}
                               </td>
-                              <td className="py-1 pr-1 sm:pr-2 text-right whitespace-nowrap">
+                              <td className="py-1 pr-1 sm:pr-2 text-center">
                                 {d.precipitation != null ? `${d.precipitation.toFixed(1)} mm` : "-"}
+                              </td>
+                              <td className="py-1 pr-1 sm:pr-2 text-center">
+                                <div className="flex items-center justify-center gap-1">
+                                  <span>{d.windSpeed}km/h</span>
+                                  <span className="inline-flex items-center">{getWindDirectionIcon(d.windDirection, 14)}</span>
+                                </div>
                               </td>
                             </tr>
                           ))}

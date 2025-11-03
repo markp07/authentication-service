@@ -11,6 +11,7 @@ import nl.markpost.demo.weather.model.ReverseGeocodeResponse;
 import nl.markpost.demo.weather.model.Weather;
 import nl.markpost.demo.weather.model.WeatherCode;
 import nl.markpost.demo.weather.model.WeatherResponse;
+import nl.markpost.demo.weather.model.WindDirection;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -73,6 +74,8 @@ public interface WeatherMapper {
     List<String> sunSets = daily.getSunset();
     List<Double> precips = daily.getPrecipitation_sum();
     List<Integer> precipProbMax = daily.getPrecipitation_probability_max();
+    List<Integer> windSpeeds = daily.getWind_speed_10m_max();
+    List<Integer> windDirections = daily.getWind_direction_10m_dominant();
     List<Daily> result = new ArrayList<>();
     int size = times != null ? times.size() : 0;
     for (int i = 0; i < size; i++) {
@@ -85,12 +88,15 @@ public interface WeatherMapper {
       double precipitation = precips != null && i < precips.size() ? precips.get(i) : 0.0;
       int precipitationProbabilityMax =
           precipProbMax != null && i < precipProbMax.size() ? precipProbMax.get(i) : 0;
+      int windSpeed = windSpeeds != null && i < windSpeeds.size() ? windSpeeds.get(i) : 0;
+      WindDirection windDirection = windDirections != null && i < windDirections.size()
+          ? WindDirection.fromDegree(windDirections.get(i)) : WindDirection.N;
       LocalDateTime sunRise =
           sunRises != null && i < sunRises.size() ? mapToLocalDateTime(sunRises.get(i)) : null;
       LocalDateTime sunSet =
           sunSets != null && i < sunSets.size() ? mapToLocalDateTime(sunSets.get(i)) : null;
       result.add(new Daily(time, weatherCode, temperatureMin, temperatureMax, precipitation,
-          precipitationProbabilityMax, sunRise, sunSet));
+          precipitationProbabilityMax, windSpeed, windDirection, sunRise, sunSet));
     }
     return result;
   }
@@ -110,6 +116,9 @@ public interface WeatherMapper {
     List<Integer> codes = hourly.getWeather_code();
     List<Double> temps = hourly.getTemperature_2m();
     List<Integer> precipProbs = hourly.getPrecipitation_probability();
+    List<Double> precipSums = hourly.getPrecipitation();
+    List<Integer> windSpeeds = hourly.getWind_speed_10m();
+    List<Integer> windDirections = hourly.getWind_direction_10m();
     List<Hourly> result = new ArrayList<>();
     int size = times != null ? times.size() : 0;
     LocalDateTime now = LocalDateTime.now();
@@ -129,9 +138,13 @@ public interface WeatherMapper {
           codes != null && i < codes.size() ? WeatherCode.fromCode(codes.get(i))
               : WeatherCode.CLEAR_SKY;
       double temperature = temps != null && i < temps.size() ? temps.get(i) : 0.0;
+      double precipitation = precipSums != null && i < precipSums.size() ? precipSums.get(i) : 0.0;
       int precipitationProbability =
           precipProbs != null && i < precipProbs.size() ? precipProbs.get(i) : 0;
-      result.add(new Hourly(time, weatherCode, temperature, precipitationProbability));
+      int windSpeed = windSpeeds != null && i < windSpeeds.size() ? windSpeeds.get(i) : 0;
+      WindDirection windDirection = windDirections != null && i < windDirections.size()
+          ? WindDirection.fromDegree(windDirections.get(i)) : WindDirection.N;
+      result.add(new Hourly(time, weatherCode, temperature, precipitation, precipitationProbability, windSpeed, windDirection));
     }
     return result;
   }

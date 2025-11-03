@@ -22,6 +22,10 @@ public class Daily {
 
   private Integer precipitationProbabilityMax;
 
+  private Integer windSpeed;
+
+  private WindDirection windDirection;
+
   private LocalDateTime sunRise;
 
   private LocalDateTime sunSet;
