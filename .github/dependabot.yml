@@ -8,9 +8,6 @@ updates:
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 10
-    labels:
-      - "dependencies"
-      - "java"
     commit-message:
       prefix: "chore(maven)"
       include: "scope"
@@ -27,9 +24,6 @@ updates:
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 10
-    labels:
-      - "dependencies"
-      - "javascript"
     commit-message:
       prefix: "chore(npm)"
       include: "scope"
@@ -46,9 +40,6 @@ updates:
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 5
-    labels:
-      - "dependencies"
-      - "docker"
     commit-message:
       prefix: "chore(docker)"
       include: "scope"
@@ -65,9 +56,6 @@ updates:
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 5
-    labels:
-      - "dependencies"
-      - "docker"
     commit-message:
       prefix: "chore(docker)"
       include: "scope"
@@ -84,9 +72,6 @@ updates:
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 5
-    labels:
-      - "dependencies"
-      - "docker"
     commit-message:
       prefix: "chore(docker)"
       include: "scope"
@@ -103,9 +88,6 @@ updates:
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 5
-    labels:
-      - "dependencies"
-      - "docker"
     commit-message:
       prefix: "chore(docker)"
       include: "scope"
