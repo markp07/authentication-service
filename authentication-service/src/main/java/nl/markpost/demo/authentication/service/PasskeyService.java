@@ -130,11 +130,12 @@ public class PasskeyService {
 
   @SneakyThrows
   public ResponseEntity<Message> finishAuthentication(String email,
-      PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> credential) {
+      PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> credential,
+      AssertionRequest assertionRequest) {
     log.info("[WebAuthn] finishAuthentication credentialId: " + credential.getId().getBase64Url());
     AssertionResult result = relyingParty.finishAssertion(
         FinishAssertionOptions.builder()
-            .request(startAuthentication(email))
+            .request(assertionRequest)
             .response(credential)
             .build()
     );

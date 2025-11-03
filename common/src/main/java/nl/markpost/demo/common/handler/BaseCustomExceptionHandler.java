@@ -93,7 +93,7 @@ public class BaseCustomExceptionHandler {
    * @param errorCode the error code
    * @return Error object with details
    */
-  private Error createError(GenericErrorCodes errorCode) {
+  protected Error createError(GenericErrorCodes errorCode) {
     return createError(errorCode, errorCode.getHttpStatus());
   }
 
