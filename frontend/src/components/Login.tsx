@@ -16,7 +16,7 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [step, setStep] = useState<'login' | '2fa'>('login');
+  const [step, setStep] = useState<'start' | 'email' | 'password' | '2fa'>('start');
   const [totpCode, setTotpCode] = useState(['', '', '', '', '', '']);
   const [passkeyLoading, setPasskeyLoading] = useState(false);
   const [passkeyError, setPasskeyError] = useState<string | null>(null);
@@ -25,7 +25,16 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
     return fetch(url, { ...options, credentials: "include" });
   }
 
-  async function handleLogin(e: React.FormEvent) {
+  function resetToStart() {
+    setStep('start');
+    setEmail('');
+    setPassword('');
+    setError(null);
+    setPasskeyError(null);
+    setTotpCode(['', '', '', '', '', '']);
+  }
+
+  async function handlePasswordLogin(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError(null);
@@ -113,17 +122,11 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
     }
   }
 
-  async function handlePasskeyLogin() {
+  async function handleEmailPasskeyLogin() {
     setPasskeyLoading(true);
     setPasskeyError(null);
     try {
-      // 1. Get email from input
-      if (!email) {
-        setPasskeyError("Please enter your email.");
-        setPasskeyLoading(false);
-        return;
-      }
-      // 2. Get assertion options from backend
+      // Get assertion options from backend with email
       const res = await apiFetch(`${AUTH_API_BASE}/api/auth/v1/passkey/login/start`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -145,9 +148,11 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
       if (options.extensions) {
         options.extensions = sanitizeExtensions(options.extensions);
       }
-      // 3. Call WebAuthn API
+
+      // Call WebAuthn API
       const assertion = await navigator.credentials.get({ publicKey: options });
-      // 4. Send assertion to backend
+
+      // Send assertion to backend
       const finishRes = await apiFetch(`${AUTH_API_BASE}/api/auth/v1/passkey/login/finish`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -173,7 +178,7 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
     setPasskeyLoading(true);
     setPasskeyError(null);
     try {
-      // 1. Get assertion options without email
+      // Get assertion options without email
       const res = await apiFetch(`${AUTH_API_BASE}/api/auth/v1/passkey/login/usernameless/start`, {
         method: "POST",
         headers: { "Content-Type": "application/json" }
@@ -190,18 +195,14 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
         options.extensions = sanitizeExtensions(options.extensions);
       }
 
-      console.log("Usernameless passkey options:", options);
-
-      // 2. Call WebAuthn API - browser will show all available passkeys for this RP
+      // Call WebAuthn API - browser will show all available passkeys for this RP
       const assertion = await navigator.credentials.get({ publicKey: options });
 
       if (!assertion) {
         throw new Error("No passkey selected");
       }
 
-      console.log("Usernameless passkey assertion:", assertion);
-
-      // 3. Send assertion to backend (no email needed)
+      // Send assertion to backend (no email needed)
       const finishRes = await apiFetch(`${AUTH_API_BASE}/api/auth/v1/passkey/login/usernameless/finish`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -222,67 +223,170 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
   }
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={step === 'login' ? handleLogin : handle2fa}>
+    <div className="flex flex-col gap-4">
       <h2 className="text-xl font-bold mb-2">Login</h2>
       {error && <div className="text-red-600 text-sm bg-red-100 rounded px-2 py-1">{error}</div>}
-      {step === 'login' && (
-        <>
-          {/* Email input - now optional for usernameless flow */}
+      {passkeyError && <div className="text-red-600 text-sm bg-red-100 rounded px-2 py-1">{passkeyError}</div>}
+
+      {/* Start Screen - Choose login method */}
+      {step === 'start' && (
+        <div className="flex flex-col gap-4">
+          <p className="text-gray-600 dark:text-gray-300 text-center">Choose your login method</p>
+
+          <button
+            type="button"
+            className="bg-purple-600 text-white rounded px-4 py-3 font-semibold hover:bg-purple-700 shadow flex items-center justify-center gap-2"
+            onClick={handleUsernamelessPasskeyLogin}
+            disabled={passkeyLoading}
+          >
+            {passkeyLoading ? "Authenticating..." : (
+              <>
+                <span>🔑</span>
+                <span>Login with Passkey</span>
+              </>
+            )}
+          </button>
+
+          <div className="flex items-center gap-4">
+            <div className="flex-1 border-t border-gray-300"></div>
+            <span className="text-gray-500 text-sm">or</span>
+            <div className="flex-1 border-t border-gray-300"></div>
+          </div>
+
+          <button
+            type="button"
+            className="bg-blue-600 text-white rounded px-4 py-3 font-semibold hover:bg-blue-700 shadow"
+            onClick={() => setStep('email')}
+          >
+            Login with Email
+          </button>
+
+          <div className="text-center mt-4">
+            <span className="text-gray-600 dark:text-gray-300">Don't have an account? </span>
+            <button
+              type="button"
+              className="text-blue-600 hover:underline"
+              onClick={onRegister}
+            >
+              Register
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Email Entry Screen */}
+      {step === 'email' && (
+        <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="text-blue-600 hover:underline text-sm"
+              onClick={resetToStart}
+            >
+              ← Back
+            </button>
+          </div>
+
           <input
             type="email"
-            placeholder="Email (optional for passkey)"
+            placeholder="Enter your email address"
             className="border rounded px-3 py-2 bg-blue-50 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
             value={email}
             onChange={e => setEmail(e.target.value)}
+            autoFocus
+            required
           />
 
-          {/* Password input */}
+          <div className="flex flex-col gap-2">
+            <button
+              type="button"
+              className="bg-green-600 text-white rounded px-4 py-2 font-semibold hover:bg-green-700 shadow disabled:opacity-50"
+              onClick={handleEmailPasskeyLogin}
+              disabled={!email || passkeyLoading}
+            >
+              {passkeyLoading ? "Authenticating..." : "Login with Passkey"}
+            </button>
+
+            <button
+              type="button"
+              className="bg-blue-600 text-white rounded px-4 py-2 font-semibold hover:bg-blue-700 shadow disabled:opacity-50"
+              onClick={() => email && setStep('password')}
+              disabled={!email}
+            >
+              Next (Password)
+            </button>
+          </div>
+
+          <div className="text-center">
+            <button
+              type="button"
+              className="text-blue-600 hover:underline text-sm"
+              onClick={onForgot}
+            >
+              Forgot Password?
+            </button>
+          </div>
+        </form>
+      )}
+
+      {/* Password Screen */}
+      {step === 'password' && (
+        <form className="flex flex-col gap-4" onSubmit={handlePasswordLogin}>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="text-blue-600 hover:underline text-sm"
+              onClick={() => setStep('email')}
+            >
+              ← Back
+            </button>
+            <span className="text-gray-600 dark:text-gray-300 text-sm">{email}</span>
+          </div>
+
           <input
             type="password"
-            placeholder="Password"
+            placeholder="Enter your password"
             className="border rounded px-3 py-2 bg-blue-50 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-            required={!email} // Only required if no email for passkey
             value={password}
             onChange={e => setPassword(e.target.value)}
+            autoFocus
+            required
           />
 
-          {/* Traditional login button */}
           <button
             type="submit"
-            className="bg-blue-600 text-white rounded px-4 py-2 font-semibold hover:bg-blue-700 shadow"
-            disabled={loading || !email || !password}
+            className="bg-blue-600 text-white rounded px-4 py-2 font-semibold hover:bg-blue-700 shadow disabled:opacity-50"
+            disabled={loading || !password}
           >
             {loading ? "Logging in..." : "Login"}
           </button>
 
-          {/* Passkey buttons */}
-          <div className="flex flex-col gap-2">
-            {email && (
-              <button
-                type="button"
-                className="bg-green-600 text-white rounded px-4 py-2 font-semibold hover:bg-green-700 shadow"
-                onClick={handlePasskeyLogin}
-                disabled={passkeyLoading}
-              >
-                {passkeyLoading ? "Logging in..." : "Login with Passkey (Email)"}
-              </button>
-            )}
-
+          <div className="text-center">
             <button
               type="button"
-              className="bg-purple-600 text-white rounded px-4 py-2 font-semibold hover:bg-purple-700 shadow"
-              onClick={handleUsernamelessPasskeyLogin}
-              disabled={passkeyLoading}
+              className="text-blue-600 hover:underline text-sm"
+              onClick={onForgot}
             >
-              {passkeyLoading ? "Logging in..." : "🔑 Login with Passkey"}
+              Forgot Password?
             </button>
           </div>
-
-          {passkeyError && <div className="text-red-600 text-xs mt-1">{passkeyError}</div>}
-        </>
+        </form>
       )}
+
+      {/* 2FA Screen */}
       {step === '2fa' && (
-        <>
+        <form className="flex flex-col gap-4" onSubmit={handle2fa}>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="text-blue-600 hover:underline text-sm"
+              onClick={() => setStep('password')}
+            >
+              ← Back
+            </button>
+            <span className="text-gray-600 dark:text-gray-300 text-sm">{email}</span>
+          </div>
+
           <label htmlFor="totp-0" className="font-semibold">Enter your 2FA code:</label>
           <div className="flex gap-2 justify-center">
             {Array.from({ length: 6 }, (_, index) => (
@@ -302,21 +406,26 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
               />
             ))}
           </div>
+
           <button
             type="submit"
-            className="bg-blue-600 text-white rounded px-4 py-2 font-semibold hover:bg-blue-700 shadow"
-            disabled={loading}
+            className="bg-blue-600 text-white rounded px-4 py-2 font-semibold hover:bg-blue-700 shadow disabled:opacity-50"
+            disabled={loading || totpCode.some(digit => digit === '')}
           >
             {loading ? "Verifying..." : "Verify"}
           </button>
-          <div className="flex justify-between text-sm mt-2">
-            <button type="button" className="text-blue-600 hover:underline" onClick={() => setStep('login')}>
-              ← Back to Login
+
+          <div className="text-center">
+            <button
+              type="button"
+              className="text-blue-600 hover:underline text-sm"
+              onClick={() => window.open('mailto:support@markpost.dev?subject=Lost 2FA', '_blank')}
+            >
+              Lost 2FA?
             </button>
-            <button type="button" className="text-blue-600 hover:underline" onClick={() => window.open('mailto:support@markpost.dev?subject=Lost 2FA', '_blank')}>Lost 2FA?</button>
           </div>
-        </>
+        </form>
       )}
-    </form>
+    </div>
   );
 }
