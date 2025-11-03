@@ -185,11 +185,6 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
       // Convert challenge from base64url to Uint8Array
       options.challenge = Uint8Array.from(atob(base64urlToBase64(options.challenge)), c => c.charCodeAt(0));
 
-      // Remove null allowCredentials - it should be undefined for usernameless auth
-      if (options.allowCredentials === null) {
-        delete options.allowCredentials;
-      }
-
       // Clean up extensions
       if (options.extensions) {
         options.extensions = sanitizeExtensions(options.extensions);

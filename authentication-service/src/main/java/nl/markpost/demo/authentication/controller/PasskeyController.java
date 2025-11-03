@@ -7,7 +7,6 @@ import com.yubico.webauthn.data.ClientAssertionExtensionOutputs;
 import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
 import com.yubico.webauthn.data.PublicKeyCredential;
 import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
-import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +14,7 @@ import nl.markpost.demo.authentication.api.v1.model.Message;
 import nl.markpost.demo.authentication.api.v1.model.PasskeyInfoDto;
 import nl.markpost.demo.authentication.api.v1.model.PasskeyLoginFinishRequest;
 import nl.markpost.demo.authentication.api.v1.model.PasskeyLoginRequest;
+import nl.markpost.demo.authentication.dto.PublicKeyCredentialRequestOptionsDto;
 import nl.markpost.demo.authentication.model.User;
 import nl.markpost.demo.authentication.service.PasskeyService;
 import org.springframework.http.ResponseEntity;
@@ -67,14 +67,17 @@ public class PasskeyController {
   }
 
   @PostMapping("/login/start")
-  public ResponseEntity<PublicKeyCredentialRequestOptions> startAuthentication(
+  public ResponseEntity<PublicKeyCredentialRequestOptionsDto> startAuthentication(
       @RequestBody PasskeyLoginRequest request, HttpSession session) {
     // Get the full AssertionRequest and store it in session
     AssertionRequest assertionRequest = passkeyService.startAuthentication(request.getEmail());
     session.setAttribute("webauthn_assertion_request", assertionRequest);
 
-    // Return only the PublicKeyCredentialRequestOptions object
-    return ResponseEntity.ok(assertionRequest.getPublicKeyCredentialRequestOptions());
+    // Return custom DTO that properly excludes null values
+    PublicKeyCredentialRequestOptionsDto dto = PublicKeyCredentialRequestOptionsDto.from(
+        assertionRequest.getPublicKeyCredentialRequestOptions()
+    );
+    return ResponseEntity.ok(dto);
   }
 
   @PostMapping("/login/finish")
@@ -89,13 +92,16 @@ public class PasskeyController {
   }
 
   @PostMapping("/login/usernameless/start")
-  public ResponseEntity<PublicKeyCredentialRequestOptions> startUsernamelessAuthentication(HttpSession session) {
+  public ResponseEntity<PublicKeyCredentialRequestOptionsDto> startUsernamelessAuthentication(HttpSession session) {
     // Get the full AssertionRequest and store it in session
     AssertionRequest assertionRequest = passkeyService.startUsernamelessAuthentication();
     session.setAttribute("webauthn_usernameless_assertion_request", assertionRequest);
 
-    // Return only the PublicKeyCredentialRequestOptions object
-    return ResponseEntity.ok(assertionRequest.getPublicKeyCredentialRequestOptions());
+    // Return custom DTO that properly excludes null values
+    PublicKeyCredentialRequestOptionsDto dto = PublicKeyCredentialRequestOptionsDto.from(
+        assertionRequest.getPublicKeyCredentialRequestOptions()
+    );
+    return ResponseEntity.ok(dto);
   }
 
   @PostMapping("/login/usernameless/finish")
