@@ -2,6 +2,8 @@ package nl.markpost.demo.authentication.controller;
 
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.data.AuthenticatorAssertionResponse;
+import com.yubico.webauthn.AssertionRequest;
+import com.yubico.webauthn.data.AuthenticatorAssertionResponse;
 import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
 import com.yubico.webauthn.data.ClientAssertionExtensionOutputs;
 import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
@@ -90,8 +92,11 @@ public class PasskeyController {
 
   @PostMapping("/login/usernameless/start")
   public ResponseEntity<PublicKeyCredentialRequestOptions> startUsernamelessAuthentication(HttpSession session) {
+    // Get the full AssertionRequest and store it in session
     AssertionRequest assertionRequest = passkeyService.startUsernamelessAuthentication();
-    session.setAttribute("webauthn_assertion_request", assertionRequest);
+    session.setAttribute("webauthn_usernameless_assertion_request", assertionRequest);
+
+    // Return only the PublicKeyCredentialRequestOptions object
     return ResponseEntity.ok(assertionRequest.getPublicKeyCredentialRequestOptions());
   }
 
@@ -99,9 +104,10 @@ public class PasskeyController {
   public ResponseEntity<Message> finishUsernamelessAuthentication(
       @RequestBody PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> credential,
       HttpSession session) {
-    AssertionRequest assertionRequest = (AssertionRequest) session.getAttribute("webauthn_assertion_request");
+    // Get the stored AssertionRequest from session
+    AssertionRequest assertionRequest = (AssertionRequest) session.getAttribute("webauthn_usernameless_assertion_request");
     ResponseEntity<Message> result = passkeyService.finishUsernamelessAuthentication(credential, assertionRequest);
-    session.removeAttribute("webauthn_assertion_request");
+    session.removeAttribute("webauthn_usernameless_assertion_request");
     return result;
   }
 }

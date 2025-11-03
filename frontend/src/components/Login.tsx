@@ -181,15 +181,30 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
       if (!res.ok) throw new Error("Failed to start usernameless passkey login");
 
       const options = await res.json();
+
+      // Convert challenge from base64url to Uint8Array
       options.challenge = Uint8Array.from(atob(base64urlToBase64(options.challenge)), c => c.charCodeAt(0));
 
-      // No allowCredentials means any passkey can be used
+      // Remove null allowCredentials - it should be undefined for usernameless auth
+      if (options.allowCredentials === null) {
+        delete options.allowCredentials;
+      }
+
+      // Clean up extensions
       if (options.extensions) {
         options.extensions = sanitizeExtensions(options.extensions);
       }
 
-      // 2. Call WebAuthn API - browser will show all available passkeys
+      console.log("Usernameless passkey options:", options);
+
+      // 2. Call WebAuthn API - browser will show all available passkeys for this RP
       const assertion = await navigator.credentials.get({ publicKey: options });
+
+      if (!assertion) {
+        throw new Error("No passkey selected");
+      }
+
+      console.log("Usernameless passkey assertion:", assertion);
 
       // 3. Send assertion to backend (no email needed)
       const finishRes = await apiFetch(`${AUTH_API_BASE}/api/auth/v1/passkey/login/usernameless/finish`, {
@@ -202,11 +217,11 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
       if (finishRes.status === 200 && finishData.code === "LOGIN_SUCCESS") {
         onSuccess();
       } else {
-        setPasskeyError("Passkey login failed.");
+        setPasskeyError("Usernameless passkey login failed.");
       }
     } catch (err) {
-      console.error(err);
-      setPasskeyError("Passkey login failed.");
+      console.error("Usernameless passkey login error:", err);
+      setPasskeyError("Usernameless passkey login failed. Make sure you have registered passkeys for this site.");
     }
     setPasskeyLoading(false);
   }

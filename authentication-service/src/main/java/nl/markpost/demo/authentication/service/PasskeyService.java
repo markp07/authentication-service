@@ -129,11 +129,10 @@ public class PasskeyService {
   }
 
   public AssertionRequest startUsernamelessAuthentication() {
-    // Start assertion without specifying a username
-    // This allows any registered passkey for this RP to be used
+    // Start assertion without specifying a username - allows any discoverable credential
     AssertionRequest assertionRequest = relyingParty.startAssertion(
         StartAssertionOptions.builder()
-            // No username specified - allows discoverable credentials
+            // No username specified - allows discoverable credentials for this RP
             .build()
     );
     log.info("[WebAuthn] Usernameless AssertionRequest started");
@@ -185,15 +184,20 @@ public class PasskeyService {
     );
 
     if (result.isSuccess()) {
-      // Find user by credential ID (since we don't have email)
-      PasskeyCredential passkeyCredential = passkeyCredentialRepository
-          .findByCredentialId(credential.getId().getBase64Url());
+      // Find user by credential ID since we don't have email
+      String credentialIdBase64 = credential.getId().getBase64Url();
+      PasskeyCredential passkeyCredential = passkeyCredentialRepository.findByCredentialId(credentialIdBase64);
 
       if (passkeyCredential == null) {
+        log.warn("[WebAuthn] No passkey credential found for ID: " + credentialIdBase64);
         throw new UnauthorizedException();
       }
 
       User user = passkeyCredential.getUser();
+      if (user == null) {
+        log.warn("[WebAuthn] No user found for passkey credential: " + credentialIdBase64);
+        throw new UnauthorizedException();
+      }
 
       HttpServletResponse response = RequestUtil.getCurrentResponse();
       String accessToken = jwtService.generateAccessToken(user);
@@ -202,9 +206,11 @@ public class PasskeyService {
       String refreshToken = jwtService.generateRefreshToken(user);
       response.addCookie(CookieUtil.buildCookie(REFRESH_TOKEN, refreshToken, DAYS_7));
 
+      log.info("[WebAuthn] Usernameless authentication successful for user: " + user.getEmail());
       return ResponseEntity.status(HttpStatus.OK)
           .body(createMessageResponse(Messages.LOGIN_SUCCESS));
     } else {
+      log.warn("[WebAuthn] Usernameless authentication failed");
       throw new UnauthorizedException();
     }
   }
