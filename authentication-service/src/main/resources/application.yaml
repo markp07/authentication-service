@@ -39,6 +39,10 @@ spring:
         connection:
           useUnicode: true
           characterEncoding: UTF-8
+  jackson:
+    default-property-inclusion: non_null
+    deserialization:
+      fail-on-unknown-properties: false
   mail:
     host: smtp.example.com
     port: 587
@@ -96,6 +100,10 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  jackson:
+    default-property-inclusion: non_null
+    deserialization:
+      fail-on-unknown-properties: false
 
 authentication:
   cors:
