@@ -5,6 +5,8 @@ export interface Daily {
   temperatureMax: number;
   precipitation: number;
   precipitationProbabilityMax: number;
+  windSpeed: number;
+  windDirection: string;
   sunRise: string;
   sunSet: string;
 }

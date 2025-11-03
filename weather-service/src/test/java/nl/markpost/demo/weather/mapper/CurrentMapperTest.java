@@ -46,18 +46,18 @@ class CurrentMapperTest {
 
     response.setWind_direction_10m(45); // NE
     Current current = mapper.toCurrent(response);
-    assertEquals(nl.markpost.demo.weather.model.WindDirection.NE, current.getWindDirection());
+    assertEquals(WindDirection.NE, current.getWindDirection());
 
     response.setWind_direction_10m(90); // E
     current = mapper.toCurrent(response);
-    assertEquals(nl.markpost.demo.weather.model.WindDirection.E, current.getWindDirection());
+    assertEquals(WindDirection.E, current.getWindDirection());
 
-    response.setWind_direction_10m(200); // S_SW
+    response.setWind_direction_10m(205); // SW
     current = mapper.toCurrent(response);
-    assertEquals(nl.markpost.demo.weather.model.WindDirection.SSW, current.getWindDirection());
+    assertEquals(WindDirection.SW, current.getWindDirection());
 
     response.setWind_direction_10m(310); // NW
     current = mapper.toCurrent(response);
-    assertEquals(nl.markpost.demo.weather.model.WindDirection.NW, current.getWindDirection());
+    assertEquals(WindDirection.NW, current.getWindDirection());
   }
 }

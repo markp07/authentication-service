@@ -16,7 +16,12 @@ public class Hourly {
 
   private Double temperature;
 
+  private Double precipitation;
+
   private Integer precipitationProbability;
 
+  private Integer windSpeed;
+
+  private WindDirection windDirection;
 
 }

@@ -29,5 +29,9 @@ public class DailyResponse {
 
   private List<Integer> precipitation_probability_max;
 
+  private List<Integer> wind_speed_10m_max;
+
+  private List<Integer> wind_direction_10m_dominant;
+
 }
 
