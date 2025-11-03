@@ -2,8 +2,6 @@ package nl.markpost.demo.authentication.controller;
 
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.data.AuthenticatorAssertionResponse;
-import com.yubico.webauthn.AssertionRequest;
-import com.yubico.webauthn.data.AuthenticatorAssertionResponse;
 import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
 import com.yubico.webauthn.data.ClientAssertionExtensionOutputs;
 import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;

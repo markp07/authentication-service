@@ -57,7 +57,7 @@ spring:
             enable: true
 
 security:
-  excluded-paths: /actuator/health,/actuator/info,/actuator/prometheus,/api/auth/actuator/health,/api/auth/actuator/info,/api/auth/actuator/prometheus,/swagger-ui.html,/swagger-ui/**,/*/api-docs,/v1/register,/v1/login,/v1/refresh,/v1/2fa/verify,/v1/password/forgot,/v1/password/reset,/v1/public-key,/v1/passkey/login/start,/v1/passkey/login/finish,/v1/passkey/login/usernameless/start,/v1/passkey/login/usernameless/finish,/v1/passkey/login/usernameless/start,/v1/passkey/login/usernameless/finish
+  excluded-paths: /actuator/health,/actuator/info,/actuator/prometheus,/api/auth/actuator/health,/api/auth/actuator/info,/api/auth/actuator/prometheus,/swagger-ui.html,/swagger-ui/**,/*/api-docs,/v1/register,/v1/login,/v1/refresh,/v1/2fa/verify,/v1/password/forgot,/v1/password/reset,/v1/public-key,/v1/passkey/login/start,/v1/passkey/login/finish,/v1/passkey/login/usernameless/start,/v1/passkey/login/usernameless/finish
 
 authentication:
   cors:
