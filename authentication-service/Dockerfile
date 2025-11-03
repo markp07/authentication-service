@@ -1,5 +1,5 @@
 # Use OpenJDK 21 with a slim base image
-FROM openjdk:21-jdk-slim
+FROM openjdk:26-jdk-slim
 
 # Set the maintainer label
 LABEL maintainer="mark@markpost.nl"
