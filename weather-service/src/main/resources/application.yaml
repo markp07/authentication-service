@@ -21,10 +21,6 @@ spring:
     redis:
       host: redis
       port: 12005
-  jackson:
-    default-property-inclusion: non_null
-    deserialization:
-      fail-on-unknown-properties: false
 
 security:
   excluded-paths: /actuator/health,/actuator/info,/actuator/prometheus,/api/weather/actuator/health,/api/weather/actuator/info,/api/weather/actuator/prometheus,/swagger-ui.html,/swagger-ui/**,/*/api-docs
@@ -53,10 +49,6 @@ spring:
     redis:
       host: localhost
       port: 12005
-  jackson:
-    default-property-inclusion: non_null
-    deserialization:
-      fail-on-unknown-properties: false
 weather:
   cors:
     allowed-origin-patterns: "http://localhost:3000"

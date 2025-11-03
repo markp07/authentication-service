@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.openapitools.jackson.nullable.JsonNullableModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,9 @@ public class JacksonConfig {
     // Add JDK8 module to handle Optional types
     mapper.registerModule(new Jdk8Module());
     mapper.registerModule(new JsonNullableModule());
+
+    // Add JavaTimeModule to handle Java 8 date/time types like OffsetDateTime
+    mapper.registerModule(new JavaTimeModule());
 
     // Ignore null fields during serialization
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
