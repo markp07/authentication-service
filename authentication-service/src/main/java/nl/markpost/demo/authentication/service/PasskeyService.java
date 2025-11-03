@@ -16,12 +16,15 @@ import com.yubico.webauthn.StartAssertionOptions;
 import com.yubico.webauthn.StartRegistrationOptions;
 import com.yubico.webauthn.data.AuthenticatorAssertionResponse;
 import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
+import com.yubico.webauthn.data.AuthenticatorSelectionCriteria;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.ClientAssertionExtensionOutputs;
 import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
 import com.yubico.webauthn.data.PublicKeyCredential;
 import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
+import com.yubico.webauthn.data.ResidentKeyRequirement;
 import com.yubico.webauthn.data.UserIdentity;
+import com.yubico.webauthn.data.UserVerificationRequirement;
 import jakarta.servlet.http.HttpServletResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -84,6 +87,10 @@ public class PasskeyService {
                 .displayName(user.getUsername())
                 .id(userIdBytes)
                 .build())
+            .authenticatorSelection(AuthenticatorSelectionCriteria.builder()
+                .residentKey(ResidentKeyRequirement.REQUIRED)
+                .userVerification(UserVerificationRequirement.REQUIRED)
+                .build())
             .build()
     );
     log.info("[WebAuthn] Registration options credentialId: " + options);
@@ -132,6 +139,7 @@ public class PasskeyService {
     // Start assertion without specifying a username - allows any discoverable credential
     AssertionRequest assertionRequest = relyingParty.startAssertion(
         StartAssertionOptions.builder()
+            .userVerification(UserVerificationRequirement.REQUIRED)
             // No username specified - allows discoverable credentials for this RP
             .build()
     );

@@ -117,6 +117,9 @@ public class WebAuthnConfig {
         .identity(rpIdentity)
         .credentialRepository(credentialRepository)
         .origins(Set.of(origin))
+        .allowOriginPort(true)
+        .allowOriginSubdomain(false)
+        .validateSignatureCounter(true)
         .build();
   }
 }
