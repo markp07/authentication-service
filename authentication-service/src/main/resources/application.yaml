@@ -72,7 +72,7 @@ cookie:
 webauthn:
     rp:
         name: "Authentication Demo Service"
-        id: "AuthenticationDemoService"
+        id: "demo.markpost.dev"
     origin: "https://demo.markpost.dev"
 
 ---
