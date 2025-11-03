@@ -1,9 +1,7 @@
 package nl.markpost.demo.authentication.controller;
 
 import com.yubico.webauthn.AssertionRequest;
-import com.yubico.webauthn.data.AuthenticatorAssertionResponse;
 import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
-import com.yubico.webauthn.data.ClientAssertionExtensionOutputs;
 import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
 import com.yubico.webauthn.data.PublicKeyCredential;
 import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
@@ -13,6 +11,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import nl.markpost.demo.authentication.api.v1.model.Message;
 import nl.markpost.demo.authentication.api.v1.model.PasskeyInfoDto;
+import nl.markpost.demo.authentication.api.v1.model.PasskeyLoginFinishRequest;
+import nl.markpost.demo.authentication.api.v1.model.PasskeyLoginRequest;
 import nl.markpost.demo.authentication.model.User;
 import nl.markpost.demo.authentication.service.PasskeyService;
 import org.springframework.http.ResponseEntity;
@@ -66,9 +66,9 @@ public class PasskeyController {
 
   @PostMapping("/login/start")
   public ResponseEntity<PublicKeyCredentialRequestOptions> startAuthentication(
-      @RequestParam String email, HttpSession session) {
+      @RequestBody PasskeyLoginRequest request, HttpSession session) {
     // Get the full AssertionRequest and store it in session
-    AssertionRequest assertionRequest = passkeyService.startAuthentication(email);
+    AssertionRequest assertionRequest = passkeyService.startAuthentication(request.getEmail());
     session.setAttribute("webauthn_assertion_request", assertionRequest);
 
     // Return only the PublicKeyCredentialRequestOptions object
@@ -76,12 +76,12 @@ public class PasskeyController {
   }
 
   @PostMapping("/login/finish")
-  public ResponseEntity<Message> finishAuthentication(@RequestParam String email,
-      @RequestBody PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> credential,
-      HttpSession session) {
+  public ResponseEntity<Message> finishAuthentication(
+      @RequestBody PasskeyLoginFinishRequest request, HttpSession session) {
     // Get the stored AssertionRequest from session
     AssertionRequest assertionRequest = (AssertionRequest) session.getAttribute("webauthn_assertion_request");
-    ResponseEntity<Message> result = passkeyService.finishAuthentication(email, credential, assertionRequest);
+    ResponseEntity<Message> result = passkeyService.finishAuthentication(
+        request.getEmail(), request.getCredential(), assertionRequest);
     session.removeAttribute("webauthn_assertion_request");
     return result;
   }

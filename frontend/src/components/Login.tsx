@@ -124,7 +124,11 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
         return;
       }
       // 2. Get assertion options from backend
-      const res = await apiFetch(`${AUTH_API_BASE}/api/auth/v1/passkey/login/start?email=${encodeURIComponent(email)}`, { method: "POST" });
+      const res = await apiFetch(`${AUTH_API_BASE}/api/auth/v1/passkey/login/start`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
       if (!res.ok) throw new Error("Failed to start passkey login");
       const options = await res.json();
       options.challenge = Uint8Array.from(atob(base64urlToBase64(options.challenge)), c => c.charCodeAt(0));
@@ -144,10 +148,13 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
       // 3. Call WebAuthn API
       const assertion = await navigator.credentials.get({ publicKey: options });
       // 4. Send assertion to backend
-      const finishRes = await apiFetch(`${AUTH_API_BASE}/api/auth/v1/passkey/login/finish?email=${encodeURIComponent(email)}`, {
+      const finishRes = await apiFetch(`${AUTH_API_BASE}/api/auth/v1/passkey/login/finish`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(assertion),
+        body: JSON.stringify({
+          email,
+          credential: assertion
+        }),
       });
       const finishData = await finishRes.json();
       if (finishRes.status === 200 && finishData.code === "LOGIN_SUCCESS") {
