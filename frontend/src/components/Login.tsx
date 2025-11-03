@@ -313,7 +313,7 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
               onClick={() => email && setStep('password')}
               disabled={!email}
             >
-              Next (Password)
+              Next
             </button>
           </div>
 
