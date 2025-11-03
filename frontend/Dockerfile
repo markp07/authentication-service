@@ -8,7 +8,7 @@ RUN npm run build
 
 # Production image
 FROM node:25-alpine
-WORKDIR /appcd
+WORKDIR /app
 COPY --from=builder /app .
 EXPOSE 3000
 CMD ["npm", "start"]

@@ -17,7 +17,7 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState<'login' | '2fa'>('login');
-  const [totpCode, setTotpCode] = useState('');
+  const [totpCode, setTotpCode] = useState(['', '', '', '', '', '']);
   const [passkeyLoading, setPasskeyLoading] = useState(false);
   const [passkeyError, setPasskeyError] = useState<string | null>(null);
 
@@ -57,7 +57,7 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
       const res = await apiFetch(`${AUTH_API_BASE}/api/auth/v1/2fa/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: totpCode }),
+        body: JSON.stringify({ code: totpCode.join('') }),
       });
       const data = await res.json();
       if (res.status === 200 && data.code === "LOGIN_SUCCESS") {
@@ -87,6 +87,30 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
       }
     }
     return sanitized;
+  }
+
+  function handleTotpChange(index: number, value: string) {
+    // Only allow single digit
+    if (value.length > 1) value = value.slice(-1);
+    if (!/^\d*$/.test(value)) return;
+
+    const newCode = [...totpCode];
+    newCode[index] = value;
+    setTotpCode(newCode);
+
+    // Auto-focus next input
+    if (value && index < 5) {
+      const nextInput = document.getElementById(`totp-${index + 1}`);
+      nextInput?.focus();
+    }
+  }
+
+  function handleTotpKeyDown(index: number, e: React.KeyboardEvent) {
+    // Handle backspace to move to previous input
+    if (e.key === 'Backspace' && !totpCode[index] && index > 0) {
+      const prevInput = document.getElementById(`totp-${index - 1}`);
+      prevInput?.focus();
+    }
   }
 
   async function handlePasskeyLogin() {
@@ -188,19 +212,25 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
       )}
       {step === '2fa' && (
         <>
-          <label htmlFor="totp-code" className="font-semibold">Enter your 2FA code:</label>
-          <input
-            id="totp-code"
-            autoComplete="one-time-code"
-            type="text"
-            inputMode="numeric"
-            pattern="\d{6}"
-            maxLength={6}
-            required
-            className="border rounded px-3 py-2 bg-blue-50 dark:bg-gray-800 dark:text-white text-center text-lg tracking-widest"
-            value={totpCode}
-            onChange={e => setTotpCode(e.target.value)}
-          />
+          <label htmlFor="totp-0" className="font-semibold">Enter your 2FA code:</label>
+          <div className="flex gap-2 justify-center">
+            {Array.from({ length: 6 }, (_, index) => (
+              <input
+                key={index}
+                id={`totp-${index}`}
+                autoComplete="one-time-code"
+                type="text"
+                inputMode="numeric"
+                pattern="\d"
+                maxLength={1}
+                required
+                className="w-12 h-12 border rounded px-3 py-2 bg-blue-50 dark:bg-gray-800 dark:text-white text-center text-lg font-bold focus:outline-none focus:ring-2 focus:ring-blue-400"
+                value={totpCode[index]}
+                onChange={e => handleTotpChange(index, e.target.value)}
+                onKeyDown={e => handleTotpKeyDown(index, e)}
+              />
+            ))}
+          </div>
           <button
             type="submit"
             className="bg-blue-600 text-white rounded px-4 py-2 font-semibold hover:bg-blue-700 shadow"

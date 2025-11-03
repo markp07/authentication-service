@@ -11,7 +11,7 @@ import ChangePassword from "../components/ChangePassword";
 import DeleteAccountModal from "../components/DeleteAccountModal";
 import ProfilePage from "../components/ProfilePage";
 import SecurityPage from "../components/SecurityPage";
-import { IconSun, IconUser, IconWind } from "@tabler/icons-react";
+import { IconSun, IconUser, IconWind, IconArrowUp, IconArrowUpLeft, IconArrowUpRight, IconArrowDown, IconArrowDownLeft, IconArrowDownRight, IconArrowRight, IconArrowLeft } from "@tabler/icons-react";
 import type { Weather } from "../types/Weather";
 import { weatherCodeMap } from "../types/WeatherCodeMap";
 
@@ -28,6 +28,21 @@ function getWeatherIcon(code: string, size = 32) {
 }
 function getWeatherLabel(code: string) {
   return weatherCodeMap[code]?.label || code;
+}
+function getWindDirectionIcon(direction: string, size = 22) {
+  const iconMap: { [key: string]: any } = {
+    S: IconArrowUp,
+    SE: IconArrowUpLeft,
+    SW: IconArrowUpRight,
+    N: IconArrowDown,
+    NE: IconArrowDownLeft,
+    NW: IconArrowDownRight,
+    W: IconArrowRight,
+    E: IconArrowLeft
+  };
+
+  const IconComponent = iconMap[direction] || IconArrowUp;
+  return <IconComponent size={size} />;
 }
 
 export default function Home() {
@@ -188,7 +203,7 @@ export default function Home() {
                       <div className="text-4xl sm:text-5xl font-extrabold leading-none">{Math.round(weather.current.temperature)}°C</div>
                       <div className="text-base sm:text-lg font-medium text-gray-600 dark:text-gray-300">{getWeatherLabel(weather.current.weatherCode)}</div>
                       <div className="flex flex-row gap-4 sm:gap-6 mt-1 sm:mt-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
-                        <div><IconWind className="float-left mr-1" size="20" /> {weather.current.windSpeed} km/h - {weather.current.windDirection}</div>
+                        <div className="text-center font-bold"><IconWind className="float-left mr-1" size="20" /> {weather.current.windSpeed} km/h - <span className="float-right mr-1">{getWindDirectionIcon(weather.current.windDirection)}</span></div>
                       </div>
                     </div>
                     <div className="flex flex-col items-end justify-center flex-1 w-full sm:w-auto mr-5">
