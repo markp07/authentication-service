@@ -13,11 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Automated code generation for Weather Service controller interfaces and models
 - WeatherModelMapper for converting between domain models and API models
 - Comprehensive API documentation for both Authentication and Weather services
+- Passkey/WebAuthn endpoints to Authentication Service OpenAPI specification for complete API documentation
 
 ### Changed
 - Refactored WeatherController to implement generated WeatherApi interface
 - Updated README.md with OpenAPI documentation and code generation details
 - Enhanced Weather Service with proper API specification and validation
+- Enhanced Authentication Service OpenAPI spec with complete Passkey endpoint documentation
 
 ## [1.0.0] - 2025-11-02
 
