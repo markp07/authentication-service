@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import nl.markpost.demo.authentication.model.PasskeyCredential;
 import nl.markpost.demo.authentication.model.User;
 import nl.markpost.demo.authentication.repository.PasskeyCredentialRepository;
@@ -39,7 +40,7 @@ public class WebAuthnConfig {
             .map(cred -> PublicKeyCredentialDescriptor.builder()
                 .id(new ByteArray(Base64.getUrlDecoder().decode(cred.getCredentialId())))
                 .build())
-            .collect(java.util.stream.Collectors.toSet());
+            .collect(Collectors.toSet());
       }
 
       @Override
@@ -119,7 +120,7 @@ public class WebAuthnConfig {
                   .userHandle(userHandle)
                   .publicKeyCose(ByteArray.fromBase64(cred.getPublicKey()))
                   .build())
-              .collect(java.util.stream.Collectors.toSet());
+              .collect(Collectors.toSet());
         } catch (IllegalArgumentException e) {
           logger.warning("Invalid UUID in userHandle: " + uuidStr);
           return Set.of();
