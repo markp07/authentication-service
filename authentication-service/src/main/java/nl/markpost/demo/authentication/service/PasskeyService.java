@@ -66,12 +66,13 @@ public class PasskeyService {
         .toList();
   }
 
+  @org.springframework.transaction.annotation.Transactional
   public void deletePasskey(User user, String credentialId) {
     if (user == null) {
       return;
     }
     PasskeyCredential cred = passkeyCredentialRepository.findByCredentialId(credentialId);
-    if (cred != null && cred.getUser().equals(user)) {
+    if (cred != null && cred.getUser().getId().equals(user.getId())) {
       passkeyCredentialRepository.delete(cred);
     }
   }

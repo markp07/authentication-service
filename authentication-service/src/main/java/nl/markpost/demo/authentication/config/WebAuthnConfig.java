@@ -9,6 +9,7 @@ import com.yubico.webauthn.data.RelyingPartyIdentity;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Logger;
 import nl.markpost.demo.authentication.model.PasskeyCredential;
 import nl.markpost.demo.authentication.model.User;
@@ -47,17 +48,28 @@ public class WebAuthnConfig {
         if (user == null) {
           return Optional.empty();
         }
-        String encodedEmail = Base64.getEncoder()
-            .encodeToString(user.getEmail().getBytes(java.nio.charset.StandardCharsets.UTF_8));
-        logger.info("Encoded email for user " + username + ": " + encodedEmail);
+        // Use UUID as userHandle to match what's used during registration
+        String uuid = user.getId().toString();
+        ByteArray userHandle = new ByteArray(uuid.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        logger.info("UserHandle for user " + username + ": " + uuid);
 
-        return Optional.of(ByteArray.fromBase64(encodedEmail));
+        return Optional.of(userHandle);
       }
 
       @Override
       public Optional<String> getUsernameForUserHandle(ByteArray userHandle) {
-        String email = new String(userHandle.getBytes(), java.nio.charset.StandardCharsets.UTF_8);
-        return Optional.of(email);
+        // UserHandle contains UUID, need to look up user by UUID
+        String uuidStr = new String(userHandle.getBytes(), java.nio.charset.StandardCharsets.UTF_8);
+        try {
+          UUID userId = UUID.fromString(uuidStr);
+          User user = userRepository.findById(userId).orElse(null);
+          if (user != null) {
+            return Optional.of(user.getEmail());
+          }
+        } catch (IllegalArgumentException e) {
+          logger.warning("Invalid UUID in userHandle: " + uuidStr);
+        }
+        return Optional.empty();
       }
 
       private String toBase64UrlNoPadding(ByteArray byteArray) {
@@ -67,37 +79,51 @@ public class WebAuthnConfig {
 
       @Override
       public Optional<RegisteredCredential> lookup(ByteArray credentialId, ByteArray userHandle) {
-        String email = new String(userHandle.getBytes(), java.nio.charset.StandardCharsets.UTF_8);
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
+        // UserHandle contains UUID
+        String uuidStr = new String(userHandle.getBytes(), java.nio.charset.StandardCharsets.UTF_8);
+        try {
+          UUID userId = UUID.fromString(uuidStr);
+          User user = userRepository.findById(userId).orElse(null);
+          if (user == null) {
+            return Optional.empty();
+          }
+          String base64urlNoPad = toBase64UrlNoPadding(credentialId);
+          PasskeyCredential cred = passkeyCredentialRepository.findByCredentialId(base64urlNoPad);
+          if (cred == null) {
+            return Optional.empty();
+          }
+          return Optional.of(RegisteredCredential.builder()
+              .credentialId(credentialId)
+              .userHandle(userHandle)
+              .publicKeyCose(ByteArray.fromBase64(cred.getPublicKey()))
+              .build());
+        } catch (IllegalArgumentException e) {
+          logger.warning("Invalid UUID in userHandle: " + uuidStr);
           return Optional.empty();
         }
-        String base64urlNoPad = toBase64UrlNoPadding(credentialId);
-        PasskeyCredential cred = passkeyCredentialRepository.findByCredentialId(base64urlNoPad);
-        if (cred == null) {
-          return Optional.empty();
-        }
-        return Optional.of(RegisteredCredential.builder()
-            .credentialId(credentialId)
-            .userHandle(userHandle)
-            .publicKeyCose(ByteArray.fromBase64(cred.getPublicKey()))
-            .build());
       }
 
       @Override
       public Set<RegisteredCredential> lookupAll(ByteArray userHandle) {
-        String email = new String(userHandle.getBytes(), java.nio.charset.StandardCharsets.UTF_8);
-        User user = userRepository.findByEmail(email);
-        if (user == null) {
+        // UserHandle contains UUID
+        String uuidStr = new String(userHandle.getBytes(), java.nio.charset.StandardCharsets.UTF_8);
+        try {
+          UUID userId = UUID.fromString(uuidStr);
+          User user = userRepository.findById(userId).orElse(null);
+          if (user == null) {
+            return Set.of();
+          }
+          return passkeyCredentialRepository.findByUserId(user.getId()).stream()
+              .map(cred -> RegisteredCredential.builder()
+                  .credentialId(new ByteArray(Base64.getUrlDecoder().decode(cred.getCredentialId())))
+                  .userHandle(userHandle)
+                  .publicKeyCose(ByteArray.fromBase64(cred.getPublicKey()))
+                  .build())
+              .collect(java.util.stream.Collectors.toSet());
+        } catch (IllegalArgumentException e) {
+          logger.warning("Invalid UUID in userHandle: " + uuidStr);
           return Set.of();
         }
-        return passkeyCredentialRepository.findByUserId(user.getId()).stream()
-            .map(cred -> RegisteredCredential.builder()
-                .credentialId(new ByteArray(Base64.getUrlDecoder().decode(cred.getCredentialId())))
-                .userHandle(userHandle)
-                .publicKeyCose(ByteArray.fromBase64(cred.getPublicKey()))
-                .build())
-            .collect(java.util.stream.Collectors.toSet());
       }
     };
   }
