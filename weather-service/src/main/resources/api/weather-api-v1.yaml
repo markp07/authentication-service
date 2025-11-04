@@ -146,21 +146,13 @@ components:
           description: Wind direction
           enum:
             - N
-            - NNE
             - NE
-            - ENE
             - E
-            - ESE
             - SE
-            - SSE
             - S
-            - SSW
             - SW
-            - WSW
             - W
-            - WNW
             - NW
-            - NNW
     Daily:
       type: object
       properties:
@@ -223,21 +215,13 @@ components:
           description: Wind direction
           enum:
             - N
-            - NNE
             - NE
-            - ENE
             - E
-            - ESE
             - SE
-            - SSE
             - S
-            - SSW
             - SW
-            - WSW
             - W
-            - WNW
             - NW
-            - NNW
         sunRise:
           type: string
           description: Sunrise time
@@ -304,21 +288,13 @@ components:
           description: Wind direction
           enum:
             - N
-            - NNE
             - NE
-            - ENE
             - E
-            - ESE
             - SE
-            - SSE
             - S
-            - SSW
             - SW
-            - WSW
             - W
-            - WNW
             - NW
-            - NNW
     Error:
       type: object
       properties:
