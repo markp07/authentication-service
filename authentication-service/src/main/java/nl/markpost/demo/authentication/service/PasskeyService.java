@@ -46,6 +46,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -66,12 +67,13 @@ public class PasskeyService {
         .toList();
   }
 
+  @Transactional
   public void deletePasskey(User user, String credentialId) {
     if (user == null) {
       return;
     }
     PasskeyCredential cred = passkeyCredentialRepository.findByCredentialId(credentialId);
-    if (cred != null && cred.getUser().equals(user)) {
+    if (cred != null && cred.getUser().getId().equals(user.getId())) {
       passkeyCredentialRepository.delete(cred);
     }
   }
