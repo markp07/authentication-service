@@ -11,6 +11,8 @@ tags:
     description: Endpoints for password change and reset
   - name: manage-2fa
     description: Endpoints for managing two-factor authentication (2FA)
+  - name: passkey
+    description: Endpoints for passkey/WebAuthn management
   - name: public-key
     description: Endpoint for retrieving public key
   - name: user
@@ -433,6 +435,239 @@ paths:
                 $ref: '#/components/schemas/Error'
       security:
         - AccessCookie: []
+  /passkey:
+    get:
+      operationId: listPasskeys
+      summary: List all registered passkeys for the current user
+      tags:
+        - passkey
+      responses:
+        '200':
+          description: List of registered passkeys
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  description: PasskeyInfoDto with credentialId, name, and createdAt
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: []
+  /passkey/{credentialId}:
+    delete:
+      operationId: deletePasskey
+      summary: Delete a registered passkey
+      tags:
+        - passkey
+      parameters:
+        - name: credentialId
+          in: path
+          required: true
+          description: The credential ID of the passkey to delete
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Passkey deleted successfully
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Passkey not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: []
+  /passkey/register/start:
+    post:
+      operationId: startPasskeyRegistration
+      summary: Start passkey registration process
+      tags:
+        - passkey
+      responses:
+        '200':
+          description: Registration options for WebAuthn ceremony
+          content:
+            application/json:
+              schema:
+                type: object
+                description: PublicKeyCredentialCreationOptions from WebAuthn spec
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: []
+  /passkey/register/finish:
+    post:
+      operationId: finishPasskeyRegistration
+      summary: Complete passkey registration process
+      tags:
+        - passkey
+      parameters:
+        - name: name
+          in: query
+          required: true
+          description: Name for the passkey
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: PublicKeyCredential from WebAuthn ceremony
+      responses:
+        '200':
+          description: Passkey registered successfully
+        '400':
+          description: Invalid credential data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: []
+  /passkey/login/start:
+    post:
+      operationId: startPasskeyLogin
+      summary: Start passkey authentication process
+      tags:
+        - passkey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: PasskeyLoginRequest with email field
+              properties:
+                email:
+                  type: string
+                  format: email
+              required:
+                - email
+      responses:
+        '200':
+          description: Authentication options for WebAuthn ceremony
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicKeyCredentialRequestOptionsDto'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: []
+  /passkey/login/finish:
+    post:
+      operationId: finishPasskeyLogin
+      summary: Complete passkey authentication process
+      tags:
+        - passkey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: PasskeyLoginFinishRequest with email and credential fields
+              properties:
+                email:
+                  type: string
+                  format: email
+                credential:
+                  type: object
+              required:
+                - email
+                - credential
+      responses:
+        '200':
+          description: Authentication successful, tokens set in cookies
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '401':
+          description: Authentication failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: []
+  /passkey/login/usernameless/start:
+    post:
+      operationId: startUsernamelessPasskeyLogin
+      summary: Start usernameless passkey authentication process
+      tags:
+        - passkey
+      responses:
+        '200':
+          description: Authentication options for WebAuthn ceremony
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublicKeyCredentialRequestOptionsDto'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: []
+  /passkey/login/usernameless/finish:
+    post:
+      operationId: finishUsernamelessPasskeyLogin
+      summary: Complete usernameless passkey authentication process
+      tags:
+        - passkey
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: PublicKeyCredential from WebAuthn ceremony
+      responses:
+        '200':
+          description: Authentication successful, tokens set in cookies
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '401':
+          description: Authentication failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: []
 
 components:
   securitySchemes:
@@ -573,3 +808,37 @@ components:
       properties:
         backupCode:
           type: string
+    PublicKeyCredentialRequestOptionsDto:
+      type: object
+      properties:
+        challenge:
+          type: string
+          description: Base64URL encoded challenge
+        timeout:
+          type: integer
+          format: int64
+          description: Timeout in milliseconds
+        rpId:
+          type: string
+          description: Relying Party identifier
+        allowCredentials:
+          type: array
+          items:
+            type: object
+          description: List of allowed credentials
+        userVerification:
+          type: string
+          description: User verification requirement
+          enum:
+            - required
+            - preferred
+            - discouraged
+        extensions:
+          type: object
+          additionalProperties: true
+          description: WebAuthn extensions
+        hints:
+          type: array
+          items:
+            type: string
+          description: Hints for credential selection

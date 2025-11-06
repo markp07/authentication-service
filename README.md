@@ -167,10 +167,28 @@ Access at: `http://localhost:3000`
 
 ## 📚 API Documentation
 
-Once the authentication service is running, access the interactive API documentation:
+### OpenAPI Specifications
 
+This project uses OpenAPI 3.0 specifications with automated code generation for both services:
+
+**Authentication Service:**
 - **Swagger UI**: `http://localhost:12002/swagger-ui.html`
 - **OpenAPI Spec**: `http://localhost:12002/v3/api-docs`
+- **Spec File**: `authentication-service/src/main/resources/api/authentication-api-v1.yaml`
+
+**Weather Service:**
+- **Swagger UI**: `http://localhost:12001/swagger-ui.html`
+- **OpenAPI Spec**: `http://localhost:12001/v3/api-docs`
+- **Spec File**: `weather-service/src/main/resources/api/weather-api-v1.yaml`
+
+### Code Generation
+
+Both services use the OpenAPI Generator Maven plugin to automatically generate:
+- Controller interfaces with proper annotations
+- Model/DTO classes with validation
+- API documentation
+
+Generated code is created during the Maven build process and placed in `target/generated-sources`.
 
 ### Key Endpoints
 
@@ -205,6 +223,9 @@ Once the authentication service is running, access the interactive API documenta
 - `GET /v1/user` - Get current user details
 - `PUT /v1/user/username` - Update username
 - `DELETE /v1/user` - Delete account
+
+#### Weather Service
+- `GET /v1/forecast` - Get weather forecast for coordinates (requires authentication)
 
 ## 🔐 Security Features
 

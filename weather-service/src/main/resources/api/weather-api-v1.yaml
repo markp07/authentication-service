@@ -1,0 +1,311 @@
+openapi: 3.0.3
+info:
+  title: Weather API
+  version: 1.0.0
+  description: Weather forecast API for retrieving weather data based on geographic coordinates.
+
+tags:
+  - name: weather
+    description: Endpoints for weather forecast retrieval
+
+servers:
+  - url: https://your-backend.com
+
+paths:
+  /forecast:
+    get:
+      operationId: getWeather
+      summary: Get weather forecast for given coordinates
+      tags:
+        - weather
+      parameters:
+        - name: latitude
+          in: query
+          required: true
+          description: Latitude of the location
+          schema:
+            type: number
+            format: double
+            example: 52.3676
+        - name: longitude
+          in: query
+          required: true
+          description: Longitude of the location
+          schema:
+            type: number
+            format: double
+            example: 4.9041
+      responses:
+        '200':
+          description: Weather forecast retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Weather'
+        '400':
+          description: Bad request - Invalid coordinates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BearerAuth: []
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Weather:
+      type: object
+      properties:
+        latitude:
+          type: number
+          format: double
+          description: Latitude of the location
+        longitude:
+          type: number
+          format: double
+          description: Longitude of the location
+        location:
+          type: string
+          description: Name of the location
+        timezone:
+          type: string
+          description: Timezone of the location
+        elevation:
+          type: number
+          format: double
+          description: Elevation in meters
+        current:
+          $ref: '#/components/schemas/Current'
+        daily:
+          type: array
+          items:
+            $ref: '#/components/schemas/Daily'
+        hourly:
+          type: array
+          items:
+            $ref: '#/components/schemas/Hourly'
+    Current:
+      type: object
+      properties:
+        time:
+          type: string
+          description: Current time
+          example: "2025-11-04T14:00:00"
+        weatherCode:
+          type: string
+          description: Weather condition code
+          enum:
+            - CLEAR_SKY
+            - MAINLY_CLEAR
+            - PARTLY_CLOUDY
+            - OVERCAST
+            - FOG
+            - DEPOSITING_RIME_FOG
+            - DRIZZLE_LIGHT
+            - DRIZZLE_MODERATE
+            - DRIZZLE_DENSE
+            - FREEZING_DRIZZLE_LIGHT
+            - FREEZING_DRIZZLE_DENSE
+            - RAIN_SLIGHT
+            - RAIN_MODERATE
+            - RAIN_HEAVY
+            - FREEZING_RAIN_LIGHT
+            - FREEZING_RAIN_HEAVY
+            - SNOW_SLIGHT
+            - SNOW_MODERATE
+            - SNOW_HEAVY
+            - SNOW_GRAINS
+            - RAIN_SHOWERS_SLIGHT
+            - RAIN_SHOWERS_MODERATE
+            - RAIN_SHOWERS_VIOLENT
+            - SNOW_SHOWERS_SLIGHT
+            - SNOW_SHOWERS_HEAVY
+            - THUNDERSTORM_SLIGHT_MODERATE
+            - THUNDERSTORM_SLIGHT_HAIL
+            - THUNDERSTORM_HEAVY_HAIL
+        temperature:
+          type: number
+          format: double
+          description: Temperature in Celsius
+        windSpeed:
+          type: integer
+          description: Wind speed in km/h
+        windDirection:
+          type: string
+          description: Wind direction
+          enum:
+            - N
+            - NE
+            - E
+            - SE
+            - S
+            - SW
+            - W
+            - NW
+    Daily:
+      type: object
+      properties:
+        time:
+          type: string
+          description: Date
+          example: "2025-11-04T00:00:00"
+        weatherCode:
+          type: string
+          description: Weather condition code
+          enum:
+            - CLEAR_SKY
+            - MAINLY_CLEAR
+            - PARTLY_CLOUDY
+            - OVERCAST
+            - FOG
+            - DEPOSITING_RIME_FOG
+            - DRIZZLE_LIGHT
+            - DRIZZLE_MODERATE
+            - DRIZZLE_DENSE
+            - FREEZING_DRIZZLE_LIGHT
+            - FREEZING_DRIZZLE_DENSE
+            - RAIN_SLIGHT
+            - RAIN_MODERATE
+            - RAIN_HEAVY
+            - FREEZING_RAIN_LIGHT
+            - FREEZING_RAIN_HEAVY
+            - SNOW_SLIGHT
+            - SNOW_MODERATE
+            - SNOW_HEAVY
+            - SNOW_GRAINS
+            - RAIN_SHOWERS_SLIGHT
+            - RAIN_SHOWERS_MODERATE
+            - RAIN_SHOWERS_VIOLENT
+            - SNOW_SHOWERS_SLIGHT
+            - SNOW_SHOWERS_HEAVY
+            - THUNDERSTORM_SLIGHT_MODERATE
+            - THUNDERSTORM_SLIGHT_HAIL
+            - THUNDERSTORM_HEAVY_HAIL
+        temperatureMin:
+          type: number
+          format: double
+          description: Minimum temperature in Celsius
+        temperatureMax:
+          type: number
+          format: double
+          description: Maximum temperature in Celsius
+        precipitation:
+          type: number
+          format: double
+          description: Total precipitation in mm
+        precipitationProbabilityMax:
+          type: integer
+          description: Maximum precipitation probability percentage
+        windSpeed:
+          type: integer
+          description: Wind speed in km/h
+        windDirection:
+          type: string
+          description: Wind direction
+          enum:
+            - N
+            - NE
+            - E
+            - SE
+            - S
+            - SW
+            - W
+            - NW
+        sunRise:
+          type: string
+          description: Sunrise time
+          example: "2025-11-04T06:30:00"
+        sunSet:
+          type: string
+          description: Sunset time
+          example: "2025-11-04T18:00:00"
+    Hourly:
+      type: object
+      properties:
+        time:
+          type: string
+          description: Hour timestamp
+          example: "2025-11-04T14:00:00"
+        weatherCode:
+          type: string
+          description: Weather condition code
+          enum:
+            - CLEAR_SKY
+            - MAINLY_CLEAR
+            - PARTLY_CLOUDY
+            - OVERCAST
+            - FOG
+            - DEPOSITING_RIME_FOG
+            - DRIZZLE_LIGHT
+            - DRIZZLE_MODERATE
+            - DRIZZLE_DENSE
+            - FREEZING_DRIZZLE_LIGHT
+            - FREEZING_DRIZZLE_DENSE
+            - RAIN_SLIGHT
+            - RAIN_MODERATE
+            - RAIN_HEAVY
+            - FREEZING_RAIN_LIGHT
+            - FREEZING_RAIN_HEAVY
+            - SNOW_SLIGHT
+            - SNOW_MODERATE
+            - SNOW_HEAVY
+            - SNOW_GRAINS
+            - RAIN_SHOWERS_SLIGHT
+            - RAIN_SHOWERS_MODERATE
+            - RAIN_SHOWERS_VIOLENT
+            - SNOW_SHOWERS_SLIGHT
+            - SNOW_SHOWERS_HEAVY
+            - THUNDERSTORM_SLIGHT_MODERATE
+            - THUNDERSTORM_SLIGHT_HAIL
+            - THUNDERSTORM_HEAVY_HAIL
+        temperature:
+          type: number
+          format: double
+          description: Temperature in Celsius
+        precipitation:
+          type: number
+          format: double
+          description: Precipitation in mm
+        precipitationProbability:
+          type: integer
+          description: Precipitation probability percentage
+        windSpeed:
+          type: integer
+          description: Wind speed in km/h
+        windDirection:
+          type: string
+          description: Wind direction
+          enum:
+            - N
+            - NE
+            - E
+            - SE
+            - S
+            - SW
+            - W
+            - NW
+    Error:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+        code:
+          type: string
+        message:
+          type: string
+        traceparent:
+          type: string

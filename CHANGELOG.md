@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- OpenAPI 3.0 specification for Weather Service (`weather-api-v1.yaml`)
+- OpenAPI Generator Maven plugin configuration for Weather Service
+- Automated code generation for Weather Service controller interfaces and models
+- WeatherModelMapper for converting between domain models and API models
+- Comprehensive API documentation for both Authentication and Weather services
+- Passkey/WebAuthn endpoints to Authentication Service OpenAPI specification for complete API documentation
+
+### Changed
+- Refactored WeatherController to implement generated WeatherApi interface
+- Updated README.md with OpenAPI documentation and code generation details
+- Enhanced Weather Service with proper API specification and validation
+- Enhanced Authentication Service OpenAPI spec with complete Passkey endpoint documentation
+
 ## [1.0.0] - 2025-11-02
 
 ### Added
