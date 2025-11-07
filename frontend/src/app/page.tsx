@@ -11,7 +11,8 @@ import ChangePassword from "../components/ChangePassword";
 import DeleteAccountModal from "../components/DeleteAccountModal";
 import ProfilePage from "../components/ProfilePage";
 import SecurityPage from "../components/SecurityPage";
-import { IconSun, IconUser, IconWind, IconArrowUp, IconArrowUpLeft, IconArrowUpRight, IconArrowDown, IconArrowDownLeft, IconArrowDownRight, IconArrowRight, IconArrowLeft } from "@tabler/icons-react";
+import Sidebar from "../components/Sidebar";
+import { IconSun, IconWind, IconArrowUp, IconArrowUpLeft, IconArrowUpRight, IconArrowDown, IconArrowDownLeft, IconArrowDownRight, IconArrowRight, IconArrowLeft } from "@tabler/icons-react";
 import type { Weather } from "../types/Weather";
 import { weatherCodeMap } from "../types/WeatherCodeMap";
 
@@ -51,7 +52,6 @@ export default function Home() {
     | "register"
     | "forgot"
     | "reset"
-    | "profile"
     | "2fa"
     | "changePassword"
     | "deleteAccount"
@@ -63,7 +63,7 @@ export default function Home() {
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [username, setUsername] = React.useState<string | null>(null);
   const [checkingLogin, setCheckingLogin] = React.useState(true);
-  const [activePage, setActivePage] = React.useState<null | "profile" | "security">(null);
+  const [activePage, setActivePage] = React.useState<"dashboard" | "profile" | "security">("dashboard");
 
   // Modal open/close helpers
   const openModal = (name: typeof modal) => setModal(name);
@@ -147,6 +147,7 @@ export default function Home() {
     setLoggedIn(false);
     setShowWeather(false);
     setWeather(null);
+    setActivePage("dashboard");
     setModal("login");
   }
 
@@ -160,124 +161,131 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-row gap-8 w-full min-h-screen">
+    <div className="flex min-h-screen w-full bg-gray-50 dark:bg-gray-900">
       {loggedIn && (
-        <div className="fixed top-1 right-1 z-50">
-          <button
-            className="flex items-center gap-2 bg-blue-600 text-white rounded-full px-3 py-1 shadow-lg hover:bg-blue-700 focus:outline-none"
-            onClick={() => setActivePage("profile")}
-            aria-label="Profile"
-          >
-            <IconUser size={18} />
-            <span className="text-sm font-semibold">{username || "User"}</span>
-          </button>
-        </div>
+        <Sidebar
+          username={username}
+          activePage={activePage}
+          onNavigate={setActivePage}
+          onLogout={handleLogout}
+        />
       )}
-      {/* Main content area: weather, profile, security */}
-      <main className="flex-1 flex flex-col items-center w-full">
-        {/* Render ProfilePage or SecurityPage as pages, not overlays */}
-        {activePage === "profile" ? (
-          <ProfilePage
-            onBack={() => setActivePage(null)}
-            onSecurity={() => setActivePage("security")}
-            onDeleteAccount={() => setModal("deleteAccount")}
-            onLogout={handleLogout}
-          />
-        ) : activePage === "security" ? (
-          <SecurityPage
-            onBack={() => setActivePage("profile")}
-            onChangePassword={() => setModal("changePassword")}
-            onToggle2FA={() => setModal("2fa")}
-          />
-        ) : (
-          // Weather view
-          (() => {
-            if (!loggedIn) return null;
-            if (showWeather && weather) {
-              return (
-                <div className="w-full max-w-xl mx-auto gap-6 sm:gap-8 bg-gradient-to-br from-blue-30 to-indigo-100 dark:from-gray-900/80 dark:to-gray-900/80 p-2 sm:p-4 md:p-6">
-                  {/* Current Weather Section */}
-                  <div className="flex flex-row justify-between items-center gap-2 sm:gap-4 my-3">
-                    <div className="flex flex-col items-start gap-1 w-full sm:w-auto">
-                      <div className="text-lg sm:text-3xl font-bold text-gray-900 dark:text-gray-100">{weather.location}</div>
-                      <div className="text-4xl sm:text-5xl font-extrabold leading-none">{Math.round(weather.current.temperature)}°C</div>
-                      <div className="text-base sm:text-lg font-medium text-gray-600 dark:text-gray-300">{getWeatherLabel(weather.current.weatherCode)}</div>
-                      <div className="flex flex-row gap-4 sm:gap-6 mt-1 sm:mt-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300">
-                        <div className="text-center font-bold"><IconWind className="float-left mr-1" size="20" /> {weather.current.windSpeed} km/h - <span className="float-right mr-1">{getWindDirectionIcon(weather.current.windDirection)}</span></div>
+      
+      {/* Main content area */}
+      <main className="flex-1 overflow-auto">
+        {loggedIn ? (
+          <>
+            {activePage === "profile" && (
+              <ProfilePage
+                onSecurity={() => setActivePage("security")}
+                onDeleteAccount={() => setModal("deleteAccount")}
+              />
+            )}
+            {activePage === "security" && (
+              <SecurityPage
+                onChangePassword={() => setModal("changePassword")}
+                onToggle2FA={() => setModal("2fa")}
+              />
+            )}
+            {activePage === "dashboard" && (
+              <div className="p-6">
+                {showWeather && weather ? (
+                  <div className="max-w-4xl mx-auto space-y-6">
+                    {/* Current Weather Card */}
+                    <div className="bg-gradient-to-br from-blue-500 to-blue-700 dark:from-blue-700 dark:to-blue-900 rounded-xl shadow-xl p-6 text-white">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <h2 className="text-3xl font-bold mb-1">{weather.location}</h2>
+                          <div className="text-6xl font-extrabold my-4">{Math.round(weather.current.temperature)}°C</div>
+                          <div className="text-xl font-medium opacity-90 mb-3">{getWeatherLabel(weather.current.weatherCode)}</div>
+                          <div className="flex items-center gap-4 text-sm opacity-90">
+                            <div className="flex items-center gap-2">
+                              <IconWind size={20} />
+                              <span>{weather.current.windSpeed} km/h</span>
+                              {getWindDirectionIcon(weather.current.windDirection, 20)}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-center">
+                          {getWeatherIcon(weather.current.weatherCode, 128)}
+                        </div>
                       </div>
                     </div>
-                    <div className="flex flex-col items-end justify-center flex-1 w-full sm:w-auto mr-5">
-                      {getWeatherIcon(weather.current.weatherCode, 112)}
-                    </div>
-                  </div>
-                  {/* Hourly Forecast Section */}
-                  <div className="py-3 border-t border-gray-400 dark:border-gray-300">
-                    <div className="text-base sm:text-lg font-semibold">Hourly Forecast</div>
-                    <div className="flex flex-row gap-2 sm:gap-4 overflow-x-auto pb-2 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                      {weather.hourly
-                        .slice(0, 48)
-                        .map((h, i) => (
-                          <div key={i} className="flex flex-col items-center min-w-[64px] sm:min-w-[80px] p-1 sm:p-2 rounded-lg bg-white/80 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-                            <div className="text-[10px] sm:text-xs font-medium text-gray-500 dark:text-gray-300 mb-0.5 sm:mb-1">
+
+                    {/* Hourly Forecast Card */}
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Hourly Forecast</h3>
+                      <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'thin' }}>
+                        {weather.hourly.slice(0, 48).map((h, i) => (
+                          <div key={i} className="flex flex-col items-center min-w-[80px] p-3 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
+                            <div className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
                               {i === 0 ? "Now" : new Date(h.time).toLocaleTimeString([], { hour: "2-digit", hour12: false })}
                             </div>
-                            <div className="text-xl sm:text-2xl mb-0.5 sm:mb-1">{getWeatherIcon(h.weatherCode, 32)}</div>
-                            <div className="font-bold text-base sm:text-lg">{Math.round(h.temperature)}°</div>
-                            <div className="text-[10px] sm:text-xs text-blue-700 dark:text-blue-300">{h.precipitationProbability}%</div>
-                            <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">{h.precipitation.toFixed(1)}mm</div>
-                            <div className="flex items-center gap-1 text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">
+                            <div className="mb-2">{getWeatherIcon(h.weatherCode, 36)}</div>
+                            <div className="font-bold text-lg text-gray-900 dark:text-white">{Math.round(h.temperature)}°</div>
+                            <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">{h.precipitationProbability}%</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">{h.precipitation.toFixed(1)}mm</div>
+                            <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400 mt-1">
                               <span>{h.windSpeed}km/h</span>
-                              <span className="inline-flex items-center">{getWindDirectionIcon(h.windDirection, 12)}</span>
+                              {getWindDirectionIcon(h.windDirection, 14)}
                             </div>
                           </div>
                         ))}
+                      </div>
+                    </div>
+
+                    {/* 14-Day Forecast Card */}
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">14-Day Forecast</h3>
+                      <div className="space-y-2">
+                        {weather.daily.slice(0, 14).map((d, i) => (
+                          <div key={i} className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            <div className="w-20 font-medium text-gray-700 dark:text-gray-300">
+                              {i === 0 ? "Today" : new Date(d.time).toLocaleDateString("en-GB", { weekday: "short" })}
+                            </div>
+                            <div className="flex items-center justify-center w-12">
+                              {getWeatherIcon(d.weatherCode, 36)}
+                            </div>
+                            <div className="flex items-center gap-2 flex-1">
+                              <div className="font-bold text-gray-900 dark:text-white">{Math.round(d.temperatureMax)}°</div>
+                              <div className="text-gray-500 dark:text-gray-400">{Math.round(d.temperatureMin)}°</div>
+                            </div>
+                            <div className="text-sm text-blue-600 dark:text-blue-400 w-12 text-center">
+                              {d.precipitationProbabilityMax != null ? `${Math.round(d.precipitationProbabilityMax)}%` : "-"}
+                            </div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400 w-16 text-center">
+                              {d.precipitation != null ? `${d.precipitation.toFixed(1)}mm` : "-"}
+                            </div>
+                            <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 w-20">
+                              <span>{d.windSpeed}km/h</span>
+                              {getWindDirectionIcon(d.windDirection, 16)}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                  {/* 14-Day Forecast Section */}
-                  <div className="py-3 border-t border-gray-400 dark:border-gray-300">
-                    <div className="text-base sm:text-lg font-semibold">14-Day Forecast</div>
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-xs sm:text-sm">
-                        <tbody>
-                          {weather.daily.slice(0, 14).map((d, i) => (
-                            <tr key={i} className="border-b border-gray-200 dark:border-gray-700 last:border-0">
-                              <td className="py-1 pr-1 sm:pr-2 w-16 font-medium text-gray-700 dark:text-gray-200 text-left">
-                                {i === 0 ? "Today" : new Date(d.time).toLocaleDateString("en-GB", { weekday: "short" })}
-                              </td>
-                              <td className="py-1 pr-1 sm:pr-2 w-16 text-center">{getWeatherIcon(d.weatherCode, 32)}</td>
-                              <td className="py-1 pr-1 sm:pr-2 w-10 text-center font-bold">{Math.round(d.temperatureMax)}°C</td>
-                              <td className="py-1 pr-1 sm:pr-2 w-24 text-center text-gray-500 dark:text-gray-400">{Math.round(d.temperatureMin)}°C</td>
-                              <td className="py-1 pr-1 sm:pr-2 text-center">
-                                {d.precipitationProbabilityMax != null ? `${Math.round(d.precipitationProbabilityMax)}%` : "-"}
-                              </td>
-                              <td className="py-1 pr-1 sm:pr-2 text-center">
-                                {d.precipitation != null ? `${d.precipitation.toFixed(1)} mm` : "-"}
-                              </td>
-                              <td className="py-1 pr-1 sm:pr-2 text-center">
-                                <div className="flex items-center justify-center gap-1">
-                                  <span>{d.windSpeed}km/h</span>
-                                  <span className="inline-flex items-center">{getWindDirectionIcon(d.windDirection, 14)}</span>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                ) : weatherError ? (
+                  <div className="max-w-4xl mx-auto">
+                    <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                      <p className="text-red-600 dark:text-red-400">{weatherError}</p>
                     </div>
                   </div>
-                </div>
-              );
-            }
-            if (weatherError) {
-              return (
-                <div className="text-red-600 text-sm bg-red-100 dark:bg-red-900 rounded px-2 py-1 mb-4">{weatherError}</div>
-              );
-            }
-            return null;
-          })()
-        )}
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <div className="text-center">
+                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                      <p className="text-gray-600 dark:text-gray-400">Loading weather data...</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+          </>
+        ) : null}
       </main>
-      {/* Modals for login, register, forgot, reset, profile (legacy), 2fa, changePassword, deleteAccount */}
+
+      {/* Modals */}
       <Modal open={!loggedIn && modal === "login"} onClose={closeModal}>
         <Login
           onSuccess={() => {
