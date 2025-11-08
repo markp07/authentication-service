@@ -188,46 +188,46 @@ export default function Home() {
               />
             )}
             {activePage === "dashboard" && (
-              <div className="p-3 sm:p-4 lg:p-6">
+              <div className="p-2 sm:p-4 lg:p-6">
                 {showWeather && weather ? (
-                  <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4 lg:space-y-6">
+                  <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4 lg:space-y-6">
                     {/* Current Weather Card */}
-                    <div className="bg-gradient-to-br from-blue-500 to-blue-700 dark:from-blue-700 dark:to-blue-900 rounded-xl shadow-xl p-4 sm:p-5 lg:p-6 text-white">
-                      <div className="flex items-start justify-between gap-4">
+                    <div className="bg-gradient-to-br from-blue-500 to-blue-700 dark:from-blue-700 dark:to-blue-900 rounded-xl shadow-xl p-3 sm:p-5 lg:p-6 text-white">
+                      <div className="flex items-start justify-between gap-3">
                         <div className="flex-1">
-                          <h2 className="text-3xl font-bold mb-1">{weather.location}</h2>
-                          <div className="text-6xl font-extrabold my-4">{Math.round(weather.current.temperature)}°C</div>
-                          <div className="text-xl font-medium opacity-90 mb-3">{getWeatherLabel(weather.current.weatherCode)}</div>
-                          <div className="flex items-center gap-4 text-sm opacity-90">
-                            <div className="flex items-center gap-2">
-                              <IconWind size={20} />
+                          <h2 className="text-2xl sm:text-3xl font-bold mb-1">{weather.location}</h2>
+                          <div className="text-5xl sm:text-6xl font-extrabold my-3 sm:my-4">{Math.round(weather.current.temperature)}°C</div>
+                          <div className="text-lg sm:text-xl font-medium opacity-90 mb-2 sm:mb-3">{getWeatherLabel(weather.current.weatherCode)}</div>
+                          <div className="flex items-center gap-3 sm:gap-4 text-sm opacity-90">
+                            <div className="flex items-center gap-1.5 sm:gap-2">
+                              <IconWind size={18} />
                               <span>{weather.current.windSpeed} km/h</span>
-                              {getWindDirectionIcon(weather.current.windDirection, 20)}
+                              {getWindDirectionIcon(weather.current.windDirection, 18)}
                             </div>
                           </div>
                         </div>
                         <div className="flex items-center justify-center">
-                          {getWeatherIcon(weather.current.weatherCode, 128)}
+                          {getWeatherIcon(weather.current.weatherCode, 96)}
                         </div>
                       </div>
                     </div>
 
                     {/* Hourly Forecast Card */}
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-5 lg:p-6">
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Hourly Forecast</h3>
-                      <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'thin' }}>
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 sm:p-5 lg:p-6">
+                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">Hourly Forecast</h3>
+                      <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'thin' }}>
                         {weather.hourly.slice(0, 48).map((h, i) => (
-                          <div key={i} className="flex flex-col items-center min-w-[80px] p-3 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
-                            <div className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                          <div key={i} className="flex flex-col items-center min-w-[65px] sm:min-w-[80px] p-2 sm:p-3 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
+                            <div className="text-[10px] sm:text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 sm:mb-2">
                               {i === 0 ? "Now" : new Date(h.time).toLocaleTimeString([], { hour: "2-digit", hour12: false })}
                             </div>
-                            <div className="mb-2">{getWeatherIcon(h.weatherCode, 36)}</div>
-                            <div className="font-bold text-lg text-gray-900 dark:text-white">{Math.round(h.temperature)}°</div>
-                            <div className="text-xs text-blue-600 dark:text-blue-400 mt-1">{h.precipitationProbability}%</div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400">{h.precipitation.toFixed(1)}mm</div>
-                            <div className="flex items-center gap-1 text-xs text-gray-600 dark:text-gray-400 mt-1">
+                            <div className="mb-1 sm:mb-2">{getWeatherIcon(h.weatherCode, 32)}</div>
+                            <div className="font-bold text-base sm:text-lg text-gray-900 dark:text-white">{Math.round(h.temperature)}°</div>
+                            <div className="text-[10px] sm:text-xs text-blue-600 dark:text-blue-400 mt-0.5 sm:mt-1">{h.precipitationProbability}%</div>
+                            <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">{h.precipitation.toFixed(1)}mm</div>
+                            <div className="flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 mt-0.5 sm:mt-1">
                               <span>{h.windSpeed}km/h</span>
-                              {getWindDirectionIcon(h.windDirection, 14)}
+                              {getWindDirectionIcon(h.windDirection, 12)}
                             </div>
                           </div>
                         ))}
@@ -235,30 +235,32 @@ export default function Home() {
                     </div>
 
                     {/* 14-Day Forecast Card */}
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-5 lg:p-6">
-                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">14-Day Forecast</h3>
-                      <div className="space-y-2">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 sm:p-5 lg:p-6">
+                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">14-Day Forecast</h3>
+                      <div className="space-y-1 sm:space-y-2">
                         {weather.daily.slice(0, 14).map((d, i) => (
-                          <div key={i} className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                            <div className="w-20 font-medium text-gray-700 dark:text-gray-300">
+                          <div key={i} className="flex items-center gap-2 sm:gap-4 p-2 sm:p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            <div className="w-14 sm:w-20 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
                               {i === 0 ? "Today" : new Date(d.time).toLocaleDateString("en-GB", { weekday: "short" })}
                             </div>
-                            <div className="flex items-center justify-center w-12">
-                              {getWeatherIcon(d.weatherCode, 36)}
+                            <div className="flex items-center justify-center w-8 sm:w-12">
+                              {getWeatherIcon(d.weatherCode, 28)}
                             </div>
-                            <div className="flex items-center gap-2 flex-1">
-                              <div className="font-bold text-gray-900 dark:text-white">{Math.round(d.temperatureMax)}°</div>
-                              <div className="text-gray-500 dark:text-gray-400">{Math.round(d.temperatureMin)}°</div>
+                            <div className="font-bold text-sm sm:text-base text-gray-900 dark:text-white w-9 sm:w-12 text-right">
+                              {Math.round(d.temperatureMax)}°
                             </div>
-                            <div className="text-sm text-blue-600 dark:text-blue-400 w-12 text-center">
+                            <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 w-9 sm:w-12 text-right">
+                              {Math.round(d.temperatureMin)}°
+                            </div>
+                            <div className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 w-9 sm:w-12 text-center">
                               {d.precipitationProbabilityMax != null ? `${Math.round(d.precipitationProbabilityMax)}%` : "-"}
                             </div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400 w-16 text-center">
+                            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 w-12 sm:w-16 text-center">
                               {d.precipitation != null ? `${d.precipitation.toFixed(1)}mm` : "-"}
                             </div>
-                            <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 w-20">
+                            <div className="flex items-center justify-end gap-0.5 sm:gap-1 text-xs sm:text-sm text-gray-600 dark:text-gray-400 w-16 sm:w-20">
                               <span>{d.windSpeed}km/h</span>
-                              {getWindDirectionIcon(d.windDirection, 16)}
+                              {getWindDirectionIcon(d.windDirection, 14)}
                             </div>
                           </div>
                         ))}
