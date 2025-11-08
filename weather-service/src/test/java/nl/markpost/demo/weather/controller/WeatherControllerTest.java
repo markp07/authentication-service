@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
 import nl.markpost.demo.weather.config.SecurityConfig;
+import nl.markpost.demo.weather.mapper.WeatherModelMapper;
 import nl.markpost.demo.weather.model.Current;
 import nl.markpost.demo.weather.model.Weather;
 import nl.markpost.demo.weather.model.WeatherCode;
@@ -36,6 +37,9 @@ class WeatherControllerTest {
   @MockitoBean
   private WeatherService weatherService;
 
+  @MockitoBean
+  private WeatherModelMapper weatherModelMapper;
+
   @Autowired
   private MockMvc mockMvc;
 
@@ -59,7 +63,15 @@ class WeatherControllerTest {
         List.of(),
         List.of()
     );
+    nl.markpost.demo.weather.api.v1.model.Weather apiWeather = new nl.markpost.demo.weather.api.v1.model.Weather();
+    apiWeather.setLatitude(52.0);
+    apiWeather.setLongitude(4.0);
+    apiWeather.setLocation("Gouda");
+    apiWeather.setTimezone("Europe/Berlin");
+    apiWeather.setElevation(10.0);
+
     when(weatherService.getWeather(52.0, 4.0)).thenReturn(weather);
+    when(weatherModelMapper.toApiModel(weather)).thenReturn(apiWeather);
 
     MvcResult result = mockMvc.perform(
             get("/v1/forecast")
@@ -71,9 +83,10 @@ class WeatherControllerTest {
     String responseContent = result.getResponse().getContentAsString();
 
     assertNotNull(responseContent);
-    Weather response = ObjectMapperUtil.createObjectMapper()
-        .readValue(responseContent, Weather.class);
-    assertEquals(weather, response);
+    nl.markpost.demo.weather.api.v1.model.Weather response = ObjectMapperUtil.createObjectMapper()
+        .readValue(responseContent, nl.markpost.demo.weather.api.v1.model.Weather.class);
+    assertEquals(apiWeather.getLatitude(), response.getLatitude());
+    assertEquals(apiWeather.getLocation(), response.getLocation());
   }
 
   @Test
