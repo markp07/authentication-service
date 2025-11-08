@@ -246,9 +246,11 @@ export default function Home() {
                             <div className="flex items-center justify-center w-8 sm:w-12">
                               {getWeatherIcon(d.weatherCode, 28)}
                             </div>
-                            <div className="flex items-center gap-1.5 sm:gap-2 flex-1">
-                              <div className="font-bold text-sm sm:text-base text-gray-900 dark:text-white">{Math.round(d.temperatureMax)}°</div>
-                              <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">{Math.round(d.temperatureMin)}°</div>
+                            <div className="font-bold text-sm sm:text-base text-gray-900 dark:text-white w-9 sm:w-12 text-right">
+                              {Math.round(d.temperatureMax)}°
+                            </div>
+                            <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 w-9 sm:w-12 text-right">
+                              {Math.round(d.temperatureMin)}°
                             </div>
                             <div className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 w-9 sm:w-12 text-center">
                               {d.precipitationProbabilityMax != null ? `${Math.round(d.precipitationProbabilityMax)}%` : "-"}
@@ -256,7 +258,7 @@ export default function Home() {
                             <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 w-12 sm:w-16 text-center">
                               {d.precipitation != null ? `${d.precipitation.toFixed(1)}mm` : "-"}
                             </div>
-                            <div className="flex items-center gap-0.5 sm:gap-1 text-xs sm:text-sm text-gray-600 dark:text-gray-400 w-16 sm:w-20">
+                            <div className="flex items-center justify-end gap-0.5 sm:gap-1 text-xs sm:text-sm text-gray-600 dark:text-gray-400 w-16 sm:w-20">
                               <span>{d.windSpeed}km/h</span>
                               {getWindDirectionIcon(d.windDirection, 14)}
                             </div>
