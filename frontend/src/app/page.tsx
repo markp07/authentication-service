@@ -193,7 +193,7 @@ export default function Home() {
                   <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4 lg:space-y-6">
                     {/* Current Weather Card */}
                     <div className="bg-gradient-to-br from-blue-500 to-blue-700 dark:from-blue-700 dark:to-blue-900 rounded-xl shadow-xl p-3 sm:p-5 lg:p-6 text-white">
-                      <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-stretch justify-between gap-3">
                         <div className="flex-1">
                           <h2 className="text-2xl sm:text-3xl font-bold mb-1">{weather.location}</h2>
                           <div className="text-5xl sm:text-6xl font-extrabold my-3 sm:my-4">{Math.round(weather.current.temperature)}°C</div>
@@ -206,8 +206,8 @@ export default function Home() {
                             </div>
                           </div>
                         </div>
-                        <div className="flex items-center justify-center">
-                          {getWeatherIcon(weather.current.weatherCode, 96)}
+                        <div className="flex items-center justify-center self-stretch">
+                          {getWeatherIcon(weather.current.weatherCode, 192)}
                         </div>
                       </div>
                     </div>
@@ -239,26 +239,26 @@ export default function Home() {
                       <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">14-Day Forecast</h3>
                       <div className="space-y-1 sm:space-y-2">
                         {weather.daily.slice(0, 14).map((d, i) => (
-                          <div key={i} className="flex items-center gap-2 sm:gap-4 p-2 sm:p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                            <div className="w-14 sm:w-20 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
+                          <div key={i} className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            <div className="flex-1 min-w-0 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
                               {i === 0 ? "Today" : new Date(d.time).toLocaleDateString("en-GB", { weekday: "short" })}
                             </div>
-                            <div className="flex items-center justify-center w-8 sm:w-12">
+                            <div className="flex items-center justify-center w-8 sm:w-10 flex-shrink-0">
                               {getWeatherIcon(d.weatherCode, 28)}
                             </div>
-                            <div className="font-bold text-sm sm:text-base text-gray-900 dark:text-white w-9 sm:w-12 text-right">
+                            <div className="flex-1 font-bold text-sm sm:text-base text-gray-900 dark:text-white text-right">
                               {Math.round(d.temperatureMax)}°
                             </div>
-                            <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 w-9 sm:w-12 text-right">
+                            <div className="flex-1 text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-right">
                               {Math.round(d.temperatureMin)}°
                             </div>
-                            <div className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 w-9 sm:w-12 text-center">
+                            <div className="flex-1 text-xs sm:text-sm text-blue-600 dark:text-blue-400 text-center">
                               {d.precipitationProbabilityMax != null ? `${Math.round(d.precipitationProbabilityMax)}%` : "-"}
                             </div>
-                            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 w-12 sm:w-16 text-center">
+                            <div className="flex-1 text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center">
                               {d.precipitation != null ? `${d.precipitation.toFixed(1)}mm` : "-"}
                             </div>
-                            <div className="flex items-center justify-end gap-0.5 sm:gap-1 text-xs sm:text-sm text-gray-600 dark:text-gray-400 w-16 sm:w-20">
+                            <div className="flex-1 flex items-center justify-end gap-0.5 sm:gap-1 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                               <span>{d.windSpeed}km/h</span>
                               {getWindDirectionIcon(d.windDirection, 14)}
                             </div>
