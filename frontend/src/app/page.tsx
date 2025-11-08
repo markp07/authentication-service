@@ -188,11 +188,11 @@ export default function Home() {
               />
             )}
             {activePage === "dashboard" && (
-              <div className="p-6">
+              <div className="p-3 sm:p-4 lg:p-6">
                 {showWeather && weather ? (
-                  <div className="max-w-4xl mx-auto space-y-6">
+                  <div className="max-w-4xl mx-auto space-y-3 sm:space-y-4 lg:space-y-6">
                     {/* Current Weather Card */}
-                    <div className="bg-gradient-to-br from-blue-500 to-blue-700 dark:from-blue-700 dark:to-blue-900 rounded-xl shadow-xl p-6 text-white">
+                    <div className="bg-gradient-to-br from-blue-500 to-blue-700 dark:from-blue-700 dark:to-blue-900 rounded-xl shadow-xl p-4 sm:p-5 lg:p-6 text-white">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
                           <h2 className="text-3xl font-bold mb-1">{weather.location}</h2>
@@ -213,7 +213,7 @@ export default function Home() {
                     </div>
 
                     {/* Hourly Forecast Card */}
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-5 lg:p-6">
                       <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">Hourly Forecast</h3>
                       <div className="flex gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'thin' }}>
                         {weather.hourly.slice(0, 48).map((h, i) => (
@@ -235,7 +235,7 @@ export default function Home() {
                     </div>
 
                     {/* 14-Day Forecast Card */}
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-5 lg:p-6">
                       <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">14-Day Forecast</h3>
                       <div className="space-y-2">
                         {weather.daily.slice(0, 14).map((d, i) => (
