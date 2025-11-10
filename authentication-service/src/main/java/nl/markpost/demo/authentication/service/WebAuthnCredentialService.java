@@ -114,7 +114,7 @@ public class WebAuthnCredentialService {
         return Optional.of(RegisteredCredential.builder()
             .credentialId(credentialId)
             .userHandle(userHandle)
-            .publicKeyCose(ByteArray.fromBase64(cred.getPublicKey()))
+            .publicKeyCose(ByteArray.fromBase64Url(cred.getPublicKey()))
             .build());
       } catch (Exception e) {
         log.error("[WebAuthnCredentialService] Error building RegisteredCredential for credentialId: "
@@ -143,7 +143,7 @@ public class WebAuthnCredentialService {
               return RegisteredCredential.builder()
                   .credentialId(ByteArray.fromBase64Url(cred.getCredentialId()))
                   .userHandle(userHandle)
-                  .publicKeyCose(ByteArray.fromBase64(cred.getPublicKey()))
+                  .publicKeyCose(ByteArray.fromBase64Url(cred.getPublicKey()))
                   .build();
             } catch (Exception e) {
               log.error("Failed to decode credential: " + cred.getCredentialId(), e);
