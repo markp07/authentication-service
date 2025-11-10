@@ -72,12 +72,12 @@ public class WebAuthnConfig {
           UUID userId = UUID.fromString(uuidStr);
           User user = userRepository.findById(userId).orElse(null);
           if (user != null) {
-          return Optional.of(user.getEmail());
+            return Optional.of(user.getEmail());
+          }
+        } catch (IllegalArgumentException e) {
+          log.warn("Invalid UUID in userHandle: " + uuidStr);
         }
-      } catch (IllegalArgumentException e) {
-        log.warn("Invalid UUID in userHandle: " + uuidStr);
-      }
-      return Optional.empty();
+        return Optional.empty();
       }
 
       @Override
