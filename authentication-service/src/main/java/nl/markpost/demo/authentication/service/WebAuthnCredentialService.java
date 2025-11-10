@@ -53,24 +53,17 @@ public class WebAuthnCredentialService {
     }
     // Use UUID as userHandle to match what's used during registration
     String uuid = user.getId().toString();
-    ByteArray userHandle = new ByteArray(
-        uuid.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-    log.info("UserHandle for user " + username + ": " + uuid);
-
+    ByteArray userHandle = new ByteArray(uuid.getBytes(java.nio.charset.StandardCharsets.UTF_8));
     return Optional.of(userHandle);
   }
 
   @Transactional(readOnly = true)
   public Optional<String> getUsernameForUserHandle(ByteArray userHandle) {
-    // UserHandle contains UUID, need to look up user by UUID
     String uuidStr = new String(userHandle.getBytes(), java.nio.charset.StandardCharsets.UTF_8);
-    log.info("[WebAuthnCredentialService] getUsernameForUserHandle called with: " + uuidStr);
     try {
       UUID userId = UUID.fromString(uuidStr);
-      log.info("[WebAuthnCredentialService] Successfully parsed UUID: " + userId);
       User user = userRepository.findById(userId).orElse(null);
       if (user != null) {
-        log.info("[WebAuthnCredentialService] Found user: " + user.getEmail());
         return Optional.of(user.getEmail());
       } else {
         log.warn("[WebAuthnCredentialService] User not found in database for UUID: " + userId);
@@ -83,11 +76,7 @@ public class WebAuthnCredentialService {
 
   @Transactional(readOnly = true)
   public Optional<RegisteredCredential> lookup(ByteArray credentialId, ByteArray userHandle) {
-    // UserHandle contains UUID
     String uuidStr = new String(userHandle.getBytes(), java.nio.charset.StandardCharsets.UTF_8);
-    log.info(
-        "[WebAuthnCredentialService] lookup called with credentialId: " + credentialId.getBase64Url()
-            + ", userHandle: " + uuidStr);
     try {
       UUID userId = UUID.fromString(uuidStr);
       User user = userRepository.findById(userId).orElse(null);
@@ -96,20 +85,11 @@ public class WebAuthnCredentialService {
         return Optional.empty();
       }
       String credentialIdBase64 = credentialId.getBase64Url();
-      log.info("[WebAuthnCredentialService] Looking up credential with ID: " + credentialIdBase64);
       PasskeyCredential cred = passkeyCredentialRepository.findByCredentialId(credentialIdBase64);
       if (cred == null) {
-        log.warn(
-            "[WebAuthnCredentialService] Credential not found in database for ID: " + credentialIdBase64);
-        // List all credentials for this user to debug
-        List<PasskeyCredential> allCreds = passkeyCredentialRepository.findByUserId(userId);
-        log.info("[WebAuthnCredentialService] User has " + allCreds.size() + " credentials:");
-        for (PasskeyCredential c : allCreds) {
-          log.info("[WebAuthnCredentialService]   - " + c.getCredentialId());
-        }
+        log.warn("[WebAuthnCredentialService] Credential not found in database for ID: " + credentialIdBase64);
         return Optional.empty();
       }
-      log.info("[WebAuthnCredentialService] Credential found successfully");
       try {
         return Optional.of(RegisteredCredential.builder()
             .credentialId(credentialId)
