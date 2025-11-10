@@ -261,6 +261,39 @@ Key configuration files:
 - `docker-compose.yml` - Container orchestration
 - `pom.xml` - Maven dependencies and build configuration
 
+## 📦 Versioning
+
+This project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html) with automatic version management through GitHub Actions.
+
+### Version Bump Rules
+
+Versions are automatically incremented based on branch naming conventions when merging PRs to `master`/`main`:
+
+- **Major version** (`X.0.0`): Branches starting with `major/*` or PRs with `[major]` tag or containing `BREAKING CHANGE`
+  - Example: `major/api-redesign` → version bumps from `1.2.3` to `2.0.0`
+  
+- **Minor version** (`x.Y.0`): Branches starting with `feature/*` or PRs with `[feature]` tag
+  - Example: `feature/add-oauth` → version bumps from `1.2.3` to `1.3.0`
+  
+- **Patch version** (`x.y.Z`): Branches starting with `fix/*`, `bugfix/*`, or Dependabot PRs
+  - Example: `fix/login-bug` → version bumps from `1.2.3` to `1.2.4`
+  - Example: Dependabot updates → version bumps from `1.2.3` to `1.2.4`
+
+### Automatic Actions
+
+On each merge to `master`/`main`:
+1. Version is automatically bumped in `pom.xml` and `frontend/package.json`
+2. `CHANGELOG.md` is updated with commit history
+3. Git tag is created (e.g., `v1.2.3`)
+4. GitHub Release is created with release notes
+
+### Manual Version Override
+
+You can also control versioning through commit messages:
+- `feat:` prefix → minor version bump
+- `fix:` prefix → patch version bump
+- `BREAKING CHANGE` in message → major version bump
+
 ## 🤝 Contributing
 
 This is a demonstration project for learning purposes. Feel free to fork and experiment!

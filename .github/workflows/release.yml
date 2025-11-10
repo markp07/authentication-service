@@ -14,6 +14,7 @@ jobs:
   release:
     name: Create Release
     runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     
     steps:
       - name: Checkout code
@@ -184,17 +185,15 @@ jobs:
           git push origin "v$NEW_VERSION"
 
       - name: Create GitHub Release
-        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ steps.new_version.outputs.new_version }}
-          release_name: Release v${{ steps.new_version.outputs.new_version }}
-          body: |
-            ## Release v${{ steps.new_version.outputs.new_version }}
-            
-            Version bump: ${{ steps.version_bump.outputs.bump_type }}
-            
-            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details.
-          draft: false
-          prerelease: false
+          NEW_VERSION: ${{ steps.new_version.outputs.new_version }}
+          BUMP_TYPE: ${{ steps.version_bump.outputs.bump_type }}
+        run: |
+          gh release create "v$NEW_VERSION" \
+            --title "Release v$NEW_VERSION" \
+            --notes "## Release v$NEW_VERSION
+
+Version bump: $BUMP_TYPE
+
+See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details."
