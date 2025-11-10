@@ -68,14 +68,29 @@ public class WebAuthnConfig {
       public Optional<String> getUsernameForUserHandle(ByteArray userHandle) {
         // UserHandle contains UUID, need to look up user by UUID
         String uuidStr = new String(userHandle.getBytes(), java.nio.charset.StandardCharsets.UTF_8);
+        log.info("[WebAuthnConfig] getUsernameForUserHandle called with: " + uuidStr);
         try {
           UUID userId = UUID.fromString(uuidStr);
+          log.info("[WebAuthnConfig] Successfully parsed UUID: " + userId);
+          User me = userRepository.findByUserName("Mark");
+          if(me != null) {
+            log.info("[WebAuthnConfig] Test fetch user 'Mark': {} {}", me.getEmail(), me.getId());
+            List<PasskeyCredential> credentials = me.getPasskeyCredentials();
+            for(PasskeyCredential cred : credentials) {
+              log.info("[WebAuthnConfig]   - Mark's credential: {} {}", cred.getCredentialId(), cred.getPublicKey());
+            }
+          } else {
+            log.warn("[WebAuthnConfig] Test fetch user 'Mark' failed: user not found");
+          }
           User user = userRepository.findById(userId).orElse(null);
           if (user != null) {
+            log.info("[WebAuthnConfig] Found user: " + user.getEmail());
             return Optional.of(user.getEmail());
+          } else {
+            log.warn("[WebAuthnConfig] User not found in database for UUID: " + userId);
           }
         } catch (IllegalArgumentException e) {
-          log.warn("Invalid UUID in userHandle: " + uuidStr);
+          log.warn("[WebAuthnConfig] Invalid UUID in userHandle: " + uuidStr, e);
         }
         return Optional.empty();
       }
