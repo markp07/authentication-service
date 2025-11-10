@@ -190,10 +190,12 @@ jobs:
           NEW_VERSION: ${{ steps.new_version.outputs.new_version }}
           BUMP_TYPE: ${{ steps.version_bump.outputs.bump_type }}
         run: |
+          NOTES="## Release v$NEW_VERSION
+
+          Version bump: $BUMP_TYPE
+
+          See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details."
+          
           gh release create "v$NEW_VERSION" \
             --title "Release v$NEW_VERSION" \
-            --notes "## Release v$NEW_VERSION
-
-Version bump: $BUMP_TYPE
-
-See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details."
+            --notes "$NOTES"
