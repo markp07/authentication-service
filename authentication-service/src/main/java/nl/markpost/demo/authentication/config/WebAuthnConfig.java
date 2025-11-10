@@ -129,9 +129,9 @@ public class WebAuthnConfig {
           if(me != null) {
             log.info("[WebAuthnConfig] Test fetch user 'Mark': {} {}", me.getEmail(), me.getId());
             List<PasskeyCredential> credentials = me.getPasskeyCredentials();
-            for (PasskeyCredential cred : credentials) {
-              log.info("[WebAuthnConfig]   - Mark's credential: {} {}", cred.getCredentialId(),
-                  cred.getPublicKey());
+            for (PasskeyCredential mecred : credentials) {
+              log.info("[WebAuthnConfig]   - Mark's credential: {} {}", mecred.getCredentialId(),
+                  mecred.getPublicKey());
             }
           }
           return Optional.of(RegisteredCredential.builder()
