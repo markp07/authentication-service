@@ -48,6 +48,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+//TODO: move controller logic into here
+//TODO: add JavaDoc to class and all methods
+//TODO: Refactor to remove duplicate code between finishAuthentication and finishUsernamelessAuthentication
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -63,6 +66,7 @@ public class PasskeyService {
     List<PasskeyCredential> list = passkeyCredentialRepository.findByUserId(user.getId());
     return list
         .stream()
+        //TODO: Use mapstruct mapper for mapping PasskeyInfoDto
         .map(pk -> new PasskeyInfoDto(pk.getCredentialId(), pk.getName(), pk.getCreatedAt()))
         .toList();
   }
@@ -137,18 +141,6 @@ public class PasskeyService {
     return assertionRequest;
   }
 
-  public AssertionRequest startUsernamelessAuthentication() {
-    // Start assertion without specifying a username - allows any discoverable credential
-    AssertionRequest assertionRequest = relyingParty.startAssertion(
-        StartAssertionOptions.builder()
-            .userVerification(UserVerificationRequirement.REQUIRED)
-            // No username specified - allows discoverable credentials for this RP
-            .build()
-    );
-    log.info("[WebAuthn] Usernameless AssertionRequest started");
-    return assertionRequest;
-  }
-
   @SneakyThrows
   public ResponseEntity<Message> finishAuthentication(String email,
       PublicKeyCredential<AuthenticatorAssertionResponse, ClientAssertionExtensionOutputs> credential,
@@ -178,6 +170,18 @@ public class PasskeyService {
     } else {
       throw new UnauthorizedException();
     }
+  }
+
+  public AssertionRequest startUsernamelessAuthentication() {
+    // Start assertion without specifying a username - allows any discoverable credential
+    AssertionRequest assertionRequest = relyingParty.startAssertion(
+        StartAssertionOptions.builder()
+            .userVerification(UserVerificationRequirement.REQUIRED)
+            // No username specified - allows discoverable credentials for this RP
+            .build()
+    );
+    log.info("[WebAuthn] Usernameless AssertionRequest started");
+    return assertionRequest;
   }
 
   @SneakyThrows
