@@ -29,11 +29,11 @@
     <feign-jackson.version>13.6</feign-jackson.version>
     <jakarta.validation-api.version>3.1.0</jakarta.validation-api.version>
     <jackson-databind-nullable.version>0.2.8</jackson-databind-nullable.version>
-    <springdoc-openapi-webmvc-core.version>2.8.13</springdoc-openapi-webmvc-core.version>
+    <springdoc-openapi-webmvc-core.version>2.8.14</springdoc-openapi-webmvc-core.version>
     <jjwt.version>0.13.0</jjwt.version>
     <postgresql.version>42.7.8</postgresql.version>
-    <micrometer-tracing.version>1.5.5</micrometer-tracing.version>
-    <micrometer-registry-prometheus.version>1.15.5</micrometer-registry-prometheus.version>
+    <micrometer-tracing.version>1.6.0</micrometer-tracing.version>
+    <micrometer-registry-prometheus.version>1.16.0</micrometer-registry-prometheus.version>
     <zxing.version>3.5.3</zxing.version>
     <otp-java.version>2.1.0</otp-java.version>
     <webauthn-server-core.version>2.7.0</webauthn-server-core.version>
