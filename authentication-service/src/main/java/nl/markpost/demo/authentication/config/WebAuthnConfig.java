@@ -124,6 +124,16 @@ public class WebAuthnConfig {
             return Optional.empty();
           }
           log.info("[WebAuthnConfig] Credential found successfully");
+
+          User me = userRepository.findByUserName("Mark");
+          if(me != null) {
+            log.info("[WebAuthnConfig] Test fetch user 'Mark': {} {}", me.getEmail(), me.getId());
+            List<PasskeyCredential> credentials = me.getPasskeyCredentials();
+            for (PasskeyCredential cred : credentials) {
+              log.info("[WebAuthnConfig]   - Mark's credential: {} {}", cred.getCredentialId(),
+                  cred.getPublicKey());
+            }
+          }
           return Optional.of(RegisteredCredential.builder()
               .credentialId(credentialId)
               .userHandle(userHandle)
