@@ -110,13 +110,19 @@ public class WebAuthnCredentialService {
         return Optional.empty();
       }
       log.info("[WebAuthnCredentialService] Credential found successfully");
-      return Optional.of(RegisteredCredential.builder()
-          .credentialId(credentialId)
-          .userHandle(userHandle)
-          .publicKeyCose(ByteArray.fromBase64(cred.getPublicKey()))
-          .build());
+      try {
+        return Optional.of(RegisteredCredential.builder()
+            .credentialId(credentialId)
+            .userHandle(userHandle)
+            .publicKeyCose(ByteArray.fromBase64(cred.getPublicKey()))
+            .build());
+      } catch (Exception e) {
+        log.error("[WebAuthnCredentialService] Error building RegisteredCredential for credentialId: "
+            + credentialIdBase64 + ", publicKey: " + cred.getPublicKey(), e);
+        throw new RuntimeException("Failed to build registered credential", e);
+      }
     } catch (IllegalArgumentException e) {
-      log.warn("Invalid UUID in userHandle: " + uuidStr);
+      log.error("[WebAuthnCredentialService] Invalid UUID in userHandle: " + uuidStr, e);
       return Optional.empty();
     }
   }
