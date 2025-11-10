@@ -72,16 +72,6 @@ public class WebAuthnConfig {
         try {
           UUID userId = UUID.fromString(uuidStr);
           log.info("[WebAuthnConfig] Successfully parsed UUID: " + userId);
-          User me = userRepository.findByUserName("Mark");
-          if(me != null) {
-            log.info("[WebAuthnConfig] Test fetch user 'Mark': {} {}", me.getEmail(), me.getId());
-            List<PasskeyCredential> credentials = me.getPasskeyCredentials();
-            for(PasskeyCredential cred : credentials) {
-              log.info("[WebAuthnConfig]   - Mark's credential: {} {}", cred.getCredentialId(), cred.getPublicKey());
-            }
-          } else {
-            log.warn("[WebAuthnConfig] Test fetch user 'Mark' failed: user not found");
-          }
           User user = userRepository.findById(userId).orElse(null);
           if (user != null) {
             log.info("[WebAuthnConfig] Found user: " + user.getEmail());
@@ -89,8 +79,8 @@ public class WebAuthnConfig {
           } else {
             log.warn("[WebAuthnConfig] User not found in database for UUID: " + userId);
           }
-        } catch (IllegalArgumentException e) {
-          log.warn("[WebAuthnConfig] Invalid UUID in userHandle: " + uuidStr, e);
+        } catch (Exception e) {
+          log.error("[WebAuthnConfig] Error in getUsernameForUserHandle for UUID: " + uuidStr, e);
         }
         return Optional.empty();
       }
@@ -124,16 +114,6 @@ public class WebAuthnConfig {
             return Optional.empty();
           }
           log.info("[WebAuthnConfig] Credential found successfully");
-
-          User me = userRepository.findByUserName("Mark");
-          if(me != null) {
-            log.info("[WebAuthnConfig] Test fetch user 'Mark': {} {}", me.getEmail(), me.getId());
-            List<PasskeyCredential> credentials = me.getPasskeyCredentials();
-            for (PasskeyCredential mecred : credentials) {
-              log.info("[WebAuthnConfig]   - Mark's credential: {} {}", mecred.getCredentialId(),
-                  mecred.getPublicKey());
-            }
-          }
           return Optional.of(RegisteredCredential.builder()
               .credentialId(credentialId)
               .userHandle(userHandle)
