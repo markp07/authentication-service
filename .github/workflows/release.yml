@@ -1,0 +1,201 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - master
+      - main
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Get latest tag
+        id: get_latest_tag
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          echo "latest_tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+          echo "Latest tag: $LATEST_TAG"
+          
+          VERSION=${LATEST_TAG#v}
+          echo "current_version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Current version: $VERSION"
+
+      - name: Determine version bump
+        id: version_bump
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          echo "Commit message: $COMMIT_MSG"
+          
+          PR_NUMBER=$(echo "$COMMIT_MSG" | grep -oP '#\K\d+' | head -1 || echo "")
+          echo "PR number: $PR_NUMBER"
+          
+          BUMP_TYPE="patch"
+          
+          if [ -n "$PR_NUMBER" ]; then
+            PR_DATA=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/${{ github.repository }}/pulls/$PR_NUMBER")
+            
+            BRANCH_NAME=$(echo "$PR_DATA" | jq -r '.head.ref // empty')
+            echo "Branch name: $BRANCH_NAME"
+            
+            PR_TITLE=$(echo "$PR_DATA" | jq -r '.title // empty')
+            PR_BODY=$(echo "$PR_DATA" | jq -r '.body // empty')
+            PR_USER=$(echo "$PR_DATA" | jq -r '.user.login // empty')
+            
+            if [[ "$BRANCH_NAME" == major/* ]] || [[ "$PR_TITLE" == *"[major]"* ]] || [[ "$PR_BODY" == *"BREAKING CHANGE"* ]]; then
+              BUMP_TYPE="major"
+            elif [[ "$BRANCH_NAME" == feature/* ]] || [[ "$PR_TITLE" == *"[feature]"* ]]; then
+              BUMP_TYPE="minor"
+            elif [[ "$BRANCH_NAME" == fix/* ]] || [[ "$BRANCH_NAME" == bugfix/* ]] || [[ "$PR_USER" == "dependabot"* ]] || [[ "$PR_TITLE" == *"[fix]"* ]] || [[ "$PR_TITLE" == *"[patch]"* ]]; then
+              BUMP_TYPE="patch"
+            fi
+          else
+            if [[ "$COMMIT_MSG" == *"BREAKING CHANGE"* ]] || [[ "$COMMIT_MSG" == *"[major]"* ]]; then
+              BUMP_TYPE="major"
+            elif [[ "$COMMIT_MSG" == *"feat:"* ]] || [[ "$COMMIT_MSG" == *"[feature]"* ]]; then
+              BUMP_TYPE="minor"
+            elif [[ "$COMMIT_MSG" == *"fix:"* ]] || [[ "$COMMIT_MSG" == *"chore(maven)"* ]] || [[ "$COMMIT_MSG" == *"chore(npm)"* ]] || [[ "$COMMIT_MSG" == *"chore(docker)"* ]]; then
+              BUMP_TYPE="patch"
+            fi
+          fi
+          
+          echo "bump_type=$BUMP_TYPE" >> $GITHUB_OUTPUT
+          echo "Version bump type: $BUMP_TYPE"
+
+      - name: Calculate new version
+        id: new_version
+        run: |
+          CURRENT_VERSION="${{ steps.get_latest_tag.outputs.current_version }}"
+          BUMP_TYPE="${{ steps.version_bump.outputs.bump_type }}"
+          
+          IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
+          MAJOR=${VERSION_PARTS[0]}
+          MINOR=${VERSION_PARTS[1]}
+          PATCH=${VERSION_PARTS[2]}
+          
+          if [ "$BUMP_TYPE" = "major" ]; then
+            MAJOR=$((MAJOR + 1))
+            MINOR=0
+            PATCH=0
+          elif [ "$BUMP_TYPE" = "minor" ]; then
+            MINOR=$((MINOR + 1))
+            PATCH=0
+          else
+            PATCH=$((PATCH + 1))
+          fi
+          
+          NEW_VERSION="$MAJOR.$MINOR.$PATCH"
+          echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "New version: $NEW_VERSION"
+
+      - name: Update version in pom.xml
+        run: |
+          NEW_VERSION="${{ steps.new_version.outputs.new_version }}"
+          sed -i "s/<revision>.*<\/revision>/<revision>$NEW_VERSION<\/revision>/" pom.xml
+          echo "Updated pom.xml to version $NEW_VERSION"
+
+      - name: Update version in package.json
+        run: |
+          NEW_VERSION="${{ steps.new_version.outputs.new_version }}"
+          cd frontend
+          sed -i "s/\"version\": \".*\"/\"version\": \"$NEW_VERSION\"/" package.json
+          echo "Updated package.json to version $NEW_VERSION"
+
+      - name: Generate changelog entry
+        id: changelog
+        run: |
+          NEW_VERSION="${{ steps.new_version.outputs.new_version }}"
+          BUMP_TYPE="${{ steps.version_bump.outputs.bump_type }}"
+          DATE=$(date +%Y-%m-%d)
+          
+          LATEST_TAG="${{ steps.get_latest_tag.outputs.latest_tag }}"
+          if [ "$LATEST_TAG" != "v0.0.0" ]; then
+            COMMITS=$(git log $LATEST_TAG..HEAD --pretty=format:"- %s" --no-merges)
+          else
+            COMMITS=$(git log --pretty=format:"- %s" --no-merges | head -20)
+          fi
+          
+          echo "## [$NEW_VERSION] - $DATE" > /tmp/changelog_entry.md
+          echo "" >> /tmp/changelog_entry.md
+          echo "### Changed" >> /tmp/changelog_entry.md
+          echo "$COMMITS" >> /tmp/changelog_entry.md
+          echo "" >> /tmp/changelog_entry.md
+          
+          if [ -f CHANGELOG.md ]; then
+            LINE_NUM=$(grep -n "^## \[Unreleased\]" CHANGELOG.md | cut -d: -f1 | head -1)
+            if [ -z "$LINE_NUM" ]; then
+              LINE_NUM=$(grep -n "^## \[" CHANGELOG.md | cut -d: -f1 | head -1)
+            fi
+            
+            if [ -n "$LINE_NUM" ]; then
+              UNRELEASED_END=$(tail -n +$LINE_NUM CHANGELOG.md | grep -n "^## \[" | sed -n '2p' | cut -d: -f1)
+              if [ -n "$UNRELEASED_END" ]; then
+                INSERT_LINE=$((LINE_NUM + UNRELEASED_END - 1))
+              else
+                INSERT_LINE=$((LINE_NUM + 1))
+              fi
+              
+              head -n $INSERT_LINE CHANGELOG.md > /tmp/changelog_top.md
+              cat /tmp/changelog_entry.md >> /tmp/changelog_top.md
+              tail -n +$((INSERT_LINE + 1)) CHANGELOG.md >> /tmp/changelog_top.md
+              mv /tmp/changelog_top.md CHANGELOG.md
+            else
+              LINE_NUM=$(grep -n "^# Changelog" CHANGELOG.md | cut -d: -f1 | head -1)
+              if [ -n "$LINE_NUM" ]; then
+                head -n $((LINE_NUM + 3)) CHANGELOG.md > /tmp/changelog_top.md
+                cat /tmp/changelog_entry.md >> /tmp/changelog_top.md
+                tail -n +$((LINE_NUM + 4)) CHANGELOG.md >> /tmp/changelog_top.md
+                mv /tmp/changelog_top.md CHANGELOG.md
+              fi
+            fi
+          fi
+          
+          echo "Updated CHANGELOG.md with version $NEW_VERSION"
+
+      - name: Commit version updates
+        run: |
+          NEW_VERSION="${{ steps.new_version.outputs.new_version }}"
+          git add pom.xml frontend/package.json CHANGELOG.md
+          git commit -m "chore: bump version to $NEW_VERSION [skip ci]" || echo "No changes to commit"
+          git push origin ${{ github.ref_name }}
+
+      - name: Create and push tag
+        run: |
+          NEW_VERSION="${{ steps.new_version.outputs.new_version }}"
+          git tag -a "v$NEW_VERSION" -m "Release version $NEW_VERSION"
+          git push origin "v$NEW_VERSION"
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NEW_VERSION: ${{ steps.new_version.outputs.new_version }}
+          BUMP_TYPE: ${{ steps.version_bump.outputs.bump_type }}
+        run: |
+          NOTES="## Release v$NEW_VERSION
+
+          Version bump: $BUMP_TYPE
+
+          See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details."
+          
+          gh release create "v$NEW_VERSION" \
+            --title "Release v$NEW_VERSION" \
+            --notes "$NOTES"
