@@ -142,9 +142,10 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
     setRegistering(false);
   }
 
-  async function handleLogin() {
+  async function handleEmailPasskeyLogin() {
     setLoginLoading(true);
     setLoginError(null);
+    setSuccess(null);
     try {
       if (!user?.email) {
         setLoginError("User email not loaded.");
@@ -152,44 +153,113 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
         return;
       }
       // 1. Get authentication options from backend
-      const res = await fetchWithAuthRetry(`${AUTH_API_BASE}/api/auth/v1/passkey/login/start?email=${encodeURIComponent(user.email)}`, { method: "POST" });
-      const options = await res.json();
-      options.challenge = Uint8Array.from(atob(options.challenge), c => c.charCodeAt(0));
-      options.allowCredentials = options.allowCredentials?.map((cred: { id: string; transports?: string[] }) => {
-        const decodedId = base64urlToUint8Array(cred.id);
-        // Only allow valid AuthenticatorTransport values
-        const validTransports = Array.isArray(cred.transports)
-          ? cred.transports.filter(t => [
-              "usb",
-              "nfc",
-              "ble",
-              "internal",
-              "cable",
-              "hybrid"
-            ].includes(t))
-          : undefined;
-        const newCred: PublicKeyCredentialDescriptor = {
-          type: "public-key",
-          id: decodedId,
-          transports: validTransports as AuthenticatorTransport[] | undefined,
-        };
-        return newCred;
+      const res = await fetchWithAuthRetry(`${AUTH_API_BASE}/api/auth/v1/passkey/login/start`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: user.email })
       });
+      if (!res.ok) {
+        setLoginError("Failed to start passkey login.");
+        setLoginLoading(false);
+        return;
+      }
+      const options = await res.json();
+      options.challenge = base64urlToUint8Array(options.challenge);
+      if (options.allowCredentials) {
+        options.allowCredentials = options.allowCredentials.map((cred: { id: string; transports?: string[]; type?: string }) => {
+          const decodedId = base64urlToUint8Array(cred.id);
+          // Only allow valid AuthenticatorTransport values
+          const validTransports = Array.isArray(cred.transports)
+            ? cred.transports.filter(t => [
+                "usb",
+                "nfc",
+                "ble",
+                "internal",
+                "cable",
+                "hybrid"
+              ].includes(t))
+            : undefined;
+          return {
+            type: cred.type || "public-key",
+            id: decodedId,
+            transports: validTransports as AuthenticatorTransport[] | undefined,
+          };
+        });
+      }
       // 2. Call WebAuthn API
       const assertion = await navigator.credentials.get({ publicKey: options });
       // 3. Send assertion to backend
-      const finishRes = await fetchWithAuthRetry(`${AUTH_API_BASE}/api/auth/v1/passkey/login/finish?email=${encodeURIComponent(user.email)}`, {
+      const finishRes = await fetchWithAuthRetry(`${AUTH_API_BASE}/api/auth/v1/passkey/login/finish`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(assertion),
+        body: JSON.stringify({ email: user.email, credential: assertion }),
       });
       if (finishRes.ok) {
-        onClose(); // or set login state
+        setSuccess("Passkey login successful!");
+        setTimeout(() => {
+          setSuccess(null);
+          onClose();
+        }, 2000);
       } else {
         setLoginError("Passkey login failed.");
       }
-    } catch {
+    } catch (err) {
+      console.error("Email passkey login error:", err);
       setLoginError("Passkey login failed.");
+    }
+    setLoginLoading(false);
+  }
+
+  async function handleUsernamelessPasskeyLogin() {
+    setLoginLoading(true);
+    setLoginError(null);
+    setSuccess(null);
+    try {
+      // 1. Get authentication options from backend
+      const res = await fetchWithAuthRetry(`${AUTH_API_BASE}/api/auth/v1/passkey/login/usernameless/start`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" }
+      });
+      if (!res.ok) {
+        setLoginError("Failed to start usernameless passkey login.");
+        setLoginLoading(false);
+        return;
+      }
+      const options = await res.json();
+      options.challenge = base64urlToUint8Array(options.challenge);
+      // Sanitize extensions: remove keys with null/undefined values
+      if (options.extensions && typeof options.extensions === "object") {
+        Object.keys(options.extensions).forEach(key => {
+          if (options.extensions[key] == null) {
+            delete options.extensions[key];
+          }
+        });
+      }
+      // 2. Call WebAuthn API
+      const assertion = await navigator.credentials.get({ publicKey: options });
+      if (!assertion) {
+        setLoginError("No passkey selected.");
+        setLoginLoading(false);
+        return;
+      }
+      // 3. Send assertion to backend
+      const finishRes = await fetchWithAuthRetry(`${AUTH_API_BASE}/api/auth/v1/passkey/login/usernameless/finish`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(assertion)
+      });
+      if (finishRes.ok) {
+        setSuccess("Usernameless passkey login successful!");
+        setTimeout(() => {
+          setSuccess(null);
+          onClose();
+        }, 2000);
+      } else {
+        setLoginError("Usernameless passkey login failed.");
+      }
+    } catch (err) {
+      console.error("Usernameless passkey login error:", err);
+      setLoginError("Usernameless passkey login failed.");
     }
     setLoginLoading(false);
   }
@@ -305,13 +375,22 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
               {/* Test Login (Optional) */}
               <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Test Passkey Login</h3>
-                <button 
-                  className="w-full px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
-                  onClick={handleLogin} 
-                  disabled={loginLoading || passkeys.length === 0}
-                >
-                  {loginLoading ? "Authenticating..." : "Login with Passkey"}
-                </button>
+                <div className="flex flex-col gap-3">
+                  <button
+                    className="w-full px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={handleEmailPasskeyLogin}
+                    disabled={loginLoading || passkeys.length === 0}
+                  >
+                    {loginLoading ? "Authenticating..." : "Login with Passkey (Email)"}
+                  </button>
+                  <button
+                    className="w-full px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    onClick={handleUsernamelessPasskeyLogin}
+                    disabled={loginLoading || passkeys.length === 0}
+                  >
+                    {loginLoading ? "Authenticating..." : "Login with Passkey (Usernameless)"}
+                  </button>
+                </div>
                 {loginError && (
                   <div className="mt-2 text-sm text-red-600 dark:text-red-400">{loginError}</div>
                 )}
