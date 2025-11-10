@@ -22,6 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced Authentication Service OpenAPI spec with complete Passkey endpoint documentation
 
 ## [1.0.0] - 2025-11-02
+## [1.2.0] - 2025-11-10
+
+### Changed
+- refactor: simplify Docker script for service updates and cleanup (#49)
+
 ## [1.1.0] - 2025-11-10
 
 ### Changed
