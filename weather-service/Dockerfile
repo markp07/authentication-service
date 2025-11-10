@@ -1,5 +1,5 @@
 # Use OpenJDK 21 with a slim base image
-FROM eclipse-temurin:21-jdk-alpine
+FROM eclipse-temurin:25-jdk-alpine
 
 # Set the maintainer label
 LABEL maintainer="mark@markpost.nl"
