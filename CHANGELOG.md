@@ -22,6 +22,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced Authentication Service OpenAPI spec with complete Passkey endpoint documentation
 
 ## [1.0.0] - 2025-11-02
+## [1.0.0] - 2025-11-10
+
+### Changed
+- Add automatic semantic versioning with branch-based version bumps (#47)
+- chore(docker)(deps): bump node (#42)
+- chore(docker)(deps): bump eclipse-temurin (#45)
+- chore(npm)(deps-dev): bump the npm-dependencies group (#43)
+- chore(maven)(deps): bump the maven-dependencies group with 3 updates (#44)
+- chore(docker)(deps): bump eclipse-temurin (#46)
+- Update PostgreSQL volume path in docker-compose (#41)
+- Optimize weather layout: scale current icon to fill height, distribute forecast columns (#40)
+- Optimize weather UI spacing and typography for mobile viewports (#39)
+- Add unit tests for uncovered utility, filter, service, and controller classes (#37)
+- Reduce padding on mobile dashboard to maximize weather data visibility (#38)
+- Redesign profile, security, user management, and modals with modern sidebar navigation (#35)
+- Add OpenAPI specifications and code generation for authentication and weather services (#33)
+- Fix WebAuthn userHandle encoding mismatch breaking Bitwarden and usernameless flows (#34)
+- Simplify button label in login component for improved clarity
+- Refactor login component to enhance user flow with distinct steps for email and password, and improve passkey login options
+- Enable subdomain origin allowance in WebAuthn configuration
+- Enhance WebAuthn configuration with additional security options for origin validation and user verification
+- Refactor authentication flow to use custom DTO for PublicKeyCredentialRequestOptions, excluding null values
+- Add JsonNullableModule to Jackson configuration for better null handling
+
 
 ### Added
 - Dependabot configuration for automated dependency updates (Maven, npm, Docker)
