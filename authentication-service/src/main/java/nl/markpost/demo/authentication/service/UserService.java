@@ -1,5 +1,6 @@
 package nl.markpost.demo.authentication.service;
 
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import nl.markpost.demo.authentication.api.v1.model.UserDetails;
 import nl.markpost.demo.authentication.model.User;
@@ -59,19 +60,30 @@ public class UserService {
     userRepository.delete(user);
   }
 
+  /**
+   * Helper methods to check for existing username and email
+   */
   public void checkIfUserExists(String userName) {
-    User existingUser = userRepository.findByUserName(userName);
-    if (existingUser != null) {
-      //TODO: Use codes for exception
-      throw new BadRequestException("Username already exists");
-    }
+    userRepository.findByUserName(userName)
+        .orElseThrow(() -> new BadRequestException("User not found"));
   }
 
+  /**
+   * Checks if an email already exists in the system.
+   *
+   * @param email the email to check
+   * @throws BadRequestException if the email already exists
+   */
   public void checkIfEmailExists(String email) {
-    User existingUser = userRepository.findByEmail(email);
-    if (existingUser != null) {
-      //TODO: Use codes for exception
-      throw new BadRequestException("E-mail already exists");
-    }
+    getUserByEmail(email);
+  }
+
+  public User getUserById(UUID id) {
+    return userRepository.findById(id).orElseThrow(() -> new BadRequestException("User not found"));
+  }
+
+  public User getUserByEmail(String email) {
+    return userRepository.findByEmail(email)
+        .orElseThrow(() -> new BadRequestException("User not found"));
   }
 }

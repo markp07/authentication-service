@@ -38,7 +38,6 @@ import nl.markpost.demo.authentication.util.CookieUtil;
 import nl.markpost.demo.authentication.util.RequestUtil;
 import nl.markpost.demo.common.exception.BadRequestException;
 import nl.markpost.demo.common.exception.ForbiddenException;
-import nl.markpost.demo.common.exception.NotFoundException;
 import nl.markpost.demo.common.exception.UnauthorizedException;
 import org.apache.commons.codec.binary.Base32;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -74,10 +73,7 @@ public class Manage2faService {
   public TOTPSetupResponse setup2fa() {
     HttpServletRequest request = getCurrentRequest();
     String email = getEmailFromClaims(request);
-    User user = userRepository.findByEmail(email);
-    if (user == null) {
-      throw new BadRequestException("User not found"); //TODO: Use a more specific message
-    }
+    User user = userRepository.findByEmail(email).orElseThrow(BadRequestException::new);
     if (user.is2faEnabled()) {
       throw new BadRequestException(
           "2FA is already enabled for this user."); //TODO: Use a more specific message
@@ -109,15 +105,14 @@ public class Manage2faService {
    *
    * @param code the TOTP code to verify
    *             <p>
-   *                                     TODO: need check what time enabling 2FA was triggered. Only allow enabling 2FA within a certain time frame (e.g., 5 minutes).
+   *                                                 TODO: need check what time enabling 2FA was triggered. Only allow enabling 2FA within a certain time frame (e.g., 5 minutes).
    */
   public void enable2fa(TOTPCode code) {
     HttpServletRequest request = getCurrentRequest();
     String email = getEmailFromClaims(request);
-    User user = userRepository.findByEmail(email);
-    if (user == null || user.getTotpSecret() == null) {
-      throw new BadRequestException(
-          "User not found or 2FA not set up"); //TODO: Use a more specific message
+    User user = userRepository.findByEmail(email).orElseThrow(BadRequestException::new);
+    if (user.getTotpSecret() == null) {
+      throw new BadRequestException("2FA not set up"); //TODO: Use a more specific message
     }
     if (user.getTotpSetupCreatedAt() == null
         || Duration.between(user.getTotpSetupCreatedAt(), LocalDateTime.now()).toMinutes() > 5) {
@@ -153,9 +148,9 @@ public class Manage2faService {
     }
 
     String email = jwtService.getEmailFromToken(temporaryToken);
-    User user = userRepository.findByEmail(email);
-    if (user == null || user.getTotpSecret() == null || !user.is2faEnabled()) {
-      log.info("User not found or 2FA not set up for email: {}", email);
+    User user = userRepository.findByEmail(email).orElseThrow(BadRequestException::new);
+    if (user.getTotpSecret() == null || !user.is2faEnabled()) {
+      log.info("2FA not set up for email: {}", email);
       throw new ForbiddenException();
     }
     if (verifyTotpCode(user.getTotpSecret(), totpVerifyRequest.getCode())) {
@@ -215,10 +210,7 @@ public class Manage2faService {
   public void disable2fa(PasswordRequest passwordRequest) {
     HttpServletRequest request = getCurrentRequest();
     String email = getEmailFromClaims(request);
-    User user = userRepository.findByEmail(email);
-    if (user == null) {
-      throw new BadRequestException("User not found");
-    }
+    User user = userRepository.findByEmail(email).orElseThrow(BadRequestException::new);
     if (!user.is2faEnabled()) {
       throw new BadRequestException("2FA is not enabled for this user.");
     }
@@ -238,10 +230,7 @@ public class Manage2faService {
   public BackupCodeResponse generateBackupCode() {
     HttpServletRequest request = getCurrentRequest();
     String email = getEmailFromClaims(request);
-    User user = userRepository.findByEmail(email);
-    if (user == null) {
-      throw new NotFoundException("User not found");
-    }
+    User user = userRepository.findByEmail(email).orElseThrow(BadRequestException::new);
     if (!user.is2faEnabled()) {
       throw new BadRequestException("2FA is not enabled for this user.");
     }
@@ -275,8 +264,8 @@ public class Manage2faService {
   public boolean reset2faWithBackupCode(String backupCode) {
     HttpServletRequest request = getCurrentRequest();
     String email = getEmailFromClaims(request);
-    User user = userRepository.findByEmail(email);
-    if (user == null || user.getBackupCode() == null) {
+    User user = userRepository.findByEmail(email).orElseThrow(BadRequestException::new);
+    if (user.getBackupCode() == null) {
       return false;
     }
     if (!passwordEncoder.matches(backupCode, user.getBackupCode())) {

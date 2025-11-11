@@ -24,7 +24,7 @@ class JwtAuthenticationFilterTest {
   void setUp() {
     CustomExceptionHandler customExceptionHandler = new CustomExceptionHandler();
     ObjectMapper objectMapper = new ObjectMapper();
-    
+
     filter = new JwtAuthenticationFilter(
         customExceptionHandler,
         objectMapper
@@ -54,7 +54,7 @@ class JwtAuthenticationFilterTest {
         new Cookie("access_token", "test_token_value")
     };
     when(request.getCookies()).thenReturn(cookies);
-    
+
     String token = filter.extractAccessToken(request);
     assertEquals("test_token_value", token);
   }
@@ -66,7 +66,7 @@ class JwtAuthenticationFilterTest {
         new Cookie("other_cookie", "other_value")
     };
     when(request.getCookies()).thenReturn(cookies);
-    
+
     String token = filter.extractAccessToken(request);
     assertNull(token);
   }
@@ -75,7 +75,7 @@ class JwtAuthenticationFilterTest {
   @DisplayName("Should return null when cookies array is null")
   void extractAccessToken_noCookies() {
     when(request.getCookies()).thenReturn(null);
-    
+
     String token = filter.extractAccessToken(request);
     assertNull(token);
   }

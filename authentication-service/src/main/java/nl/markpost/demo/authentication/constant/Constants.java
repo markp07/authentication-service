@@ -1,6 +1,12 @@
 package nl.markpost.demo.authentication.constant;
 
+/**
+ * Constants used in the authentication service.
+ */
 public class Constants {
+
+  private Constants() {
+  }
 
   public static final String TRACE_PARENT = "traceparent";
   public final static String ACCESS_TOKEN = "access_token";
@@ -10,4 +16,6 @@ public class Constants {
   public final static Integer MINUTES_15 = 15 * 60; // 15 minutes in seconds
   public final static Integer MINUTES_5 = 5 * 60; // 15 minutes in seconds
   public final static String PASSKEY_REGISTRATION = "webauthn_registration_options";
+  public final static String PASSKEY_ASSERTION_REQUEST = "webauthn_assertion_request";
+  public final static String PASSKEY_USERNAMELESS_ASSERTION_REQUEST = "webauthn_usernameless_assertion_request";
 }

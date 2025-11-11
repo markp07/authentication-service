@@ -144,7 +144,8 @@ public interface WeatherMapper {
       int windSpeed = windSpeeds != null && i < windSpeeds.size() ? windSpeeds.get(i) : 0;
       WindDirection windDirection = windDirections != null && i < windDirections.size()
           ? WindDirection.fromDegree(windDirections.get(i)) : WindDirection.N;
-      result.add(new Hourly(time, weatherCode, temperature, precipitation, precipitationProbability, windSpeed, windDirection));
+      result.add(new Hourly(time, weatherCode, temperature, precipitation, precipitationProbability,
+          windSpeed, windDirection));
     }
     return result;
   }

@@ -14,10 +14,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Configuration class for WebAuthn.
+ */
 @Slf4j
 @Configuration
 public class WebAuthnConfig {
 
+  /**
+   * Bean for CredentialRepository that delegates to WebAuthnCredentialService.
+   *
+   * @param credentialService the WebAuthnCredentialService
+   * @return the CredentialRepository bean
+   */
   @Bean
   public CredentialRepository credentialRepository(WebAuthnCredentialService credentialService) {
     return new CredentialRepository() {
@@ -49,6 +58,15 @@ public class WebAuthnConfig {
     };
   }
 
+  /**
+   * Bean for RelyingParty configured with application properties.
+   *
+   * @param rpId                 the Relying Party ID
+   * @param rpName               the Relying Party name
+   * @param origin               the origin URL
+   * @param credentialRepository the CredentialRepository
+   * @return the RelyingParty bean
+   */
   @Bean
   public RelyingParty relyingParty(
       @Value("${webauthn.rp.id}") String rpId,

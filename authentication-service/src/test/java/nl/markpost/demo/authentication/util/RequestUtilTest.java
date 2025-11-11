@@ -41,7 +41,7 @@ class RequestUtilTest {
   @DisplayName("Should throw exception when no request attributes")
   void getCurrentRequest_noAttributes() {
     RequestContextHolder.resetRequestAttributes();
-    
+
     assertThrows(InternalServerErrorException.class, RequestUtil::getCurrentRequest);
   }
 
@@ -62,7 +62,7 @@ class RequestUtilTest {
   @DisplayName("Should throw exception when no response attributes")
   void getCurrentResponse_noAttributes() {
     RequestContextHolder.resetRequestAttributes();
-    
+
     assertThrows(InternalServerErrorException.class, RequestUtil::getCurrentResponse);
   }
 

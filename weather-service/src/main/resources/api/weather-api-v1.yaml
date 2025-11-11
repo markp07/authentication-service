@@ -55,7 +55,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - BearerAuth: []
+        - BearerAuth: [ ]
 
 components:
   securitySchemes:

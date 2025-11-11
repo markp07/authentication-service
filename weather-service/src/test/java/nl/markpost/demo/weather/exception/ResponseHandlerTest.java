@@ -38,8 +38,10 @@ class ResponseHandlerTest {
         Arguments.of(403, "Forbidden", ForbiddenException.class, "Forbidden"),
         Arguments.of(404, "Not Found", NotFoundException.class, "Not found"),
         Arguments.of(429, "Too Many Requests", TooManyRequestsException.class, "Too many requests"),
-        Arguments.of(500, "Internal Server Error", InternalServerErrorException.class, "Internal server error"),
-        Arguments.of(503, "Service Unavailable", ServiceUnavailableException.class, "Service unavailable"),
+        Arguments.of(500, "Internal Server Error", InternalServerErrorException.class,
+            "Internal server error"),
+        Arguments.of(503, "Service Unavailable", ServiceUnavailableException.class,
+            "Service unavailable"),
         Arguments.of(418, "I'm a teapot", GenericException.class, "Unhandled response code: 418")
     );
   }
@@ -47,7 +49,8 @@ class ResponseHandlerTest {
   @ParameterizedTest
   @MethodSource("exceptionScenarios")
   @DisplayName("Should map status to correct exception type")
-  void decode_statusToException(int status, String reason, Class<? extends Exception> expectedClass, String expectedMessage) {
+  void decode_statusToException(int status, String reason, Class<? extends Exception> expectedClass,
+      String expectedMessage) {
     Exception ex = handler.decode("method", buildResponse(status, reason));
     assertInstanceOf(expectedClass, ex);
     assertEquals(expectedMessage, ex.getMessage());

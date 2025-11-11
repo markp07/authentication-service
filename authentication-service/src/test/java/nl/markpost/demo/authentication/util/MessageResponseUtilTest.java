@@ -14,7 +14,7 @@ class MessageResponseUtilTest {
   @DisplayName("Should create message response from Messages enum")
   void createMessageResponse_success() {
     Message message = MessageResponseUtil.createMessageResponse(Messages.LOGIN_SUCCESS);
-    
+
     assertNotNull(message);
     assertNotNull(message.getTimestamp());
     assertEquals(Messages.LOGIN_SUCCESS.getCode(), message.getCode());
@@ -25,7 +25,7 @@ class MessageResponseUtilTest {
   @DisplayName("Should create message response with different Messages enum")
   void createMessageResponse_differentMessage() {
     Message message = MessageResponseUtil.createMessageResponse(Messages.LOGOUT_SUCCESS);
-    
+
     assertNotNull(message);
     assertNotNull(message.getTimestamp());
     assertEquals(Messages.LOGOUT_SUCCESS.getCode(), message.getCode());

@@ -74,10 +74,10 @@ cookie:
   secure: true
 
 webauthn:
-    rp:
-        name: "Authentication Demo Service"
-        id: "demo.markpost.dev"
-    origin: "https://demo.markpost.dev"
+  rp:
+    name: "Authentication Demo Service"
+    id: "demo.markpost.dev"
+  origin: "https://demo.markpost.dev"
 
 ---
 # Local environment profile

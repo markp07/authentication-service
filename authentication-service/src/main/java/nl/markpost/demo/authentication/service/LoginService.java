@@ -52,8 +52,9 @@ public class LoginService {
    * @return ResponseEntity with a message indicating success or failure
    */
   public ResponseEntity<Message> login(LoginRequest loginRequest) {
-    User user = userRepository.findByEmail(loginRequest.getEmail());
-    if (user == null || !passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+    User user = userRepository.findByEmail(loginRequest.getEmail())
+        .orElseThrow(UnauthorizedException::new);
+    if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
       throw new UnauthorizedException();
     }
     HttpServletResponse response = RequestUtil.getCurrentResponse();
@@ -106,10 +107,7 @@ public class LoginService {
       throw new UnauthorizedException();
     }
     String email = jwtService.getEmailFromToken(refreshToken);
-    User user = userRepository.findByEmail(email);
-    if (user == null) {
-      throw new UnauthorizedException();
-    }
+    User user = userRepository.findByEmail(email).orElseThrow(UnauthorizedException::new);
 
     HttpServletResponse response = RequestUtil.getCurrentResponse();
 
@@ -127,9 +125,7 @@ public class LoginService {
    */
   @Transactional
   public void register(RegisterRequest registerRequest) {
-    if (userRepository.findByEmail(registerRequest.getEmail()) != null) {
-      throw new BadRequestException(); //TODO: Use a more specific message
-    }
+    userRepository.findByEmail(registerRequest.getEmail()).orElseThrow(BadRequestException::new);
 
     String password = registerRequest.getPassword();
     if (!passwordService.isPasswordStrong(password)) {

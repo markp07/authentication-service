@@ -68,8 +68,11 @@ public interface WeatherModelMapper {
    * @param weatherCode domain enum
    * @return API enum string
    */
-  default nl.markpost.demo.weather.api.v1.model.Current.WeatherCodeEnum mapWeatherCodeToCurrent(WeatherCode weatherCode) {
-    return weatherCode != null ? nl.markpost.demo.weather.api.v1.model.Current.WeatherCodeEnum.fromValue(weatherCode.name()) : null;
+  default nl.markpost.demo.weather.api.v1.model.Current.WeatherCodeEnum mapWeatherCodeToCurrent(
+      WeatherCode weatherCode) {
+    return weatherCode != null
+        ? nl.markpost.demo.weather.api.v1.model.Current.WeatherCodeEnum.fromValue(
+        weatherCode.name()) : null;
   }
 
   /**
@@ -78,8 +81,11 @@ public interface WeatherModelMapper {
    * @param weatherCode domain enum
    * @return API enum string
    */
-  default nl.markpost.demo.weather.api.v1.model.Daily.WeatherCodeEnum mapWeatherCodeToDaily(WeatherCode weatherCode) {
-    return weatherCode != null ? nl.markpost.demo.weather.api.v1.model.Daily.WeatherCodeEnum.fromValue(weatherCode.name()) : null;
+  default nl.markpost.demo.weather.api.v1.model.Daily.WeatherCodeEnum mapWeatherCodeToDaily(
+      WeatherCode weatherCode) {
+    return weatherCode != null
+        ? nl.markpost.demo.weather.api.v1.model.Daily.WeatherCodeEnum.fromValue(weatherCode.name())
+        : null;
   }
 
   /**
@@ -88,8 +94,11 @@ public interface WeatherModelMapper {
    * @param weatherCode domain enum
    * @return API enum string
    */
-  default nl.markpost.demo.weather.api.v1.model.Hourly.WeatherCodeEnum mapWeatherCodeToHourly(WeatherCode weatherCode) {
-    return weatherCode != null ? nl.markpost.demo.weather.api.v1.model.Hourly.WeatherCodeEnum.fromValue(weatherCode.name()) : null;
+  default nl.markpost.demo.weather.api.v1.model.Hourly.WeatherCodeEnum mapWeatherCodeToHourly(
+      WeatherCode weatherCode) {
+    return weatherCode != null
+        ? nl.markpost.demo.weather.api.v1.model.Hourly.WeatherCodeEnum.fromValue(weatherCode.name())
+        : null;
   }
 
   /**
@@ -98,8 +107,11 @@ public interface WeatherModelMapper {
    * @param windDirection domain enum
    * @return API enum string
    */
-  default nl.markpost.demo.weather.api.v1.model.Current.WindDirectionEnum mapWindDirectionToCurrent(WindDirection windDirection) {
-    return windDirection != null ? nl.markpost.demo.weather.api.v1.model.Current.WindDirectionEnum.fromValue(windDirection.name()) : null;
+  default nl.markpost.demo.weather.api.v1.model.Current.WindDirectionEnum mapWindDirectionToCurrent(
+      WindDirection windDirection) {
+    return windDirection != null
+        ? nl.markpost.demo.weather.api.v1.model.Current.WindDirectionEnum.fromValue(
+        windDirection.name()) : null;
   }
 
   /**
@@ -108,8 +120,11 @@ public interface WeatherModelMapper {
    * @param windDirection domain enum
    * @return API enum string
    */
-  default nl.markpost.demo.weather.api.v1.model.Daily.WindDirectionEnum mapWindDirectionToDaily(WindDirection windDirection) {
-    return windDirection != null ? nl.markpost.demo.weather.api.v1.model.Daily.WindDirectionEnum.fromValue(windDirection.name()) : null;
+  default nl.markpost.demo.weather.api.v1.model.Daily.WindDirectionEnum mapWindDirectionToDaily(
+      WindDirection windDirection) {
+    return windDirection != null
+        ? nl.markpost.demo.weather.api.v1.model.Daily.WindDirectionEnum.fromValue(
+        windDirection.name()) : null;
   }
 
   /**
@@ -118,7 +133,10 @@ public interface WeatherModelMapper {
    * @param windDirection domain enum
    * @return API enum string
    */
-  default nl.markpost.demo.weather.api.v1.model.Hourly.WindDirectionEnum mapWindDirectionToHourly(WindDirection windDirection) {
-    return windDirection != null ? nl.markpost.demo.weather.api.v1.model.Hourly.WindDirectionEnum.fromValue(windDirection.name()) : null;
+  default nl.markpost.demo.weather.api.v1.model.Hourly.WindDirectionEnum mapWindDirectionToHourly(
+      WindDirection windDirection) {
+    return windDirection != null
+        ? nl.markpost.demo.weather.api.v1.model.Hourly.WindDirectionEnum.fromValue(
+        windDirection.name()) : null;
   }
 }

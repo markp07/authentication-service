@@ -65,11 +65,11 @@ public class PasswordService {
    * email.
    *
    * @param email the email address of the user requesting a password reset
-   *                                        TODO: add time in DB for token expiration
+   *              TODO: add time in DB for token expiration
    */
   @Transactional
   public void forgotPassword(String email) {
-    User user = userRepository.findByEmail(email);
+    User user = userRepository.findByEmail(email).orElse(null);
     if (user == null) {
       log.warn("Forgot password request for non-existing user: {}", email);
       return;
@@ -87,7 +87,7 @@ public class PasswordService {
    *
    * @param resetToken  the token sent to the user's email for password reset
    * @param newPassword the new password to set for the user
-   *                                                          TODO: check time in DB for token expiration
+   *                                                                             TODO: check time in DB for token expiration
    */
   @Transactional
   public void resetPassword(String resetToken, String newPassword) {
@@ -108,11 +108,24 @@ public class PasswordService {
     userRepository.save(user);
   }
 
-  public boolean validateOldPassword(User user, String oldPassword) {
+  /**
+   * Validates the provided old password against the user's current password.
+   *
+   * @param user        the user whose password is to be validated
+   * @param oldPassword the old password to validate
+   * @return true if the old password matches the user's current password, false otherwise
+   */
+  boolean validateOldPassword(User user, String oldPassword) {
     return passwordEncoder.matches(oldPassword, user.getPassword());
   }
 
-  public boolean isPasswordStrong(String password) {
+  /**
+   * Validates the strength of the provided password.
+   *
+   * @param password the password to validate
+   * @return true if the password meets strength requirements, false otherwise
+   */
+  boolean isPasswordStrong(String password) {
     // Example: at least 8 chars, 1 uppercase, 1 lowercase, 1 digit
     if (password == null) {
       return false;

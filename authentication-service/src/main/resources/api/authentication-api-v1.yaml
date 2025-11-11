@@ -60,7 +60,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
 
   /refresh:
     post:
@@ -87,7 +87,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - RefreshCookie: []
+        - RefreshCookie: [ ]
   /logout:
     post:
       operationId: logout
@@ -102,7 +102,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Message'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /register:
     post:
       operationId: register
@@ -129,7 +129,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /password/change:
     put:
       operationId: changePassword
@@ -162,7 +162,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /password/forgot:
     post:
       operationId: forgotPassword
@@ -183,7 +183,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Message'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /password/reset:
     post:
       operationId: resetPassword
@@ -210,7 +210,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /2fa/setup:
     post:
       operationId: setup2FA
@@ -225,7 +225,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/TOTPSetupResponse'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /2fa/confirm:
     post:
       operationId: enable2FA
@@ -246,7 +246,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Message'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /2fa/verify:
     post:
       operationId: verify2FA
@@ -273,7 +273,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /public-key:
     get:
       operationId: getPublicKey
@@ -307,7 +307,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
     put:
       operationId: updateUserName
       summary: Update user name
@@ -333,7 +333,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
     delete:
       operationId: deleteAccount
       summary: Delete user account (requires password)
@@ -359,7 +359,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /2fa/disable:
     post:
       operationId: disable2FA
@@ -386,7 +386,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /2fa/backup-code:
     post:
       operationId: generateBackupCode
@@ -407,7 +407,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /2fa/reset:
     post:
       operationId: reset2FA
@@ -434,7 +434,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /passkey:
     get:
       operationId: listPasskeys
@@ -457,7 +457,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /passkey/{credentialId}:
     delete:
       operationId: deletePasskey
@@ -487,7 +487,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /passkey/register/start:
     post:
       operationId: startPasskeyRegistration
@@ -508,7 +508,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /passkey/register/finish:
     post:
       operationId: finishPasskeyRegistration
@@ -545,7 +545,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /passkey/login/start:
     post:
       operationId: startPasskeyLogin
@@ -572,7 +572,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /passkey/login/finish:
     post:
       operationId: finishPasskeyLogin
@@ -599,7 +599,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /passkey/login/usernameless/start:
     post:
       operationId: startUsernamelessPasskeyLogin
@@ -620,7 +620,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /passkey/login/usernameless/finish:
     post:
       operationId: finishUsernamelessPasskeyLogin
@@ -647,7 +647,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
 
 components:
   securitySchemes:
