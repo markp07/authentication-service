@@ -6,11 +6,15 @@ import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.ResidentKeyRequirement;
 import com.yubico.webauthn.data.UserIdentity;
 import com.yubico.webauthn.data.UserVerificationRequirement;
+import lombok.AllArgsConstructor;
 import nl.markpost.demo.authentication.model.User;
+import org.springframework.stereotype.Component;
 
 /**
  * Mapper for converting User and user ID to StartRegistrationOptions.
  */
+@Component
+@AllArgsConstructor
 public class StartRegistrationOptionsMapper {
 
   /**
