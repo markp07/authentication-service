@@ -7,7 +7,6 @@ import nl.markpost.demo.common.constant.GenericErrorCodes;
 import nl.markpost.demo.common.handler.BaseCustomExceptionHandler;
 import nl.markpost.demo.common.model.Error;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 

@@ -26,7 +26,7 @@ class CustomExceptionHandlerTest {
   void handleMethodArgumentNotValidException_assertionFailed() {
     AssertionFailedException exception = new AssertionFailedException("Assertion failed");
 
-    ResponseEntity<Error> response = 
+    ResponseEntity<Error> response =
         customExceptionHandler.handleMethodArgumentNotValidException(exception);
 
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());

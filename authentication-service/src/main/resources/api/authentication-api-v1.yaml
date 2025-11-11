@@ -60,7 +60,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
 
   /refresh:
     post:
@@ -87,7 +87,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - RefreshCookie: []
+        - RefreshCookie: [ ]
   /logout:
     post:
       operationId: logout
@@ -102,7 +102,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Message'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /register:
     post:
       operationId: register
@@ -129,7 +129,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /password/change:
     put:
       operationId: changePassword
@@ -162,7 +162,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /password/forgot:
     post:
       operationId: forgotPassword
@@ -183,7 +183,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Message'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /password/reset:
     post:
       operationId: resetPassword
@@ -210,7 +210,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /2fa/setup:
     post:
       operationId: setup2FA
@@ -225,7 +225,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/TOTPSetupResponse'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /2fa/confirm:
     post:
       operationId: enable2FA
@@ -246,7 +246,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Message'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /2fa/verify:
     post:
       operationId: verify2FA
@@ -273,7 +273,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /public-key:
     get:
       operationId: getPublicKey
@@ -307,7 +307,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
     put:
       operationId: updateUserName
       summary: Update user name
@@ -333,7 +333,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
     delete:
       operationId: deleteAccount
       summary: Delete user account (requires password)
@@ -359,7 +359,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /2fa/disable:
     post:
       operationId: disable2FA
@@ -386,7 +386,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /2fa/backup-code:
     post:
       operationId: generateBackupCode
@@ -407,7 +407,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /2fa/reset:
     post:
       operationId: reset2FA
@@ -434,7 +434,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /passkey:
     get:
       operationId: listPasskeys
@@ -449,8 +449,7 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  description: PasskeyInfoDto with credentialId, name, and createdAt
+                  $ref: '#/components/schemas/PasskeyInfoDto'
         '401':
           description: Not authenticated
           content:
@@ -458,7 +457,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /passkey/{credentialId}:
     delete:
       operationId: deletePasskey
@@ -488,7 +487,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /passkey/register/start:
     post:
       operationId: startPasskeyRegistration
@@ -501,8 +500,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                description: PublicKeyCredentialCreationOptions from WebAuthn spec
+                $ref: '#/components/schemas/PublicKeyCredentialCreationOptionsDto'
         '401':
           description: Not authenticated
           content:
@@ -510,7 +508,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /passkey/register/finish:
     post:
       operationId: finishPasskeyRegistration
@@ -547,7 +545,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /passkey/login/start:
     post:
       operationId: startPasskeyLogin
@@ -559,14 +557,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              description: PasskeyLoginRequest with email field
-              properties:
-                email:
-                  type: string
-                  format: email
-              required:
-                - email
+              $ref: '#/components/schemas/PasskeyLoginStartRequest'
       responses:
         '200':
           description: Authentication options for WebAuthn ceremony
@@ -581,7 +572,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /passkey/login/finish:
     post:
       operationId: finishPasskeyLogin
@@ -593,17 +584,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              description: PasskeyLoginFinishRequest with email and credential fields
-              properties:
-                email:
-                  type: string
-                  format: email
-                credential:
-                  type: object
-              required:
-                - email
-                - credential
+              $ref: '#/components/schemas/PasskeyLoginFinishRequest'
       responses:
         '200':
           description: Authentication successful, tokens set in cookies
@@ -618,7 +599,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /passkey/login/usernameless/start:
     post:
       operationId: startUsernamelessPasskeyLogin
@@ -639,7 +620,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
   /passkey/login/usernameless/finish:
     post:
       operationId: finishUsernamelessPasskeyLogin
@@ -651,8 +632,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              description: PublicKeyCredential from WebAuthn ceremony
+              $ref: '#/components/schemas/PublicKeyCredentialAssertionDto'
       responses:
         '200':
           description: Authentication successful, tokens set in cookies
@@ -667,7 +647,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
       security:
-        - AccessCookie: []
+        - AccessCookie: [ ]
 
 components:
   securitySchemes:
@@ -842,3 +822,165 @@ components:
           items:
             type: string
           description: Hints for credential selection
+    PasskeyInfoDto:
+      type: object
+      properties:
+        credentialId:
+          type: string
+          description: The credential ID
+        name:
+          type: string
+          description: The user-provided name for this passkey
+        createdAt:
+          type: string
+          format: date-time
+          description: When the passkey was registered
+    PasskeyLoginStartRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: User email address
+      required:
+        - email
+    PasskeyLoginFinishRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: User email address
+        credential:
+          $ref: '#/components/schemas/PublicKeyCredentialAssertionDto'
+      required:
+        - email
+        - credential
+    PublicKeyCredentialCreationOptionsDto:
+      type: object
+      description: Options for WebAuthn registration ceremony
+      properties:
+        rp:
+          type: object
+          description: Relying Party information
+          properties:
+            name:
+              type: string
+            id:
+              type: string
+        user:
+          type: object
+          description: User information
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+            displayName:
+              type: string
+        challenge:
+          type: string
+          description: Base64URL encoded challenge
+        pubKeyCredParams:
+          type: array
+          description: Supported public key algorithms
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              alg:
+                type: integer
+        timeout:
+          type: integer
+          format: int64
+          description: Timeout in milliseconds
+        excludeCredentials:
+          type: array
+          description: Credentials to exclude from registration
+          items:
+            type: object
+        authenticatorSelection:
+          type: object
+          description: Authenticator selection criteria
+          properties:
+            authenticatorAttachment:
+              type: string
+            requireResidentKey:
+              type: boolean
+            residentKey:
+              type: string
+            userVerification:
+              type: string
+        attestation:
+          type: string
+          description: Attestation conveyance preference
+        extensions:
+          type: object
+          additionalProperties: true
+          description: WebAuthn extensions
+    PublicKeyCredentialAttestationDto:
+      type: object
+      description: PublicKeyCredential with attestation response from WebAuthn registration
+      properties:
+        id:
+          type: string
+          description: Base64URL encoded credential ID
+        rawId:
+          type: string
+          description: Base64URL encoded raw credential ID
+        type:
+          type: string
+          description: Credential type (public-key)
+        response:
+          type: object
+          description: Authenticator attestation response
+          properties:
+            clientDataJSON:
+              type: string
+              description: Base64URL encoded client data JSON
+            attestationObject:
+              type: string
+              description: Base64URL encoded attestation object
+            transports:
+              type: array
+              items:
+                type: string
+              description: Supported transports
+        clientExtensionResults:
+          type: object
+          additionalProperties: true
+          description: Client extension results
+    PublicKeyCredentialAssertionDto:
+      type: object
+      description: PublicKeyCredential with assertion response from WebAuthn authentication
+      properties:
+        id:
+          type: string
+          description: Base64URL encoded credential ID
+        rawId:
+          type: string
+          description: Base64URL encoded raw credential ID
+        type:
+          type: string
+          description: Credential type (public-key)
+        response:
+          type: object
+          description: Authenticator assertion response
+          properties:
+            clientDataJSON:
+              type: string
+              description: Base64URL encoded client data JSON
+            authenticatorData:
+              type: string
+              description: Base64URL encoded authenticator data
+            signature:
+              type: string
+              description: Base64URL encoded signature
+            userHandle:
+              type: string
+              description: Base64URL encoded user handle
+        clientExtensionResults:
+          type: object
+          additionalProperties: true
+          description: Client extension results

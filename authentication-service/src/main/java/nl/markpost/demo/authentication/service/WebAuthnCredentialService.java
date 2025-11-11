@@ -3,7 +3,6 @@ package nl.markpost.demo.authentication.service;
 import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -13,21 +12,30 @@ import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.authentication.model.PasskeyCredential;
 import nl.markpost.demo.authentication.model.User;
 import nl.markpost.demo.authentication.repository.PasskeyCredentialRepository;
-import nl.markpost.demo.authentication.repository.UserRepository;
+import nl.markpost.demo.common.exception.UnauthorizedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Service for managing WebAuthn credentials.
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class WebAuthnCredentialService {
 
   private final PasskeyCredentialRepository passkeyCredentialRepository;
-  private final UserRepository userRepository;
+  private final UserService userService;
 
+  /**
+   * Retrieves the credential IDs associated with a given username.
+   *
+   * @param username the username (email) of the user
+   * @return a set of PublicKeyCredentialDescriptor objects
+   */
   @Transactional(readOnly = true)
   public Set<PublicKeyCredentialDescriptor> getCredentialIdsForUsername(String username) {
-    User user = userRepository.findByEmail(username);
+    User user = userService.getUserByEmail(username);
     if (user == null) {
       return Set.of();
     }
@@ -45,9 +53,15 @@ public class WebAuthnCredentialService {
         .collect(Collectors.toSet());
   }
 
+  /**
+   * Retrieves the user handle for a given username.
+   *
+   * @param username the username (email) of the user
+   * @return an Optional containing the user handle as ByteArray, or empty if not found
+   */
   @Transactional(readOnly = true)
   public Optional<ByteArray> getUserHandleForUsername(String username) {
-    User user = userRepository.findByEmail(username);
+    User user = userService.getUserByEmail(username);
     if (user == null) {
       return Optional.empty();
     }
@@ -57,39 +71,36 @@ public class WebAuthnCredentialService {
     return Optional.of(userHandle);
   }
 
+  /**
+   * Retrieves the username associated with a given user handle.
+   *
+   * @param userHandle the user handle as ByteArray
+   * @return an Optional containing the username, or empty if not found
+   */
   @Transactional(readOnly = true)
   public Optional<String> getUsernameForUserHandle(ByteArray userHandle) {
     String uuidStr = new String(userHandle.getBytes(), java.nio.charset.StandardCharsets.UTF_8);
-    try {
-      UUID userId = UUID.fromString(uuidStr);
-      User user = userRepository.findById(userId).orElse(null);
-      if (user != null) {
-        return Optional.of(user.getEmail());
-      } else {
-        log.warn("[WebAuthnCredentialService] User not found in database for UUID: " + userId);
-      }
-    } catch (Exception e) {
-      log.error("[WebAuthnCredentialService] Error in getUsernameForUserHandle for UUID: " + uuidStr, e);
-    }
-    return Optional.empty();
+    UUID userId = UUID.fromString(uuidStr);
+    User user = userService.getUserById(userId);
+    return Optional.of(user.getEmail());
   }
 
+  /**
+   * Looks up a registered credential by its credential ID and user handle.
+   *
+   * @param credentialId the credential ID as ByteArray
+   * @param userHandle   the user handle as ByteArray
+   * @return an Optional containing the RegisteredCredential, or empty if not found
+   */
   @Transactional(readOnly = true)
   public Optional<RegisteredCredential> lookup(ByteArray credentialId, ByteArray userHandle) {
     String uuidStr = new String(userHandle.getBytes(), java.nio.charset.StandardCharsets.UTF_8);
     try {
-      UUID userId = UUID.fromString(uuidStr);
-      User user = userRepository.findById(userId).orElse(null);
-      if (user == null) {
-        log.warn("[WebAuthnCredentialService] User not found for UUID: " + userId);
-        return Optional.empty();
-      }
+      userService.getUserById(UUID.fromString(uuidStr));
       String credentialIdBase64 = credentialId.getBase64Url();
-      PasskeyCredential cred = passkeyCredentialRepository.findByCredentialId(credentialIdBase64);
-      if (cred == null) {
-        log.warn("[WebAuthnCredentialService] Credential not found in database for ID: " + credentialIdBase64);
-        return Optional.empty();
-      }
+      PasskeyCredential cred = passkeyCredentialRepository.findByCredentialId(credentialIdBase64)
+          .orElseThrow(
+              UnauthorizedException::new);
       try {
         return Optional.of(RegisteredCredential.builder()
             .credentialId(credentialId)
@@ -97,8 +108,9 @@ public class WebAuthnCredentialService {
             .publicKeyCose(ByteArray.fromBase64Url(cred.getPublicKey()))
             .build());
       } catch (Exception e) {
-        log.error("[WebAuthnCredentialService] Error building RegisteredCredential for credentialId: "
-            + credentialIdBase64 + ", publicKey: " + cred.getPublicKey(), e);
+        log.error(
+            "[WebAuthnCredentialService] Error building RegisteredCredential for credentialId: "
+                + credentialIdBase64 + ", publicKey: " + cred.getPublicKey(), e);
         throw new RuntimeException("Failed to build registered credential", e);
       }
     } catch (IllegalArgumentException e) {
@@ -107,16 +119,19 @@ public class WebAuthnCredentialService {
     }
   }
 
+  /**
+   * Looks up all registered credentials for a given user handle.
+   *
+   * @param userHandle the user handle as ByteArray
+   * @return a set of RegisteredCredential objects
+   */
   @Transactional(readOnly = true)
   public Set<RegisteredCredential> lookupAll(ByteArray userHandle) {
     // UserHandle contains UUID
     String uuidStr = new String(userHandle.getBytes(), java.nio.charset.StandardCharsets.UTF_8);
     try {
       UUID userId = UUID.fromString(uuidStr);
-      User user = userRepository.findById(userId).orElse(null);
-      if (user == null) {
-        return Set.of();
-      }
+      User user = userService.getUserById(userId);
       return passkeyCredentialRepository.findByUserId(user.getId()).stream()
           .map(cred -> {
             try {

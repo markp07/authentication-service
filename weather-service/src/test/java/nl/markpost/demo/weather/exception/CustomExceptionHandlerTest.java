@@ -26,12 +26,13 @@ class CustomExceptionHandlerTest {
   void handleGenericException_success() {
     GenericException exception = new GenericException(GenericErrorCodes.INTERNAL_SERVER_ERROR);
 
-    ResponseEntity<Error> response = 
+    ResponseEntity<Error> response =
         customExceptionHandler.handleGenericExceptionException(exception);
 
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
     assertNotNull(response.getBody());
     assertEquals(GenericErrorCodes.INTERNAL_SERVER_ERROR.getCode(), response.getBody().getCode());
-    assertEquals(GenericErrorCodes.INTERNAL_SERVER_ERROR.getMessage(), response.getBody().getMessage());
+    assertEquals(GenericErrorCodes.INTERNAL_SERVER_ERROR.getMessage(),
+        response.getBody().getMessage());
   }
 }

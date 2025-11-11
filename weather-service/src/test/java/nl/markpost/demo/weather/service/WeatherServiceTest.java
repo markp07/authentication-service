@@ -9,9 +9,9 @@ import static org.mockito.Mockito.when;
 import nl.markpost.demo.weather.client.OpenMeteoClient;
 import nl.markpost.demo.weather.client.ReverseGeocodeClient;
 import nl.markpost.demo.weather.mapper.WeatherMapper;
+import nl.markpost.demo.weather.model.ReverseGeocodeResponse;
 import nl.markpost.demo.weather.model.Weather;
 import nl.markpost.demo.weather.model.WeatherResponse;
-import nl.markpost.demo.weather.model.ReverseGeocodeResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,7 +46,8 @@ class WeatherServiceTest {
     when(openMeteoClient.getWeatherDaily(latitude, longitude)).thenReturn(weatherResponse);
     when(openMeteoClient.getWeatherHourly(latitude, longitude)).thenReturn(weatherResponse);
     when(reverseGeocodeClient.getLocation(latitude, longitude)).thenReturn(reverseGeocodeResponse);
-    when(weatherMapper.toWeather(weatherResponse, reverseGeocodeResponse)).thenReturn(expectedWeather);
+    when(weatherMapper.toWeather(weatherResponse, reverseGeocodeResponse)).thenReturn(
+        expectedWeather);
 
     Weather result = weatherService.getWeather(latitude, longitude);
 
@@ -85,7 +86,8 @@ class WeatherServiceTest {
     when(openMeteoClient.getWeatherDaily(latitude, longitude)).thenReturn(null);
     when(openMeteoClient.getWeatherHourly(latitude, longitude)).thenReturn(hourlyWeatherResponse);
     when(reverseGeocodeClient.getLocation(latitude, longitude)).thenReturn(reverseGeocodeResponse);
-    when(weatherMapper.toWeather(hourlyWeatherResponse, reverseGeocodeResponse)).thenReturn(expectedWeather);
+    when(weatherMapper.toWeather(hourlyWeatherResponse, reverseGeocodeResponse)).thenReturn(
+        expectedWeather);
     Weather result = weatherService.getWeather(latitude, longitude);
     assertSame(expectedWeather, result);
     verify(openMeteoClient).getWeatherDaily(latitude, longitude);

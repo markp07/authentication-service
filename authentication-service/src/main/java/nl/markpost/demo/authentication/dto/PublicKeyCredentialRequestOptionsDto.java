@@ -3,14 +3,14 @@ package nl.markpost.demo.authentication.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
 import com.yubico.webauthn.data.PublicKeyCredentialRequestOptions;
-import lombok.Data;
-
 import java.util.List;
 import java.util.Map;
+import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PublicKeyCredentialRequestOptionsDto {
+
   private String challenge;
   private Long timeout;
   private String rpId;
@@ -19,7 +19,8 @@ public class PublicKeyCredentialRequestOptionsDto {
   private Map<String, Object> extensions;
   private List<String> hints;
 
-  public static PublicKeyCredentialRequestOptionsDto from(PublicKeyCredentialRequestOptions options) {
+  public static PublicKeyCredentialRequestOptionsDto from(
+      PublicKeyCredentialRequestOptions options) {
     PublicKeyCredentialRequestOptionsDto dto = new PublicKeyCredentialRequestOptionsDto();
     dto.setChallenge(options.getChallenge().getBase64Url());
     dto.setTimeout(options.getTimeout().orElse(null));

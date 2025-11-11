@@ -16,6 +16,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * Entity representing a Passkey Credential associated with a User.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
