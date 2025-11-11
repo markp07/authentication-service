@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  * REST controller for passkey registration and authentication operations.
  */
 @RestController
-@RequestMapping("/v1/passkey")
+@RequestMapping("/v1")
 @RequiredArgsConstructor
 public class PasskeyController implements PasskeyApi {
 
