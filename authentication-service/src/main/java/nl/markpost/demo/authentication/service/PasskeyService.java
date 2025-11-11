@@ -3,6 +3,7 @@ package nl.markpost.demo.authentication.service;
 import static nl.markpost.demo.authentication.constant.Constants.ACCESS_TOKEN;
 import static nl.markpost.demo.authentication.constant.Constants.DAYS_7;
 import static nl.markpost.demo.authentication.constant.Constants.MINUTES_15;
+import static nl.markpost.demo.authentication.constant.Constants.PASSKEY_REGISTRATION;
 import static nl.markpost.demo.authentication.constant.Constants.REFRESH_TOKEN;
 import static nl.markpost.demo.authentication.util.MessageResponseUtil.createMessageResponse;
 
@@ -16,37 +17,43 @@ import com.yubico.webauthn.StartAssertionOptions;
 import com.yubico.webauthn.StartRegistrationOptions;
 import com.yubico.webauthn.data.AuthenticatorAssertionResponse;
 import com.yubico.webauthn.data.AuthenticatorAttestationResponse;
-import com.yubico.webauthn.data.AuthenticatorSelectionCriteria;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.ClientAssertionExtensionOutputs;
 import com.yubico.webauthn.data.ClientRegistrationExtensionOutputs;
 import com.yubico.webauthn.data.PublicKeyCredential;
 import com.yubico.webauthn.data.PublicKeyCredentialCreationOptions;
-import com.yubico.webauthn.data.ResidentKeyRequirement;
-import com.yubico.webauthn.data.UserIdentity;
 import com.yubico.webauthn.data.UserVerificationRequirement;
 import jakarta.servlet.http.HttpServletResponse;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDateTime;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.authentication.api.v1.model.Message;
 import nl.markpost.demo.authentication.api.v1.model.PasskeyInfoDto;
+import nl.markpost.demo.authentication.api.v1.model.PublicKeyCredentialCreationOptionsDto;
 import nl.markpost.demo.authentication.constant.Messages;
+import nl.markpost.demo.authentication.mapper.PasskeyCredentialMapper;
+import nl.markpost.demo.authentication.mapper.PasskeyInfoDtoMapper;
+import nl.markpost.demo.authentication.mapper.PublicKeyCredentialCreationOptionsDtoMapper;
+import nl.markpost.demo.authentication.mapper.StartRegistrationOptionsMapper;
 import nl.markpost.demo.authentication.model.PasskeyCredential;
 import nl.markpost.demo.authentication.model.User;
 import nl.markpost.demo.authentication.repository.PasskeyCredentialRepository;
 import nl.markpost.demo.authentication.repository.UserRepository;
 import nl.markpost.demo.authentication.util.CookieUtil;
 import nl.markpost.demo.authentication.util.RequestUtil;
+import nl.markpost.demo.authentication.util.UserUtil;
+import nl.markpost.demo.common.exception.InternalServerErrorException;
+import nl.markpost.demo.common.exception.NotFoundException;
 import nl.markpost.demo.common.exception.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 //TODO: move controller logic into here
 //TODO: add JavaDoc to class and all methods
@@ -61,69 +68,68 @@ public class PasskeyService {
   private final RelyingParty relyingParty;
   private final JwtService jwtService;
 
+  private final PasskeyInfoDtoMapper passkeyInfoDtoMapper;
+  private final PublicKeyCredentialCreationOptionsDtoMapper publicKeyCredentialCreationOptionsDtoMapper;
+  private final StartRegistrationOptionsMapper startRegistrationOptionsMapper;
+  private final PasskeyCredentialMapper passkeyCredentialMapper;
+
+  /**
+   * Lists all passkeys for the given user.
+   *
+   * @param user the user whose passkeys are to be listed
+   * @return a list of PasskeyInfoDto representing the user's passkeys
+   */
   public List<PasskeyInfoDto> listPasskeys(User user) {
     if (user == null) return List.of();
     List<PasskeyCredential> list = passkeyCredentialRepository.findByUserId(user.getId());
     return list
         .stream()
-        //TODO: Use mapstruct mapper for mapping PasskeyInfoDto
-        .map(pk -> new PasskeyInfoDto(pk.getCredentialId(), pk.getName(), pk.getCreatedAt()))
+        .map(passkeyInfoDtoMapper::from)
         .toList();
   }
 
-  @Transactional
-  public void deletePasskey(User user, String credentialId) {
-    if (user == null) {
-      return;
-    }
-    PasskeyCredential cred = passkeyCredentialRepository.findByCredentialId(credentialId);
-    if (cred != null && cred.getUser().getId().equals(user.getId())) {
-      passkeyCredentialRepository.delete(cred);
-    }
+  /**
+   * Starts the registration process for a new passkey.
+   *
+   * @return PublicKeyCredentialCreationOptionsDto containing the registration options
+   */
+  public PublicKeyCredentialCreationOptionsDto startRegistration() {
+    User user = UserUtil.getUserFromSecurityContext();
+    ByteArray userIdBytes = UserUtil.getIdAsByteArray(user);
+
+    StartRegistrationOptions startOptions = startRegistrationOptionsMapper.from(userIdBytes, user);
+
+    PublicKeyCredentialCreationOptions options = relyingParty.startRegistration(startOptions);
+
+    ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+    HttpSession session = attrs.getRequest().getSession(true);
+    session.setAttribute(PASSKEY_REGISTRATION, options);
+
+    return publicKeyCredentialCreationOptionsDtoMapper.from(options);
   }
 
-  public PublicKeyCredentialCreationOptions startRegistration() {
-    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    String uuid = user.getId().toString();
-    ByteArray userIdBytes = new ByteArray(uuid.getBytes(StandardCharsets.UTF_8));
-    PublicKeyCredentialCreationOptions options = relyingParty.startRegistration(
-        StartRegistrationOptions.builder()
-            .user(UserIdentity.builder()
-                .name(user.getEmail())
-                .displayName(user.getUsername())
-                .id(userIdBytes)
-                .build())
-            .authenticatorSelection(AuthenticatorSelectionCriteria.builder()
-                .residentKey(ResidentKeyRequirement.REQUIRED)
-                .userVerification(UserVerificationRequirement.REQUIRED)
-                .build())
-            .build()
-    );
-    log.info("[WebAuthn] Registration options credentialId: " + options);
-    return options;
-  }
-
+  /**
+   * Finishes the registration process for a new passkey.
+   *
+   * @param credential the PublicKeyCredential received from the client
+   * @param name       the name of the passkey
+   */
   @SneakyThrows
   public void finishRegistration(
       PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> credential,
-      String name,
-      PublicKeyCredentialCreationOptions registrationOptions) {
-    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    RegistrationResult result = relyingParty.finishRegistration(
-        FinishRegistrationOptions.builder()
-            .request(registrationOptions)
-            .response(credential)
-            .build()
-    );
-    log.info("[WebAuthn] Registered credentialId: " + result.getKeyId().getId().getBase64Url());
-    PasskeyCredential passkey = PasskeyCredential.builder()
-        .user(user)
-        .credentialId(result.getKeyId().getId().getBase64Url())
-        .publicKey(result.getPublicKeyCose().getBase64Url())
-        .name(name)
-        .createdAt(LocalDateTime.now())
-        .build();
+      String name) {
+    ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+    HttpSession session = attrs.getRequest().getSession(true);
+    PublicKeyCredentialCreationOptions registrationOptions = (PublicKeyCredentialCreationOptions) session.getAttribute(
+        PASSKEY_REGISTRATION);
+
+    User user = UserUtil.getUserFromSecurityContext();
+    FinishRegistrationOptions finishOptions = createFinishRegistrationOptions(credential, registrationOptions);
+    RegistrationResult result = relyingParty.finishRegistration(finishOptions);
+
+    PasskeyCredential passkey = passkeyCredentialMapper.from(result, user, name);
     passkeyCredentialRepository.save(passkey);
+    session.removeAttribute(PASSKEY_REGISTRATION);
   }
 
   public AssertionRequest startAuthentication(String email) {
@@ -227,5 +233,28 @@ public class PasskeyService {
       log.warn("[WebAuthn] Usernameless authentication failed");
       throw new UnauthorizedException();
     }
+  }
+
+  @Transactional
+  public void deletePasskey(String credentialId) {
+    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    if (!(principal instanceof User user)) {
+      throw new InternalServerErrorException();
+    }
+
+    PasskeyCredential cred = passkeyCredentialRepository
+        .findByCredentialIdAndUserId(credentialId, user.getId())
+        .orElseThrow(() -> new NotFoundException("Passkey not found"));
+
+    passkeyCredentialRepository.delete(cred);
+  }
+
+  private FinishRegistrationOptions createFinishRegistrationOptions(
+      PublicKeyCredential<AuthenticatorAttestationResponse, ClientRegistrationExtensionOutputs> credential,
+      PublicKeyCredentialCreationOptions registrationOptions) {
+    return FinishRegistrationOptions.builder()
+        .request(registrationOptions)
+        .response(credential)
+        .build();
   }
 }

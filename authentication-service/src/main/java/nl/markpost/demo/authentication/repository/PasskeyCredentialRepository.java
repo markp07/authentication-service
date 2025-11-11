@@ -1,9 +1,9 @@
 package nl.markpost.demo.authentication.repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import nl.markpost.demo.authentication.model.PasskeyCredential;
-import nl.markpost.demo.authentication.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PasskeyCredentialRepository extends JpaRepository<PasskeyCredential, UUID> {
@@ -12,6 +12,7 @@ public interface PasskeyCredentialRepository extends JpaRepository<PasskeyCreden
 
   PasskeyCredential findByCredentialId(String credentialId);
 
-  void deleteByCredentialId(String credentialId);
+  Optional<PasskeyCredential> findByCredentialIdAndUserId(String credentialId, UUID userId);
+
 }
 

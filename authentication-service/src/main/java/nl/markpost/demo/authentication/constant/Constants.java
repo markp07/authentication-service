@@ -9,5 +9,5 @@ public class Constants {
   public final static Integer DAYS_7 = 60 * 60 * 24 * 7; // 7 days in seconds
   public final static Integer MINUTES_15 = 15 * 60; // 15 minutes in seconds
   public final static Integer MINUTES_5 = 5 * 60; // 15 minutes in seconds
-
+  public final static String PASSKEY_REGISTRATION = "webauthn_registration_options";
 }

@@ -12,8 +12,4 @@ public class NotFoundException extends GenericException {
     super(message, GenericErrorCodes.NOT_FOUND);
   }
 
-  public NotFoundException(String message, Exception exception) {
-    super(message, GenericErrorCodes.NOT_FOUND, exception);
-  }
-
 }
