@@ -174,7 +174,7 @@ export default function Home() {
       )}
       
       {/* Main content area */}
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto lg:ml-64">
         {loggedIn ? (
           <div className="p-2 sm:p-4 lg:p-6">
                 {showWeather && weather ? (

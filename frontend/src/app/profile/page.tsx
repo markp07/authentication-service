@@ -83,7 +83,7 @@ export default function Profile() {
         onLogout={handleLogout}
       />
       
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto lg:ml-64">
         <ProfilePage
           onSecurity={() => router.push("/security")}
           onDeleteAccount={() => setModal("deleteAccount")}

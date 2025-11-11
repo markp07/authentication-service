@@ -84,7 +84,7 @@ export default function Security() {
         onLogout={handleLogout}
       />
       
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto lg:ml-64">
         <SecurityPage
           onChangePassword={() => setModal("changePassword")}
           onToggle2FA={() => setModal("2fa")}
