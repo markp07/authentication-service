@@ -31,18 +31,18 @@ export default function Sidebar({ username, activePage, onNavigate, onLogout }: 
       {/* Overlay for mobile */}
       {isOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+          className="lg:hidden fixed inset-0 bg-transparent z-40"
           onClick={() => setIsOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-800 shadow-xl transform transition-transform duration-300 ease-in-out lg:transform-none ${
+        className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-800 shadow-xl transform transition-transform duration-300 ease-in-out lg:transform-none lg:h-screen ${
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full lg:h-screen">
           {/* Header */}
           <div className="p-6 border-b border-gray-200 dark:border-gray-700">
             <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400">Demo Auth</h1>
