@@ -1,16 +1,12 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 import Modal from "../components/Modal";
 import Login from "../components/Login";
 import Register from "../components/Register";
 import ForgotPassword from "../components/ForgotPassword";
 import ResetPassword from "../components/ResetPassword";
-import Setup2FA from "../components/Setup2FA";
-import ChangePassword from "../components/ChangePassword";
-import DeleteAccountModal from "../components/DeleteAccountModal";
-import ProfilePage from "../components/ProfilePage";
-import SecurityPage from "../components/SecurityPage";
 import Sidebar from "../components/Sidebar";
 import { IconSun, IconWind, IconArrowUp, IconArrowUpLeft, IconArrowUpRight, IconArrowDown, IconArrowDownLeft, IconArrowDownRight, IconArrowRight, IconArrowLeft } from "@tabler/icons-react";
 import type { Weather } from "../types/Weather";
@@ -47,14 +43,12 @@ function getWindDirectionIcon(direction: string, size = 22) {
 }
 
 export default function Home() {
+  const router = useRouter();
   const [modal, setModal] = React.useState<
     | "login"
     | "register"
     | "forgot"
     | "reset"
-    | "2fa"
-    | "changePassword"
-    | "deleteAccount"
     | null
   >("login");
   const [showWeather, setShowWeather] = React.useState(false);
@@ -63,7 +57,6 @@ export default function Home() {
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [username, setUsername] = React.useState<string | null>(null);
   const [checkingLogin, setCheckingLogin] = React.useState(true);
-  const [activePage, setActivePage] = React.useState<"dashboard" | "profile" | "security">("dashboard");
 
   // Modal open/close helpers
   const openModal = (name: typeof modal) => setModal(name);
@@ -147,8 +140,17 @@ export default function Home() {
     setLoggedIn(false);
     setShowWeather(false);
     setWeather(null);
-    setActivePage("dashboard");
     setModal("login");
+  }
+
+  function handleNavigate(page: "dashboard" | "profile" | "security") {
+    if (page === "dashboard") {
+      router.push("/");
+    } else if (page === "profile") {
+      router.push("/profile");
+    } else if (page === "security") {
+      router.push("/security");
+    }
   }
 
   if (checkingLogin) {
@@ -165,30 +167,16 @@ export default function Home() {
       {loggedIn && (
         <Sidebar
           username={username}
-          activePage={activePage}
-          onNavigate={setActivePage}
+          activePage="dashboard"
+          onNavigate={handleNavigate}
           onLogout={handleLogout}
         />
       )}
       
       {/* Main content area */}
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto lg:ml-64">
         {loggedIn ? (
-          <>
-            {activePage === "profile" && (
-              <ProfilePage
-                onSecurity={() => setActivePage("security")}
-                onDeleteAccount={() => setModal("deleteAccount")}
-              />
-            )}
-            {activePage === "security" && (
-              <SecurityPage
-                onChangePassword={() => setModal("changePassword")}
-                onToggle2FA={() => setModal("2fa")}
-              />
-            )}
-            {activePage === "dashboard" && (
-              <div className="p-2 sm:p-4 lg:p-6">
+          <div className="p-2 sm:p-4 lg:p-6">
                 {showWeather && weather ? (
                   <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4 lg:space-y-6">
                     {/* Current Weather Card */}
@@ -282,8 +270,6 @@ export default function Home() {
                   </div>
                 )}
               </div>
-            )}
-          </>
         ) : null}
       </main>
 
@@ -316,20 +302,6 @@ export default function Home() {
         <ResetPassword
           onBack={() => openModal("forgot")}
           onLogin={() => openModal("login")}
-        />
-      </Modal>
-      <Modal open={modal === "2fa"} onClose={closeModal}>
-        <Setup2FA />
-      </Modal>
-      <Modal open={modal === "changePassword"} onClose={closeModal}>
-        <ChangePassword onClose={closeModal} />
-      </Modal>
-      <Modal open={modal === "deleteAccount"} onClose={closeModal}>
-        <DeleteAccountModal
-          onSuccess={() => {
-            handleLogout();
-          }}
-          onCancel={closeModal}
         />
       </Modal>
     </div>
