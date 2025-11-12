@@ -1,4 +1,5 @@
 import React from "react";
+import { IconTemperature, IconDroplet, IconWind } from "@tabler/icons-react";
 import type { Hourly } from "../types/Hourly";
 
 interface HourlyGraphModalProps {
@@ -94,41 +95,40 @@ export default function HourlyGraphModal({
         </button>
         
         <div className="p-6">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-            Hourly Forecast - {getLabel()}
-          </h2>
-
-          {/* Data Type Selector */}
-          <div className="flex gap-2 mb-6 flex-wrap">
+          {/* Data Type Selector - Now serving as header */}
+          <div className="flex gap-3 mb-6 flex-wrap justify-center">
             <button
               onClick={() => setDataType("temperature")}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-lg transition-colors ${
                 dataType === "temperature"
-                  ? "bg-blue-600 text-white"
+                  ? "bg-blue-600 text-white shadow-lg"
                   : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
               }`}
             >
-              Temperature
+              <IconTemperature size={24} />
+              <span>Temperature</span>
             </button>
             <button
               onClick={() => setDataType("precipitation")}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-lg transition-colors ${
                 dataType === "precipitation"
-                  ? "bg-blue-600 text-white"
+                  ? "bg-blue-600 text-white shadow-lg"
                   : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
               }`}
             >
-              Precipitation
+              <IconDroplet size={24} />
+              <span>Precipitation</span>
             </button>
             <button
               onClick={() => setDataType("wind")}
-              className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-lg transition-colors ${
                 dataType === "wind"
-                  ? "bg-blue-600 text-white"
+                  ? "bg-blue-600 text-white shadow-lg"
                   : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
               }`}
             >
-              Wind Speed
+              <IconWind size={24} />
+              <span>Wind Speed</span>
             </button>
           </div>
 
