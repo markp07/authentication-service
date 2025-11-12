@@ -208,8 +208,12 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
           </div>
           <div className="flex items-center justify-between py-2">
             <span className="text-gray-600 dark:text-gray-400">Email</span>
-            <span className="px-3 py-1 rounded-full text-sm font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
-              Verified
+            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+              user?.emailVerified
+                ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
+            }`}>
+              {user?.emailVerified ? "Verified" : "Unverified"}
             </span>
           </div>
         </div>

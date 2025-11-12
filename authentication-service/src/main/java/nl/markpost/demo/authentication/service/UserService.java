@@ -34,6 +34,7 @@ public class UserService {
         .email(user.getEmail())
         .twoFactorEnabled(user.is2faEnabled())
         .passkeyEnabled(passkeyEnabled)
+        .emailVerified(user.isEmailVerified())
         .createdAt(user.getCreatedAt() != null 
             ? user.getCreatedAt().atZone(java.time.ZoneId.systemDefault()).toOffsetDateTime()
             : null)

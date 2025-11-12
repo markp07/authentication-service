@@ -3,6 +3,7 @@ export interface User {
   userName: string;
   twoFactorEnabled: boolean;
   passkeyEnabled?: boolean;
+  emailVerified?: boolean;
   createdAt?: string;
 }
 

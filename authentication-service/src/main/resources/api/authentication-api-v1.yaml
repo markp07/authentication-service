@@ -746,6 +746,8 @@ components:
           type: boolean
         passkeyEnabled:
           type: boolean
+        emailVerified:
+          type: boolean
         createdAt:
           type: string
           format: date-time
