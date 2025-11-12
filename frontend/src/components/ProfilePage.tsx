@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { AUTH_API_BASE, fetchWithAuthRetry } from "../utils/api";
 import { User } from "../types/User";
 import { IconUser, IconMail, IconEdit, IconCheck, IconX, IconTrash, IconShield } from "@tabler/icons-react";
+import { generateProfilePictureUrl } from "../utils/profilePicture";
 
 interface ProfilePageProps {
   onSecurity: () => void;
@@ -95,8 +96,12 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
         <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-24"></div>
         <div className="px-6 pb-6 -mt-12">
           <div className="flex items-end gap-4">
-            <div className="w-24 h-24 bg-white dark:bg-gray-700 rounded-full flex items-center justify-center shadow-lg border-4 border-white dark:border-gray-800">
-              <IconUser size={48} className="text-blue-600 dark:text-blue-400" />
+            <div className="w-24 h-24 bg-white dark:bg-gray-700 rounded-full overflow-hidden shadow-lg border-4 border-white dark:border-gray-800">
+              <img 
+                src={generateProfilePictureUrl(user?.userName || "")} 
+                alt="Profile" 
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="flex-1 mb-2">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{user?.userName}</h2>
