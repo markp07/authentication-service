@@ -6,5 +6,7 @@
 export function generateProfilePictureUrl(username: string): string {
   // Base64 encode the username to use as seed
   const seed = Buffer.from(username).toString('base64');
-  return `https://api.dicebear.com/9.x/identicon/svg?seed=${seed}`;
+  // URL encode the seed to ensure it's safe to use in a URL
+  const encodedSeed = encodeURIComponent(seed);
+  return `https://api.dicebear.com/9.x/identicon/svg?seed=${encodedSeed}`;
 }
