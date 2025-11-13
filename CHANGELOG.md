@@ -22,6 +22,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced Authentication Service OpenAPI spec with complete Passkey endpoint documentation
 
 ## [1.0.0] - 2025-11-02
+## [1.3.2] - 2025-11-12
+
+### Changed
+- Update weather page to add popup for hourly data graphs (#54)
+
+## [1.3.1] - 2025-11-12
+
+### Changed
+- Add Dicebear profile pictures with base64-encoded username seed (#52)
+
 ## [1.3.0] - 2025-11-11
 
 ### Changed

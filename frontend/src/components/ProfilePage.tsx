@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { AUTH_API_BASE, fetchWithAuthRetry } from "../utils/api";
 import { User } from "../types/User";
-import { IconUser, IconMail, IconEdit, IconCheck, IconX, IconTrash, IconCalendar } from "@tabler/icons-react";
+import { IconUser, IconMail, IconEdit, IconCheck, IconX, IconTrash, IconShield, IconCalendar } from "@tabler/icons-react";
+import { generateProfilePictureUrl } from "../utils/profilePicture";
 
 interface ProfilePageProps {
   onSecurity: () => void;
@@ -99,7 +100,11 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
       {/* Profile Card */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <IconUser size={20} />
+          <img
+            src={generateProfilePictureUrl(user?.userName || "")}
+            alt="Profile"
+            className="w-full h-full object-cover"
+          />
           Profile
         </h3>
         {editing ? (

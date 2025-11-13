@@ -8,6 +8,7 @@ import Register from "../components/Register";
 import ForgotPassword from "../components/ForgotPassword";
 import ResetPassword from "../components/ResetPassword";
 import Sidebar from "../components/Sidebar";
+import HourlyGraphModal from "../components/HourlyGraphModal";
 import { IconSun, IconWind, IconArrowUp, IconArrowUpLeft, IconArrowUpRight, IconArrowDown, IconArrowDownLeft, IconArrowDownRight, IconArrowRight, IconArrowLeft } from "@tabler/icons-react";
 import type { Weather } from "../types/Weather";
 import { weatherCodeMap } from "../types/WeatherCodeMap";
@@ -57,6 +58,7 @@ export default function Home() {
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [username, setUsername] = React.useState<string | null>(null);
   const [checkingLogin, setCheckingLogin] = React.useState(true);
+  const [showHourlyGraph, setShowHourlyGraph] = React.useState(false);
 
   // Modal open/close helpers
   const openModal = (name: typeof modal) => setModal(name);
@@ -202,7 +204,15 @@ export default function Home() {
 
                     {/* Hourly Forecast Card */}
                     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 sm:p-5 lg:p-6">
-                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">Hourly Forecast</h3>
+                      <div className="flex justify-between items-center mb-3 sm:mb-4">
+                        <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Hourly Forecast</h3>
+                        <button
+                          onClick={() => setShowHourlyGraph(true)}
+                          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm"
+                        >
+                          View Graph
+                        </button>
+                      </div>
                       <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'thin' }}>
                         {weather.hourly.slice(0, 48).map((h, i) => (
                           <div key={i} className="flex flex-col items-center min-w-[65px] sm:min-w-[80px] p-2 sm:p-3 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
@@ -304,6 +314,15 @@ export default function Home() {
           onLogin={() => openModal("login")}
         />
       </Modal>
+
+      {/* Hourly Graph Modal */}
+      {weather && (
+        <HourlyGraphModal
+          open={showHourlyGraph}
+          onClose={() => setShowHourlyGraph(false)}
+          hourlyData={weather.hourly}
+        />
+      )}
     </div>
   );
 }
