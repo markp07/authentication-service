@@ -97,14 +97,33 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
     <div className="p-6 space-y-6 max-w-4xl">
       <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Profile</h1>
 
+      {/* User Header Card */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+        <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-24"></div>
+        <div className="px-6 pb-6 -mt-12">
+          <div className="flex items-end gap-4">
+            <div className="w-24 h-24 bg-white dark:bg-gray-700 rounded-full overflow-hidden shadow-lg border-4 border-white dark:border-gray-800">
+              <img
+                src={generateProfilePictureUrl(user?.userName || "")}
+                alt="Profile"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="flex-1 mb-2">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{user?.userName}</h2>
+              <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mt-1">
+                <IconMail size={16} />
+                <span>{user?.email}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Profile Card */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <img
-            src={generateProfilePictureUrl(user?.userName || "")}
-            alt="Profile"
-            className="w-full h-full object-cover"
-          />
+          <IconUser size={20} />
           Profile
         </h3>
         {editing ? (
