@@ -22,6 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced Authentication Service OpenAPI spec with complete Passkey endpoint documentation
 
 ## [1.0.0] - 2025-11-02
+## [1.3.3] - 2025-11-13
+
+### Changed
+- Refactor profile page: add passkey status, email verification, relocate delete action (#53)
+
 ## [1.3.2] - 2025-11-12
 
 ### Changed
