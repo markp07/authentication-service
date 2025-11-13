@@ -55,7 +55,7 @@ class WeatherMapperTest {
     assertEquals(WeatherCode.MAINLY_CLEAR, weather.getCurrent().getWeatherCode());
     assertNotNull(weather.getDaily());
     assertEquals(2, weather.getDaily().size());
-    Daily d1 = weather.getDaily().getFirst();
+    Daily d1 = weather.getDaily().get(0);
     assertEquals(LocalDateTime.parse("2025-07-23T00:00:00"), d1.getTime());
     assertEquals(LocalDateTime.parse("2025-07-23T05:13:00"), d1.getSunRise());
     assertEquals(LocalDateTime.parse("2025-07-23T21:12:00"), d1.getSunSet());
@@ -80,7 +80,7 @@ class WeatherMapperTest {
     // Hourly assertions
     assertNotNull(weather.getHourly());
     assertEquals(2, weather.getHourly().size());
-    Hourly h1 = weather.getHourly().getFirst();
+    Hourly h1 = weather.getHourly().get(0);
     assertEquals(LocalDateTime.parse("2025-07-23T13:00:00"), h1.getTime());
     assertEquals(WeatherCode.MAINLY_CLEAR, h1.getWeatherCode());
     assertEquals(21.0, h1.getTemperature());
