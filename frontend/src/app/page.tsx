@@ -9,8 +9,11 @@ import ForgotPassword from "../components/ForgotPassword";
 import ResetPassword from "../components/ResetPassword";
 import Sidebar from "../components/Sidebar";
 import HourlyGraphModal from "../components/HourlyGraphModal";
+import LocationSearch from "../components/LocationSearch";
+import SavedLocations from "../components/SavedLocations";
 import { IconSun, IconWind, IconArrowUp, IconArrowUpLeft, IconArrowUpRight, IconArrowDown, IconArrowDownLeft, IconArrowDownRight, IconArrowRight, IconArrowLeft } from "@tabler/icons-react";
 import type { Weather } from "../types/Weather";
+import type { Location } from "../types/Location";
 import { weatherCodeMap } from "../types/WeatherCodeMap";
 
 const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
@@ -43,6 +46,9 @@ function getWindDirectionIcon(direction: string, size = 22) {
   return <IconComponent size={size} />;
 }
 
+const SAVED_LOCATIONS_KEY = "savedLocations";
+const MAX_SAVED_LOCATIONS = 5;
+
 export default function Home() {
   const router = useRouter();
   const [modal, setModal] = React.useState<
@@ -59,6 +65,12 @@ export default function Home() {
   const [username, setUsername] = React.useState<string | null>(null);
   const [checkingLogin, setCheckingLogin] = React.useState(true);
   const [showHourlyGraph, setShowHourlyGraph] = React.useState(false);
+  const [selectedWeather, setSelectedWeather] = React.useState<Weather | null>(null);
+  
+  // Saved locations state
+  const [savedLocations, setSavedLocations] = React.useState<Location[]>([]);
+  const [savedWeatherData, setSavedWeatherData] = React.useState<Map<number, Weather>>(new Map());
+  const [loadingWeather, setLoadingWeather] = React.useState<Set<number>>(new Set());
 
   // Modal open/close helpers
   const openModal = (name: typeof modal) => setModal(name);
@@ -137,6 +149,93 @@ export default function Home() {
     if (loggedIn) fetchWeatherWithAuth();
   }, [loggedIn]);
 
+  // Load saved locations from localStorage on mount
+  React.useEffect(() => {
+    if (typeof window !== "undefined" && loggedIn) {
+      const saved = localStorage.getItem(SAVED_LOCATIONS_KEY);
+      if (saved) {
+        try {
+          const locations: Location[] = JSON.parse(saved);
+          setSavedLocations(locations);
+        } catch (e) {
+          console.error("Failed to load saved locations:", e);
+        }
+      }
+    }
+  }, [loggedIn]);
+
+  // Fetch weather for saved locations
+  React.useEffect(() => {
+    if (!loggedIn || savedLocations.length === 0) return;
+
+    async function fetchWeatherForLocation(location: Location) {
+      setLoadingWeather(prev => new Set(prev).add(location.id));
+      try {
+        const res = await fetch(
+          `${WEATHER_API_BASE}/api/weather/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}`,
+          { credentials: "include" }
+        );
+        if (res.ok) {
+          const data: Weather = await res.json();
+          setSavedWeatherData(prev => new Map(prev).set(location.id, data));
+        }
+      } catch (error) {
+        console.error(`Failed to fetch weather for ${location.name}:`, error);
+      } finally {
+        setLoadingWeather(prev => {
+          const next = new Set(prev);
+          next.delete(location.id);
+          return next;
+        });
+      }
+    }
+
+    savedLocations.forEach(location => {
+      fetchWeatherForLocation(location);
+    });
+  }, [loggedIn, savedLocations]);
+
+  // Save locations to localStorage
+  const saveLocationsToStorage = (locations: Location[]) => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem(SAVED_LOCATIONS_KEY, JSON.stringify(locations));
+    }
+  };
+
+  const handleLocationSelect = (location: Location) => {
+    if (savedLocations.length >= MAX_SAVED_LOCATIONS) {
+      alert(`You can only save up to ${MAX_SAVED_LOCATIONS} locations. Please remove one first.`);
+      return;
+    }
+
+    if (savedLocations.some(loc => loc.id === location.id)) {
+      return; // Already saved
+    }
+
+    const newLocations = [...savedLocations, location];
+    setSavedLocations(newLocations);
+    saveLocationsToStorage(newLocations);
+  };
+
+  const handleRemoveLocation = (locationId: number) => {
+    const newLocations = savedLocations.filter(loc => loc.id !== locationId);
+    setSavedLocations(newLocations);
+    saveLocationsToStorage(newLocations);
+    setSavedWeatherData(prev => {
+      const next = new Map(prev);
+      next.delete(locationId);
+      return next;
+    });
+  };
+
+  const handleLocationClick = (location: Location) => {
+    const weather = savedWeatherData.get(location.id);
+    if (weather) {
+      setSelectedWeather(weather);
+      setShowHourlyGraph(true);
+    }
+  };
+
   async function handleLogout() {
     await fetch(`${AUTH_API_BASE}/api/auth/v1/logout`, { method: "POST", credentials: "include" });
     setLoggedIn(false);
@@ -180,8 +279,39 @@ export default function Home() {
         {loggedIn ? (
           <div className="p-2 sm:p-4 lg:p-6">
                 {showWeather && weather ? (
-                  <div className="max-w-4xl mx-auto space-y-2 sm:space-y-4 lg:space-y-6">
-                    {/* Current Weather Card */}
+                  <div className="max-w-6xl mx-auto space-y-2 sm:space-y-4 lg:space-y-6">
+                    {/* Location Search Section */}
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-5 lg:p-6">
+                      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                        Search Locations
+                      </h2>
+                      <LocationSearch
+                        weatherApiBase={WEATHER_API_BASE}
+                        onLocationSelect={handleLocationSelect}
+                        savedLocations={savedLocations}
+                      />
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                        Save up to {MAX_SAVED_LOCATIONS} locations to quickly view their weather
+                      </p>
+                    </div>
+
+                    {/* Saved Locations Section */}
+                    {savedLocations.length > 0 && (
+                      <SavedLocations
+                        locations={savedLocations}
+                        weatherData={savedWeatherData}
+                        loadingWeather={loadingWeather}
+                        onRemoveLocation={handleRemoveLocation}
+                        onLocationClick={handleLocationClick}
+                      />
+                    )}
+
+                    {/* Current Location Weather Card */}
+                    <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+                      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                        Current Location Weather
+                      </h2>
+                    </div>
                     <div className="bg-gradient-to-br from-blue-500 to-blue-700 dark:from-blue-700 dark:to-blue-900 rounded-xl shadow-xl p-3 sm:p-5 lg:p-6 text-white">
                       <div className="flex items-stretch justify-between gap-3">
                         <div className="flex-1">
@@ -316,11 +446,14 @@ export default function Home() {
       </Modal>
 
       {/* Hourly Graph Modal */}
-      {weather && (
+      {(selectedWeather || weather) && (
         <HourlyGraphModal
           open={showHourlyGraph}
-          onClose={() => setShowHourlyGraph(false)}
-          hourlyData={weather.hourly}
+          onClose={() => {
+            setShowHourlyGraph(false);
+            setSelectedWeather(null);
+          }}
+          hourlyData={(selectedWeather || weather)!.hourly}
         />
       )}
     </div>
