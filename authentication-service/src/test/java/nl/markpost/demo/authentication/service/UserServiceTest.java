@@ -45,9 +45,11 @@ class UserServiceTest {
   @Test
   void getUserDetails_returnsCorrectDetails() {
     User user = new User();
+    user.setId(java.util.UUID.randomUUID());
     user.setUserName("user1");
     user.setEmail("user1@example.com");
     user.set2faEnabled(true);
+    when(userRepository.findById(user.getId())).thenReturn(java.util.Optional.of(user));
     UserDetails details = userService.getUserDetails(user);
     assertEquals("user1", details.getUserName());
     assertEquals("user1@example.com", details.getEmail());
