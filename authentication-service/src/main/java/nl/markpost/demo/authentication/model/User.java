@@ -74,6 +74,9 @@ public class User implements UserDetails {
   @Column(name = "backup_code")
   private String backupCode;
 
+  @Column(name = "email_verified")
+  private boolean emailVerified;
+
   @CreationTimestamp
   private LocalDateTime createdAt;
 

@@ -28,10 +28,16 @@ public class UserService {
    * @return a UserDetailsResponse containing the user's details
    */
   public UserDetails getUserDetails(User user) {
+    boolean passkeyEnabled = user.getPasskeyCredentials() != null && !user.getPasskeyCredentials().isEmpty();
     return UserDetails.builder()
         .userName(user.getUsername())
         .email(user.getEmail())
         .twoFactorEnabled(user.is2faEnabled())
+        .passkeyEnabled(passkeyEnabled)
+        .emailVerified(user.isEmailVerified())
+        .createdAt(user.getCreatedAt() != null 
+            ? user.getCreatedAt().atZone(java.time.ZoneId.systemDefault()).toOffsetDateTime()
+            : null)
         .build();
   }
 
