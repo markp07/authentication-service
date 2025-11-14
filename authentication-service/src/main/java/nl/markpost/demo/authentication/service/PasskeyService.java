@@ -148,7 +148,7 @@ public class PasskeyService {
    * @return PublicKeyCredentialRequestOptionsDto containing the authentication options
    */
   public PublicKeyCredentialRequestOptionsDto startAuthentication(String email) {
-    userService.checkIfUserExists(email);
+    userService.checkIfUserExists(email, false);
 
     AssertionRequest assertionRequest = relyingParty.startAssertion(
         StartAssertionOptions.builder()

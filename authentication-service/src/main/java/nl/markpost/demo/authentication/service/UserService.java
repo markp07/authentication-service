@@ -42,7 +42,7 @@ public class UserService {
    * @param username the new username to set
    */
   public void updateUserName(User user, String username) {
-    checkIfUserExists(username);
+    checkIfUserExists(username, true);
     user.setUserName(username);
     userRepository.save(user);
   }
@@ -63,9 +63,13 @@ public class UserService {
   /**
    * Helper methods to check for existing username and email
    */
-  public void checkIfUserExists(String userName) {
-    userRepository.findByUserName(userName)
-        .orElseThrow(() -> new BadRequestException("User not found"));
+  public void checkIfUserExists(String userName, boolean exceptionWhenExists) {
+    User user = userRepository.findByUserName(userName).orElse(null);
+    if(user != null && exceptionWhenExists) {
+      throw new BadRequestException("User already exists");
+    } else if(user == null && !exceptionWhenExists) {
+      throw new BadRequestException("User already exists");
+    }
   }
 
   /**
@@ -75,7 +79,10 @@ public class UserService {
    * @throws BadRequestException if the email already exists
    */
   public void checkIfEmailExists(String email) {
-    getUserByEmail(email);
+    User user = userRepository.findByEmail(email).orElse(null);
+    if(user != null) {
+      throw new BadRequestException("Email already exists");
+    }
   }
 
   public User getUserById(UUID id) {
