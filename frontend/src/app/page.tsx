@@ -11,7 +11,7 @@ import Sidebar from "../components/Sidebar";
 import HourlyGraphModal from "../components/HourlyGraphModal";
 import LocationSearch from "../components/LocationSearch";
 import SavedLocations from "../components/SavedLocations";
-import { IconSun, IconWind, IconArrowUp, IconArrowUpLeft, IconArrowUpRight, IconArrowDown, IconArrowDownLeft, IconArrowDownRight, IconArrowRight, IconArrowLeft } from "@tabler/icons-react";
+import { IconSun, IconWind, IconArrowUp, IconArrowUpLeft, IconArrowUpRight, IconArrowDown, IconArrowDownLeft, IconArrowDownRight, IconArrowRight, IconArrowLeft, IconSearch, IconCurrentLocation, IconX } from "@tabler/icons-react";
 import type { Weather } from "../types/Weather";
 import type { Location } from "../types/Location";
 import { weatherCodeMap } from "../types/WeatherCodeMap";
@@ -71,6 +71,11 @@ export default function Home() {
   const [savedLocations, setSavedLocations] = React.useState<Location[]>([]);
   const [savedWeatherData, setSavedWeatherData] = React.useState<Map<number, Weather>>(new Map());
   const [loadingWeather, setLoadingWeather] = React.useState<Set<number>>(new Set());
+  
+  // UI state
+  const [showSearchBar, setShowSearchBar] = React.useState(false);
+  const [selectedLocationId, setSelectedLocationId] = React.useState<number | null>(null); // null = current location
+  const [displayWeather, setDisplayWeather] = React.useState<Weather | null>(null);
 
   // Modal open/close helpers
   const openModal = (name: typeof modal) => setModal(name);
@@ -228,13 +233,31 @@ export default function Home() {
     });
   };
 
-  const handleLocationClick = (location: Location) => {
-    const weather = savedWeatherData.get(location.id);
-    if (weather) {
-      setSelectedWeather(weather);
-      setShowHourlyGraph(true);
+  const handleLocationClick = (locationId: number | null) => {
+    setSelectedLocationId(locationId);
+    if (locationId === null) {
+      // Show current location weather
+      setDisplayWeather(weather);
+    } else {
+      // Show saved location weather
+      const savedWeather = savedWeatherData.get(locationId);
+      if (savedWeather) {
+        setDisplayWeather(savedWeather);
+      }
     }
   };
+  
+  // Update display weather when current weather or saved weather data changes
+  React.useEffect(() => {
+    if (selectedLocationId === null && weather) {
+      setDisplayWeather(weather);
+    } else if (selectedLocationId !== null) {
+      const savedWeather = savedWeatherData.get(selectedLocationId);
+      if (savedWeather) {
+        setDisplayWeather(savedWeather);
+      }
+    }
+  }, [weather, savedWeatherData, selectedLocationId]);
 
   async function handleLogout() {
     await fetch(`${AUTH_API_BASE}/api/auth/v1/logout`, { method: "POST", credentials: "include" });
@@ -279,55 +302,139 @@ export default function Home() {
         {loggedIn ? (
           <div className="p-2 sm:p-4 lg:p-6">
                 {showWeather && weather ? (
-                  <div className="max-w-6xl mx-auto space-y-2 sm:space-y-4 lg:space-y-6">
-                    {/* Location Search Section */}
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 sm:p-5 lg:p-6">
-                      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                        Search Locations
-                      </h2>
-                      <LocationSearch
-                        weatherApiBase={WEATHER_API_BASE}
-                        onLocationSelect={handleLocationSelect}
-                        savedLocations={savedLocations}
-                      />
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                        Save up to {MAX_SAVED_LOCATIONS} locations to quickly view their weather
-                      </p>
+                  <div className="max-w-6xl mx-auto space-y-3 sm:space-y-4">
+                    {/* Search Button and Horizontal Location Bar */}
+                    <div className="space-y-3">
+                      {/* Search Button */}
+                      <div className="flex justify-end">
+                        <button
+                          onClick={() => setShowSearchBar(!showSearchBar)}
+                          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm"
+                        >
+                          {showSearchBar ? <IconX size={18} /> : <IconSearch size={18} />}
+                          {showSearchBar ? "Close Search" : "Search Location"}
+                        </button>
+                      </div>
+
+                      {/* Collapsible Search Bar */}
+                      {showSearchBar && (
+                        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4">
+                          <LocationSearch
+                            weatherApiBase={WEATHER_API_BASE}
+                            onLocationSelect={(loc) => {
+                              handleLocationSelect(loc);
+                              setShowSearchBar(false);
+                            }}
+                            savedLocations={savedLocations}
+                          />
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                            Save up to {MAX_SAVED_LOCATIONS} locations
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Horizontal Scrollable Location Bar */}
+                      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3">
+                        <div className="flex gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: 'thin' }}>
+                          {/* Current Location Card */}
+                          <button
+                            onClick={() => handleLocationClick(null)}
+                            className={`flex-shrink-0 min-w-[140px] p-3 rounded-lg transition-all ${
+                              selectedLocationId === null
+                                ? 'bg-blue-500 text-white ring-2 ring-blue-600'
+                                : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 mb-1">
+                              <IconCurrentLocation size={16} />
+                              <span className="text-xs font-semibold">Current</span>
+                            </div>
+                            {weather && (
+                              <>
+                                <div className="text-sm font-medium truncate">{weather.location}</div>
+                                <div className="flex items-center justify-between mt-1">
+                                  <span className="text-lg font-bold">{Math.round(weather.current.temperature)}°C</span>
+                                  {getWeatherIcon(weather.current.weatherCode, 24)}
+                                </div>
+                              </>
+                            )}
+                          </button>
+
+                          {/* Saved Location Cards */}
+                          {savedLocations.map((location) => {
+                            const locationWeather = savedWeatherData.get(location.id);
+                            const isLoading = loadingWeather.has(location.id);
+                            const isSelected = selectedLocationId === location.id;
+
+                            return (
+                              <div key={location.id} className="relative flex-shrink-0 min-w-[140px]">
+                                <button
+                                  onClick={() => handleLocationClick(location.id)}
+                                  className={`w-full h-full p-3 rounded-lg transition-all ${
+                                    isSelected
+                                      ? 'bg-blue-500 text-white ring-2 ring-blue-600'
+                                      : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                  }`}
+                                >
+                                  <div className="text-xs font-semibold mb-1 truncate">{location.name}</div>
+                                  {isLoading ? (
+                                    <div className="flex items-center justify-center h-12">
+                                      <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-current"></div>
+                                    </div>
+                                  ) : locationWeather ? (
+                                    <>
+                                      <div className="text-xs truncate opacity-80">{location.country}</div>
+                                      <div className="flex items-center justify-between mt-1">
+                                        <span className="text-lg font-bold">{Math.round(locationWeather.current.temperature)}°C</span>
+                                        {getWeatherIcon(locationWeather.current.weatherCode, 24)}
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <div className="text-xs opacity-70">No data</div>
+                                  )}
+                                </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleRemoveLocation(location.id);
+                                    if (selectedLocationId === location.id) {
+                                      handleLocationClick(null);
+                                    }
+                                  }}
+                                  className="absolute -top-1 -right-1 bg-red-500 hover:bg-red-600 text-white p-1 rounded-full shadow-lg transition-colors"
+                                  aria-label="Remove location"
+                                >
+                                  <IconX size={12} />
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Saved Locations Section */}
-                    {savedLocations.length > 0 && (
-                      <SavedLocations
-                        locations={savedLocations}
-                        weatherData={savedWeatherData}
-                        loadingWeather={loadingWeather}
-                        onRemoveLocation={handleRemoveLocation}
-                        onLocationClick={handleLocationClick}
-                      />
-                    )}
-
-                    {/* Current Location Weather Card */}
-                    <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-                      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                        Current Location Weather
-                      </h2>
-                    </div>
+                    {/* Main Weather Display */}
+                    {displayWeather && (
+                    <>
                     <div className="bg-gradient-to-br from-blue-500 to-blue-700 dark:from-blue-700 dark:to-blue-900 rounded-xl shadow-xl p-3 sm:p-5 lg:p-6 text-white">
                       <div className="flex items-stretch justify-between gap-3">
                         <div className="flex-1">
-                          <h2 className="text-2xl sm:text-3xl font-bold mb-1">{weather.location}</h2>
-                          <div className="text-5xl sm:text-6xl font-extrabold my-3 sm:my-4">{Math.round(weather.current.temperature)}°C</div>
-                          <div className="text-lg sm:text-xl font-medium opacity-90 mb-2 sm:mb-3">{getWeatherLabel(weather.current.weatherCode)}</div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h2 className="text-2xl sm:text-3xl font-bold">{displayWeather.location}</h2>
+                            {selectedLocationId === null && <IconCurrentLocation size={24} className="text-white" />}
+                          </div>
+                          <div className="text-5xl sm:text-6xl font-extrabold my-3 sm:my-4">{Math.round(displayWeather.current.temperature)}°C</div>
+                          <div className="text-lg sm:text-xl font-medium opacity-90 mb-2 sm:mb-3">{getWeatherLabel(displayWeather.current.weatherCode)}</div>
                           <div className="flex items-center gap-3 sm:gap-4 text-sm opacity-90">
                             <div className="flex items-center gap-1.5 sm:gap-2">
                               <IconWind size={18} />
-                              <span>{weather.current.windSpeed} km/h</span>
-                              {getWindDirectionIcon(weather.current.windDirection, 18)}
+                              <span>{displayWeather.current.windSpeed} km/h</span>
+                              {getWindDirectionIcon(displayWeather.current.windDirection, 18)}
                             </div>
                           </div>
                         </div>
                         <div className="flex items-center justify-center self-stretch">
-                          {getWeatherIcon(weather.current.weatherCode, 192)}
+                          {getWeatherIcon(displayWeather.current.weatherCode, 192)}
                         </div>
                       </div>
                     </div>
@@ -344,7 +451,7 @@ export default function Home() {
                         </button>
                       </div>
                       <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'thin' }}>
-                        {weather.hourly.slice(0, 48).map((h, i) => (
+                        {displayWeather.hourly.slice(0, 48).map((h, i) => (
                           <div key={i} className="flex flex-col items-center min-w-[65px] sm:min-w-[80px] p-2 sm:p-3 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
                             <div className="text-[10px] sm:text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 sm:mb-2">
                               {i === 0 ? "Now" : new Date(h.time).toLocaleTimeString([], { hour: "2-digit", hour12: false })}
@@ -366,7 +473,7 @@ export default function Home() {
                     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 sm:p-5 lg:p-6">
                       <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">14-Day Forecast</h3>
                       <div className="space-y-1 sm:space-y-2">
-                        {weather.daily.slice(0, 14).map((d, i) => (
+                        {displayWeather.daily.slice(0, 14).map((d, i) => (
                           <div key={i} className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                             <div className="flex-1 min-w-0 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
                               {i === 0 ? "Today" : new Date(d.time).toLocaleDateString("en-GB", { weekday: "short" })}
@@ -394,6 +501,8 @@ export default function Home() {
                         ))}
                       </div>
                     </div>
+                    </>
+                    )}
                   </div>
                 ) : weatherError ? (
                   <div className="max-w-4xl mx-auto">
@@ -446,14 +555,11 @@ export default function Home() {
       </Modal>
 
       {/* Hourly Graph Modal */}
-      {(selectedWeather || weather) && (
+      {displayWeather && (
         <HourlyGraphModal
           open={showHourlyGraph}
-          onClose={() => {
-            setShowHourlyGraph(false);
-            setSelectedWeather(null);
-          }}
-          hourlyData={(selectedWeather || weather)!.hourly}
+          onClose={() => setShowHourlyGraph(false)}
+          hourlyData={displayWeather.hourly}
         />
       )}
     </div>
