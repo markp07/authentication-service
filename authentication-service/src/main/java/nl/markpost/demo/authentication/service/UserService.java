@@ -9,6 +9,7 @@ import nl.markpost.demo.common.exception.BadRequestException;
 import nl.markpost.demo.common.exception.UnauthorizedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Service class for handling user-related operations. Provides methods to retrieve user details and
@@ -27,11 +28,21 @@ public class UserService {
    * @param user the user for whom details are to be retrieved
    * @return a UserDetailsResponse containing the user's details
    */
+  @Transactional(readOnly = true)
   public UserDetails getUserDetails(User user) {
+    // Reload the user within the transaction to access lazy-loaded collections
+    User managedUser = userRepository.findById(user.getId())
+        .orElseThrow(() -> new BadRequestException("User not found"));
+    boolean passkeyEnabled = managedUser.getPasskeyCredentials() != null && !managedUser.getPasskeyCredentials().isEmpty();
     return UserDetails.builder()
-        .userName(user.getUsername())
-        .email(user.getEmail())
-        .twoFactorEnabled(user.is2faEnabled())
+        .userName(managedUser.getUsername())
+        .email(managedUser.getEmail())
+        .twoFactorEnabled(managedUser.is2faEnabled())
+        .passkeyEnabled(passkeyEnabled)
+        .emailVerified(managedUser.isEmailVerified())
+        .createdAt(managedUser.getCreatedAt() != null 
+            ? managedUser.getCreatedAt().atZone(java.time.ZoneId.systemDefault()).toOffsetDateTime()
+            : null)
         .build();
   }
 

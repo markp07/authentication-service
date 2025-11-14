@@ -22,6 +22,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced Authentication Service OpenAPI spec with complete Passkey endpoint documentation
 
 ## [1.0.0] - 2025-11-02
+## [1.3.6] - 2025-11-14
+
+### Changed
+- Add city search with saved locations and horizontal location switcher for weather display (#57)
+
+## [1.3.5] - 2025-11-13
+
+### Changed
+- Fix LazyInitializationException when accessing user passkey credentials (#56)
+
+## [1.3.4] - 2025-11-13
+
+### Changed
+- Fix Hibernate null assignment error for boolean fields in User entity (#55)
+
+## [1.3.3] - 2025-11-13
+
+### Changed
+- Refactor profile page: add passkey status, email verification, relocate delete action (#53)
+
 ## [1.3.2] - 2025-11-12
 
 ### Changed

@@ -66,13 +66,16 @@ public class User implements UserDetails {
   private String totpSecret;
 
   @Column(name = "is_2fa_enabled")
-  private boolean is2faEnabled;
+  private Boolean is2faEnabled;
 
   @Column(name = "totp_setup_created_at")
   private LocalDateTime totpSetupCreatedAt;
 
   @Column(name = "backup_code")
   private String backupCode;
+
+  @Column(name = "email_verified")
+  private Boolean emailVerified;
 
   @CreationTimestamp
   private LocalDateTime createdAt;
@@ -117,5 +120,22 @@ public class User implements UserDetails {
   @Override
   public boolean isEnabled() {
     return true;
+  }
+
+  // Custom getters/setters to maintain backward compatibility with existing code
+  public boolean is2faEnabled() {
+    return Boolean.TRUE.equals(is2faEnabled);
+  }
+
+  public void set2faEnabled(boolean enabled) {
+    this.is2faEnabled = enabled;
+  }
+
+  public boolean isEmailVerified() {
+    return Boolean.TRUE.equals(emailVerified);
+  }
+
+  public void setEmailVerified(boolean verified) {
+    this.emailVerified = verified;
   }
 }

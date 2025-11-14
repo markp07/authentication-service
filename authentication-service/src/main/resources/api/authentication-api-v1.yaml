@@ -744,6 +744,13 @@ components:
           type: string
         twoFactorEnabled:
           type: boolean
+        passkeyEnabled:
+          type: boolean
+        emailVerified:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
     UpdateUserNameRequest:
       type: object
       properties:

@@ -35,4 +35,19 @@ public class WeatherController implements WeatherApi {
     nl.markpost.demo.weather.model.Weather weather = weatherService.getWeather(latitude, longitude);
     return ResponseEntity.ok(weatherModelMapper.toApiModel(weather));
   }
+
+  /**
+   * Searches for locations by name.
+   *
+   * @param name the location name to search for
+   * @return ResponseEntity with list of matching locations
+   */
+  @Override
+  public ResponseEntity<java.util.List<nl.markpost.demo.weather.api.v1.model.Location>> searchLocations(
+      String name) {
+    log.info("Searching for locations with name: {}", name);
+    java.util.List<nl.markpost.demo.weather.api.v1.model.Location> locations = weatherService.searchLocations(
+        name);
+    return ResponseEntity.ok(locations);
+  }
 }
