@@ -309,7 +309,7 @@ export default function Home() {
                         {/* Current Location Card */}
                         <button
                           onClick={() => handleLocationClick(null)}
-                          className={`flex-shrink-0 min-w-[140px] p-2 rounded-lg transition-all ${
+                          className={`flex-shrink-0 min-w-[120px] p-2 rounded-lg transition-all ${
                             selectedLocationId === null
                               ? 'bg-blue-500 text-white ring-2 ring-blue-600'
                               : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
@@ -317,11 +317,10 @@ export default function Home() {
                         >
                           <div className="flex items-center gap-1.5 mb-0.5">
                             <IconCurrentLocation size={14} />
-                            <span className="text-xs font-semibold">Current</span>
+                            <span className="text-xs font-semibold">{weather.location}</span>
                           </div>
                           {weather && (
                             <>
-                              <div className="text-xs font-medium truncate">{weather.location}</div>
                               <div className="flex items-center justify-between mt-0.5">
                                 <span className="text-base font-bold">{Math.round(weather.current.temperature)}°C</span>
                                 {getWeatherIcon(weather.current.weatherCode, 20)}
@@ -337,7 +336,7 @@ export default function Home() {
                           const isSelected = selectedLocationId === location.id;
 
                           return (
-                            <div key={location.id} className="flex-shrink-0 min-w-[140px]">
+                            <div key={location.id} className="flex-shrink-0 min-w-[120px]">
                               <button
                                 onClick={() => handleLocationClick(location.id)}
                                 className={`relative w-full h-full p-2 rounded-lg transition-all ${
@@ -347,7 +346,7 @@ export default function Home() {
                                 }`}
                               >
                                 <div className="flex items-start justify-between gap-1 mb-0.5">
-                                  <div className="text-xs font-semibold truncate flex-1">{location.name}</div>
+                                  <div className="text-xs text-left font-semibold truncate flex-1">{location.name}</div>
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
@@ -368,7 +367,6 @@ export default function Home() {
                                   </div>
                                 ) : locationWeather ? (
                                   <>
-                                    <div className="text-xs truncate opacity-80">{location.country}</div>
                                     <div className="flex items-center justify-between mt-0.5">
                                       <span className="text-base font-bold">{Math.round(locationWeather.current.temperature)}°C</span>
                                       {getWeatherIcon(locationWeather.current.weatherCode, 20)}
