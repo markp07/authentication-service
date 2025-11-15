@@ -22,6 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced Authentication Service OpenAPI spec with complete Passkey endpoint documentation
 
 ## [1.0.0] - 2025-11-02
+## [1.4.0] - 2025-11-15
+
+### Changed
+- Fixed registration and login flows and improved location bar UI (#58)
+
 ## [1.3.6] - 2025-11-14
 
 ### Changed
