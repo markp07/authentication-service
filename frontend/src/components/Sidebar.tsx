@@ -21,7 +21,7 @@ export default function Sidebar({ username, activePage, onNavigate, onLogout }: 
     <>
       {/* Mobile menu button */}
       <button
-        className="lg:hidden fixed top-4 left-4 z-50 bg-white dark:bg-gray-800 p-2 rounded-lg shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        className="lg:hidden fixed top-3 left-3 z-50 bg-white dark:bg-gray-800 p-2 rounded-lg shadow-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Toggle menu"
       >

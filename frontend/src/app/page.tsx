@@ -73,7 +73,7 @@ export default function Home() {
   const [loadingWeather, setLoadingWeather] = React.useState<Set<number>>(new Set());
   
   // UI state
-  const [showSearchBar, setShowSearchBar] = React.useState(false);
+  const [showLocationSearchModal, setShowLocationSearchModal] = React.useState(false);
   const [selectedLocationId, setSelectedLocationId] = React.useState<number | null>(null); // null = current location
   const [displayWeather, setDisplayWeather] = React.useState<Weather | null>(null);
 
@@ -303,113 +303,93 @@ export default function Home() {
           <div className="p-2 sm:p-4 lg:p-6">
                 {showWeather && weather ? (
                   <div className="max-w-6xl mx-auto space-y-3 sm:space-y-4">
-                    {/* Search Button and Horizontal Location Bar */}
-                    <div className="space-y-3">
-                      {/* Search Button */}
-                      <div className="flex justify-end">
+                    {/* Horizontal Scrollable Location Bar */}
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3">
+                      <div className="flex gap-2 overflow-x-auto pb-0 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                        {/* Current Location Card */}
                         <button
-                          onClick={() => setShowSearchBar(!showSearchBar)}
-                          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm"
+                          onClick={() => handleLocationClick(null)}
+                          className={`flex-shrink-0 min-w-[120px] p-2 rounded-lg transition-all ${
+                            selectedLocationId === null
+                              ? 'bg-blue-500 text-white ring-2 ring-blue-600'
+                              : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
+                          }`}
                         >
-                          {showSearchBar ? <IconX size={18} /> : <IconSearch size={18} />}
-                          {showSearchBar ? "Close Search" : "Search Location"}
-                        </button>
-                      </div>
-
-                      {/* Collapsible Search Bar */}
-                      {showSearchBar && (
-                        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4">
-                          <LocationSearch
-                            weatherApiBase={WEATHER_API_BASE}
-                            onLocationSelect={(loc) => {
-                              handleLocationSelect(loc);
-                              setShowSearchBar(false);
-                            }}
-                            savedLocations={savedLocations}
-                          />
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                            Save up to {MAX_SAVED_LOCATIONS} locations
-                          </p>
-                        </div>
-                      )}
-
-                      {/* Horizontal Scrollable Location Bar */}
-                      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3">
-                        <div className="flex gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: 'thin' }}>
-                          {/* Current Location Card */}
-                          <button
-                            onClick={() => handleLocationClick(null)}
-                            className={`flex-shrink-0 min-w-[140px] p-3 rounded-lg transition-all ${
-                              selectedLocationId === null
-                                ? 'bg-blue-500 text-white ring-2 ring-blue-600'
-                                : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
-                            }`}
-                          >
-                            <div className="flex items-center gap-2 mb-1">
-                              <IconCurrentLocation size={16} />
-                              <span className="text-xs font-semibold">Current</span>
-                            </div>
-                            {weather && (
-                              <>
-                                <div className="text-sm font-medium truncate">{weather.location}</div>
-                                <div className="flex items-center justify-between mt-1">
-                                  <span className="text-lg font-bold">{Math.round(weather.current.temperature)}°C</span>
-                                  {getWeatherIcon(weather.current.weatherCode, 24)}
-                                </div>
-                              </>
-                            )}
-                          </button>
-
-                          {/* Saved Location Cards */}
-                          {savedLocations.map((location) => {
-                            const locationWeather = savedWeatherData.get(location.id);
-                            const isLoading = loadingWeather.has(location.id);
-                            const isSelected = selectedLocationId === location.id;
-
-                            return (
-                              <div key={location.id} className="relative flex-shrink-0 min-w-[140px]">
-                                <button
-                                  onClick={() => handleLocationClick(location.id)}
-                                  className={`w-full h-full p-3 rounded-lg transition-all ${
-                                    isSelected
-                                      ? 'bg-blue-500 text-white ring-2 ring-blue-600'
-                                      : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
-                                  }`}
-                                >
-                                  <div className="text-xs font-semibold mb-1 truncate">{location.name}</div>
-                                  {isLoading ? (
-                                    <div className="flex items-center justify-center h-12">
-                                      <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-current"></div>
-                                    </div>
-                                  ) : locationWeather ? (
-                                    <>
-                                      <div className="text-xs truncate opacity-80">{location.country}</div>
-                                      <div className="flex items-center justify-between mt-1">
-                                        <span className="text-lg font-bold">{Math.round(locationWeather.current.temperature)}°C</span>
-                                        {getWeatherIcon(locationWeather.current.weatherCode, 24)}
-                                      </div>
-                                    </>
-                                  ) : (
-                                    <div className="text-xs opacity-70">No data</div>
-                                  )}
-                                </button>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleRemoveLocation(location.id);
-                                    if (selectedLocationId === location.id) {
-                                      handleLocationClick(null);
-                                    }
-                                  }}
-                                  className="absolute -top-1 -right-1 bg-red-500 hover:bg-red-600 text-white p-1 rounded-full shadow-lg transition-colors"
-                                  aria-label="Remove location"
-                                >
-                                  <IconX size={12} />
-                                </button>
+                          <div className="flex items-center gap-1.5 mb-0.5">
+                            <IconCurrentLocation size={14} />
+                            <span className="text-xs font-semibold">{weather.location}</span>
+                          </div>
+                          {weather && (
+                            <>
+                              <div className="flex items-center justify-between mt-0.5">
+                                <span className="text-base font-bold">{Math.round(weather.current.temperature)}°C</span>
+                                {getWeatherIcon(weather.current.weatherCode, 20)}
                               </div>
-                            );
-                          })}
-                        </div>
+                            </>
+                          )}
+                        </button>
+
+                        {/* Saved Location Cards */}
+                        {savedLocations.map((location) => {
+                          const locationWeather = savedWeatherData.get(location.id);
+                          const isLoading = loadingWeather.has(location.id);
+                          const isSelected = selectedLocationId === location.id;
+
+                          return (
+                            <div key={location.id} className="flex-shrink-0 min-w-[120px]">
+                              <button
+                                onClick={() => handleLocationClick(location.id)}
+                                className={`relative w-full h-full p-2 rounded-lg transition-all ${
+                                  isSelected
+                                    ? 'bg-blue-500 text-white ring-2 ring-blue-600'
+                                    : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                }`}
+                              >
+                                <div className="flex items-start justify-between gap-1 mb-0.5">
+                                  <div className="text-xs text-left font-semibold truncate flex-1">{location.name}</div>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleRemoveLocation(location.id);
+                                      if (selectedLocationId === location.id) {
+                                        handleLocationClick(null);
+                                      }
+                                    }}
+                                    className="flex-shrink-0 hover:bg-red-500 hover:text-white p-0.5 rounded transition-colors"
+                                    aria-label="Remove location"
+                                  >
+                                    <IconX size={12} />
+                                  </button>
+                                </div>
+                                {isLoading ? (
+                                  <div className="flex items-center justify-center h-10">
+                                    <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-current"></div>
+                                  </div>
+                                ) : locationWeather ? (
+                                  <>
+                                    <div className="flex items-center justify-between mt-0.5">
+                                      <span className="text-base font-bold">{Math.round(locationWeather.current.temperature)}°C</span>
+                                      {getWeatherIcon(locationWeather.current.weatherCode, 20)}
+                                    </div>
+                                  </>
+                                ) : (
+                                  <div className="text-xs opacity-70">No data</div>
+                                )}
+                              </button>
+                            </div>
+                          );
+                        })}
+
+                        {/* Add Location Search Button */}
+                        <button
+                          onClick={() => setShowLocationSearchModal(true)}
+                          className="flex-shrink-0 min-w-[140px] p-2 rounded-lg transition-all bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-2 border-dashed border-blue-300"
+                        >
+                          <div className="flex flex-col items-center justify-center h-full gap-1">
+                            <IconSearch size={24} />
+                            <span className="text-xs font-semibold">Add Location</span>
+                          </div>
+                        </button>
                       </div>
                     </div>
 
@@ -450,7 +430,7 @@ export default function Home() {
                           View Graph
                         </button>
                       </div>
-                      <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'thin' }}>
+                      <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                         {displayWeather.hourly.slice(0, 48).map((h, i) => (
                           <div key={i} className="flex flex-col items-center min-w-[65px] sm:min-w-[80px] p-2 sm:p-3 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
                             <div className="text-[10px] sm:text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 sm:mb-2">
@@ -562,6 +542,24 @@ export default function Home() {
           hourlyData={displayWeather.hourly}
         />
       )}
+
+      {/* Location Search Modal */}
+      <Modal open={showLocationSearchModal} onClose={() => setShowLocationSearchModal(false)}>
+        <div className="p-4">
+          <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Search Location</h2>
+          <LocationSearch
+            weatherApiBase={WEATHER_API_BASE}
+            onLocationSelect={(loc) => {
+              handleLocationSelect(loc);
+              setShowLocationSearchModal(false);
+            }}
+            savedLocations={savedLocations}
+          />
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
+            Save up to {MAX_SAVED_LOCATIONS} locations. You currently have {savedLocations.length} saved.
+          </p>
+        </div>
+      </Modal>
     </div>
   );
 }

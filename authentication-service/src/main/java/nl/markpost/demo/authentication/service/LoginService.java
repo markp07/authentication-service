@@ -125,7 +125,10 @@ public class LoginService {
    */
   @Transactional
   public void register(RegisterRequest registerRequest) {
-    userRepository.findByEmail(registerRequest.getEmail()).orElseThrow(BadRequestException::new);
+    User existing = userRepository.findByEmail(registerRequest.getEmail()).orElse(null);
+    if (existing != null) {
+      throw new BadRequestException();
+    }
 
     String password = registerRequest.getPassword();
     if (!passwordService.isPasswordStrong(password)) {
@@ -134,7 +137,7 @@ public class LoginService {
     }
 
     String userName = registerRequest.getUserName();
-    userService.checkIfUserExists(userName);
+    userService.checkIfUserExists(userName, true);
 
     String email = registerRequest.getEmail();
     userService.checkIfEmailExists(email);
