@@ -21,6 +21,18 @@ spring:
     redis:
       host: redis
       port: 12005
+  datasource:
+    url: jdbc:postgresql://postgres:5432/demo_authentication
+    username: demo_user
+    password: demo_password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
 security:
   excluded-paths: /actuator/health,/actuator/info,/actuator/prometheus,/api/weather/actuator/health,/api/weather/actuator/info,/api/weather/actuator/prometheus,/swagger-ui.html,/swagger-ui/**,/*/api-docs
@@ -49,6 +61,10 @@ spring:
     redis:
       host: localhost
       port: 12005
+  datasource:
+    url: jdbc:postgresql://localhost:5432/demo_authentication
+    username: demo_user
+    password: demo_password
 weather:
   cors:
     allowed-origin-patterns: "http://localhost:3000"
@@ -62,6 +78,13 @@ spring:
   config:
     activate:
       on-profile: ut
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
 
 security:
   excluded-paths: /actuator/health,/actuator/info,/swagger-ui.html,/swagger-ui/**,/*/api-docs,/v1/forecast

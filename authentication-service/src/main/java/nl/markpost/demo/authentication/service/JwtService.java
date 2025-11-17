@@ -20,6 +20,7 @@ public class JwtService {
     long expirationTime = System.currentTimeMillis() + minutes15;
     return Jwts.builder()
         .subject(user.getEmail())
+        .claim("userId", user.getId().toString())
         .issuedAt(new Date())
         .expiration(new Date(expirationTime))
         .signWith(keyProvider.getPrivateKey(), SignatureAlgorithm.RS256)
@@ -31,6 +32,7 @@ public class JwtService {
     long expirationTime = System.currentTimeMillis() + days7;
     return Jwts.builder()
         .subject(user.getEmail())
+        .claim("userId", user.getId().toString())
         .issuedAt(new Date())
         .expiration(new Date(expirationTime))
         .signWith(keyProvider.getPrivateKey(), SignatureAlgorithm.RS256)

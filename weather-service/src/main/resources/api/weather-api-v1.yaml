@@ -93,6 +93,92 @@ paths:
                 $ref: '#/components/schemas/Error'
       security:
         - BearerAuth: [ ]
+  /saved-locations:
+    get:
+      operationId: getSavedLocations
+      summary: Get saved locations for the authenticated user
+      tags:
+        - weather
+      responses:
+        '200':
+          description: Saved locations retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Location'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BearerAuth: [ ]
+    post:
+      operationId: saveLocation
+      summary: Save a location for the authenticated user
+      tags:
+        - weather
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Location'
+      responses:
+        '200':
+          description: Location saved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        '400':
+          description: Bad request - Invalid location data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BearerAuth: [ ]
+  /saved-locations/{id}:
+    delete:
+      operationId: deleteSavedLocation
+      summary: Delete a saved location
+      tags:
+        - weather
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID of the saved location to delete
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: Location deleted successfully
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Location not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BearerAuth: [ ]
 
 components:
   securitySchemes:
