@@ -11,7 +11,7 @@ import Sidebar from "../components/Sidebar";
 import HourlyGraphModal from "../components/HourlyGraphModal";
 import LocationSearch from "../components/LocationSearch";
 import SavedLocations from "../components/SavedLocations";
-import { IconSun, IconWind, IconArrowUp, IconArrowUpLeft, IconArrowUpRight, IconArrowDown, IconArrowDownLeft, IconArrowDownRight, IconArrowRight, IconArrowLeft, IconSearch, IconCurrentLocation, IconX } from "@tabler/icons-react";
+import { IconSun, IconWind, IconArrowUp, IconArrowUpLeft, IconArrowUpRight, IconArrowDown, IconArrowDownLeft, IconArrowDownRight, IconArrowRight, IconArrowLeft, IconSearch, IconCurrentLocation, IconX, IconChartHistogram } from "@tabler/icons-react";
 import type { Weather } from "../types/Weather";
 import type { Location } from "../types/Location";
 import { weatherCodeMap } from "../types/WeatherCodeMap";
@@ -302,22 +302,48 @@ export default function Home() {
         {loggedIn ? (
           <div className="p-2 sm:p-4 lg:p-6">
                 {showWeather && weather ? (
-                  <div className="max-w-6xl mx-auto space-y-3 sm:space-y-4">
+                  <div className="max-w-6xl mx-auto space-y-2 sm:space-y-4">
+
+                    {/* Main Weather Display */}
+                    {displayWeather && (
+                    <>
+                    <div className="bg-gradient-to-br from-blue-500 to-blue-700 dark:from-blue-700 dark:to-blue-900 rounded-xl shadow-xl p-3 sm:p-5 lg:p-6 text-white">
+                      <div className="flex items-stretch justify-between gap-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <h2 className="text-2xl sm:text-3xl font-bold">{displayWeather.location}</h2>
+                            {selectedLocationId === null && <IconCurrentLocation size={24} className="text-white" />}
+                          </div>
+                          <div className="text-5xl sm:text-6xl font-extrabold my-3 sm:my-4">{Math.round(displayWeather.current.temperature)}°C</div>
+                          <div className="text-lg sm:text-xl font-medium opacity-90 mb-2 sm:mb-3">{getWeatherLabel(displayWeather.current.weatherCode)}</div>
+                          <div className="flex items-center gap-3 sm:gap-4 text-sm opacity-90">
+                            <div className="flex items-center gap-1.5 sm:gap-2">
+                              <IconWind size={18} />
+                              <span>{displayWeather.current.windSpeed} km/h</span>
+                              {getWindDirectionIcon(displayWeather.current.windDirection, 18)}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-center self-stretch">
+                          {getWeatherIcon(displayWeather.current.weatherCode, 160)}
+                        </div>
+                      </div>
+                    </div>
                     {/* Horizontal Scrollable Location Bar */}
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-2 sm:p-3">
                       <div className="flex gap-2 overflow-x-auto pb-0 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                         {/* Current Location Card */}
                         <button
                           onClick={() => handleLocationClick(null)}
-                          className={`flex-shrink-0 min-w-[120px] p-2 rounded-lg transition-all ${
+                          className={`flex-shrink-0 min-w-[120px] p-2 py-1 sm:py-2 rounded-lg transition-all ${
                             selectedLocationId === null
-                              ? 'bg-blue-500 text-white ring-2 ring-blue-600'
+                              ? 'bg-blue-500 text-white'
                               : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
                           }`}
                         >
                           <div className="flex items-center gap-1.5 mb-0.5">
-                            <IconCurrentLocation size={14} />
                             <span className="text-xs font-semibold">{weather.location}</span>
+                            <IconCurrentLocation size={14} />
                           </div>
                           {weather && (
                             <>
@@ -329,19 +355,19 @@ export default function Home() {
                           )}
                         </button>
 
-                        {/* Saved Location Cards */}
-                        {savedLocations.map((location) => {
-                          const locationWeather = savedWeatherData.get(location.id);
-                          const isLoading = loadingWeather.has(location.id);
-                          const isSelected = selectedLocationId === location.id;
+                      {/* Saved Location Cards */}
+                      {savedLocations.map((location) => {
+                        const locationWeather = savedWeatherData.get(location.id);
+                        const isLoading = loadingWeather.has(location.id);
+                        const isSelected = selectedLocationId === location.id;
 
                           return (
                             <div key={location.id} className="flex-shrink-0 min-w-[120px]">
                               <button
                                 onClick={() => handleLocationClick(location.id)}
-                                className={`relative w-full h-full p-2 rounded-lg transition-all ${
+                                className={`relative w-full h-full p-2 py-1 sm:py-2 rounded-lg transition-all ${
                                   isSelected
-                                    ? 'bg-blue-500 text-white ring-2 ring-blue-600'
+                                    ? 'bg-blue-500 text-white '
                                     : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
                                 }`}
                               >
@@ -383,7 +409,7 @@ export default function Home() {
                         {/* Add Location Search Button */}
                         <button
                           onClick={() => setShowLocationSearchModal(true)}
-                          className="flex-shrink-0 min-w-[140px] p-2 rounded-lg transition-all bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-2 border-dashed border-blue-300"
+                          className="flex-shrink-0 min-w-[120px] p-2 py-1 sm:py-2 rounded-lg transition-all bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-2 border-dashed border-blue-300"
                         >
                           <div className="flex flex-col items-center justify-center h-full gap-1">
                             <IconSearch size={24} />
@@ -393,44 +419,18 @@ export default function Home() {
                       </div>
                     </div>
 
-                    {/* Main Weather Display */}
-                    {displayWeather && (
-                    <>
-                    <div className="bg-gradient-to-br from-blue-500 to-blue-700 dark:from-blue-700 dark:to-blue-900 rounded-xl shadow-xl p-3 sm:p-5 lg:p-6 text-white">
-                      <div className="flex items-stretch justify-between gap-3">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h2 className="text-2xl sm:text-3xl font-bold">{displayWeather.location}</h2>
-                            {selectedLocationId === null && <IconCurrentLocation size={24} className="text-white" />}
-                          </div>
-                          <div className="text-5xl sm:text-6xl font-extrabold my-3 sm:my-4">{Math.round(displayWeather.current.temperature)}°C</div>
-                          <div className="text-lg sm:text-xl font-medium opacity-90 mb-2 sm:mb-3">{getWeatherLabel(displayWeather.current.weatherCode)}</div>
-                          <div className="flex items-center gap-3 sm:gap-4 text-sm opacity-90">
-                            <div className="flex items-center gap-1.5 sm:gap-2">
-                              <IconWind size={18} />
-                              <span>{displayWeather.current.windSpeed} km/h</span>
-                              {getWindDirectionIcon(displayWeather.current.windDirection, 18)}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-center self-stretch">
-                          {getWeatherIcon(displayWeather.current.weatherCode, 192)}
-                        </div>
-                      </div>
-                    </div>
-
                     {/* Hourly Forecast Card */}
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 sm:p-5 lg:p-6">
-                      <div className="flex justify-between items-center mb-3 sm:mb-4">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-2 sm:p-5 lg:p-6">
+                      <div className="flex justify-between items-center mb-2 sm:mb-4">
                         <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Hourly Forecast</h3>
                         <button
                           onClick={() => setShowHourlyGraph(true)}
-                          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm"
+                          className="px-4 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm"
                         >
-                          View Graph
+                          <IconChartHistogram size={20} />
                         </button>
                       </div>
-                      <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                      <div className="flex gap-2 sm:gap-3 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                         {displayWeather.hourly.slice(0, 48).map((h, i) => (
                           <div key={i} className="flex flex-col items-center min-w-[65px] sm:min-w-[80px] p-2 sm:p-3 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
                             <div className="text-[10px] sm:text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 sm:mb-2">
@@ -450,7 +450,7 @@ export default function Home() {
                     </div>
 
                     {/* 14-Day Forecast Card */}
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-3 sm:p-5 lg:p-6">
+                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-2 sm:p-5 lg:p-6">
                       <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">14-Day Forecast</h3>
                       <div className="space-y-1 sm:space-y-2">
                         {displayWeather.daily.slice(0, 14).map((d, i) => (
