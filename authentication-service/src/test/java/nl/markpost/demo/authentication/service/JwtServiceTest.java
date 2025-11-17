@@ -32,6 +32,7 @@ class JwtServiceTest {
   @BeforeEach
   void setUp() {
     user = new User();
+    user.setId(java.util.UUID.randomUUID());
     user.setEmail("user@example.com");
     // Use a generated key pair for testing
     java.security.KeyPair keyPair = io.jsonwebtoken.security.Keys.keyPairFor(
