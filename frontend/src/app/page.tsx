@@ -46,8 +46,7 @@ function getWindDirectionIcon(direction: string, size = 22) {
   return <IconComponent size={size} />;
 }
 
-const SAVED_LOCATIONS_KEY = "savedLocations";
-const MAX_SAVED_LOCATIONS = 5;
+
 
 export default function Home() {
   const router = useRouter();
@@ -154,19 +153,20 @@ export default function Home() {
     if (loggedIn) fetchWeatherWithAuth();
   }, [loggedIn]);
 
-  // Load saved locations from localStorage on mount
+  // Load saved locations from backend on mount
   React.useEffect(() => {
-    if (typeof window !== "undefined" && loggedIn) {
-      const saved = localStorage.getItem(SAVED_LOCATIONS_KEY);
-      if (saved) {
+    async function loadSavedLocations() {
+      if (loggedIn) {
         try {
-          const locations: Location[] = JSON.parse(saved);
+          const { getSavedLocations } = await import("../utils/api");
+          const locations = await getSavedLocations();
           setSavedLocations(locations);
         } catch (e) {
           console.error("Failed to load saved locations:", e);
         }
       }
     }
+    loadSavedLocations();
   }, [loggedIn]);
 
   // Fetch weather for saved locations
@@ -200,37 +200,39 @@ export default function Home() {
     });
   }, [loggedIn, savedLocations]);
 
-  // Save locations to localStorage
-  const saveLocationsToStorage = (locations: Location[]) => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(SAVED_LOCATIONS_KEY, JSON.stringify(locations));
-    }
-  };
-
-  const handleLocationSelect = (location: Location) => {
-    if (savedLocations.length >= MAX_SAVED_LOCATIONS) {
-      alert(`You can only save up to ${MAX_SAVED_LOCATIONS} locations. Please remove one first.`);
-      return;
-    }
-
+  const handleLocationSelect = async (location: Location) => {
     if (savedLocations.some(loc => loc.id === location.id)) {
       return; // Already saved
     }
 
-    const newLocations = [...savedLocations, location];
-    setSavedLocations(newLocations);
-    saveLocationsToStorage(newLocations);
+    try {
+      const { saveLocation } = await import("../utils/api");
+      await saveLocation(location);
+      setSavedLocations(prev => [...prev, location]);
+    } catch (e) {
+      console.error("Failed to save location:", e);
+      alert("Failed to save location. Please try again.");
+    }
   };
 
-  const handleRemoveLocation = (locationId: number) => {
-    const newLocations = savedLocations.filter(loc => loc.id !== locationId);
-    setSavedLocations(newLocations);
-    saveLocationsToStorage(newLocations);
-    setSavedWeatherData(prev => {
-      const next = new Map(prev);
-      next.delete(locationId);
-      return next;
-    });
+  const handleRemoveLocation = async (locationId: number) => {
+    // Find the saved location to get its database ID
+    const savedLocation = savedLocations.find(loc => loc.id === locationId);
+    if (!savedLocation) return;
+
+    try {
+      const { deleteSavedLocation } = await import("../utils/api");
+      await deleteSavedLocation(locationId);
+      setSavedLocations(prev => prev.filter(loc => loc.id !== locationId));
+      setSavedWeatherData(prev => {
+        const next = new Map(prev);
+        next.delete(locationId);
+        return next;
+      });
+    } catch (e) {
+      console.error("Failed to delete location:", e);
+      alert("Failed to delete location. Please try again.");
+    }
   };
 
   const handleLocationClick = (locationId: number | null) => {
@@ -556,7 +558,7 @@ export default function Home() {
             savedLocations={savedLocations}
           />
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
-            Save up to {MAX_SAVED_LOCATIONS} locations. You currently have {savedLocations.length} saved.
+            You currently have {savedLocations.length} saved location{savedLocations.length !== 1 ? 's' : ''}.
           </p>
         </div>
       </Modal>
