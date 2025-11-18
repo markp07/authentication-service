@@ -22,6 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced Authentication Service OpenAPI spec with complete Passkey endpoint documentation
 
 ## [1.0.0] - 2025-11-02
+## [1.4.3] - 2025-11-18
+
+### Changed
+- chore(maven)(deps): bump the maven-dependencies group with 2 updates (#60)
+
 ## [1.4.2] - 2025-11-18
 
 ### Changed
