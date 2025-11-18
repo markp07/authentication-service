@@ -18,18 +18,16 @@ public class JwtService {
   public String generateAccessToken(User user) {
     long minutes15 = Constants.MINUTES_15 * 1000;
     long expirationTime = System.currentTimeMillis() + minutes15;
-    return Jwts.builder()
-        .subject(user.getEmail())
-        .claim("userId", user.getId().toString())
-        .issuedAt(new Date())
-        .expiration(new Date(expirationTime))
-        .signWith(keyProvider.getPrivateKey(), SignatureAlgorithm.RS256)
-        .compact();
+    return buildToken(user, expirationTime);
   }
 
   public String generateRefreshToken(User user) {
     long days7 = Constants.DAYS_7 * 1000;
     long expirationTime = System.currentTimeMillis() + days7;
+    return buildToken(user, expirationTime);
+  }
+
+  private String buildToken(User user, long expirationTime) {
     return Jwts.builder()
         .subject(user.getEmail())
         .claim("userId", user.getId().toString())

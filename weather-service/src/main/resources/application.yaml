@@ -87,4 +87,4 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
 
 security:
-  excluded-paths: /actuator/health,/actuator/info,/swagger-ui.html,/swagger-ui/**,/*/api-docs,/v1/forecast
+  excluded-paths: /actuator/health,/actuator/info,/swagger-ui.html,/swagger-ui/**,/*/api-docs,/v1/forecast,/v1/saved-locations

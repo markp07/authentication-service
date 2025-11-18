@@ -2,10 +2,12 @@ package nl.markpost.demo.weather.controller;
 
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.weather.api.v1.controller.WeatherApi;
+import nl.markpost.demo.weather.api.v1.model.Location;
 import nl.markpost.demo.weather.mapper.WeatherModelMapper;
 import nl.markpost.demo.weather.service.SavedLocationService;
 import nl.markpost.demo.weather.service.WeatherService;
@@ -49,11 +51,9 @@ public class WeatherController implements WeatherApi {
    * @return ResponseEntity with list of matching locations
    */
   @Override
-  public ResponseEntity<java.util.List<nl.markpost.demo.weather.api.v1.model.Location>> searchLocations(
-      String name) {
+  public ResponseEntity<List<Location>> searchLocations(String name) {
     log.info("Searching for locations with name: {}", name);
-    java.util.List<nl.markpost.demo.weather.api.v1.model.Location> locations = weatherService.searchLocations(
-        name);
+    List<Location> locations = weatherService.searchLocations(name);
     return ResponseEntity.ok(locations);
   }
 
@@ -63,11 +63,10 @@ public class WeatherController implements WeatherApi {
    * @return ResponseEntity with list of saved locations
    */
   @Override
-  public ResponseEntity<java.util.List<nl.markpost.demo.weather.api.v1.model.Location>> getSavedLocations() {
+  public ResponseEntity<List<Location>> getSavedLocations() {
     UUID userId = getUserIdFromToken();
     log.info("Getting saved locations for user: {}", userId);
-    java.util.List<nl.markpost.demo.weather.api.v1.model.Location> locations = savedLocationService.getSavedLocations(
-        userId);
+    List<Location> locations = savedLocationService.getSavedLocations(userId);
     return ResponseEntity.ok(locations);
   }
 
@@ -78,12 +77,10 @@ public class WeatherController implements WeatherApi {
    * @return ResponseEntity with the saved location
    */
   @Override
-  public ResponseEntity<nl.markpost.demo.weather.api.v1.model.Location> saveLocation(
-      nl.markpost.demo.weather.api.v1.model.Location location) {
+  public ResponseEntity<Location> saveLocation(Location location) {
     UUID userId = getUserIdFromToken();
     log.info("Saving location {} for user: {}", location.getName(), userId);
-    nl.markpost.demo.weather.api.v1.model.Location savedLocation = savedLocationService.saveLocation(
-        userId, location);
+    Location savedLocation = savedLocationService.saveLocation(userId, location);
     return ResponseEntity.ok(savedLocation);
   }
 

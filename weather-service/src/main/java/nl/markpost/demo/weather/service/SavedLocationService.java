@@ -5,7 +5,9 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import nl.markpost.demo.weather.api.v1.model.Location;
 import nl.markpost.demo.weather.entity.SavedLocation;
+import nl.markpost.demo.weather.mapper.SavedLocationMapper;
 import nl.markpost.demo.weather.repository.SavedLocationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SavedLocationService {
 
   private final SavedLocationRepository savedLocationRepository;
+  private final SavedLocationMapper savedLocationMapper;
 
   /**
    * Get all saved locations for a user.
@@ -26,10 +29,10 @@ public class SavedLocationService {
    * @param userId the user ID
    * @return list of saved locations
    */
-  public List<nl.markpost.demo.weather.api.v1.model.Location> getSavedLocations(UUID userId) {
+  public List<Location> getSavedLocations(UUID userId) {
     log.info("Getting saved locations for user: {}", userId);
     return savedLocationRepository.findByUserId(userId).stream()
-        .map(this::toLocationDto)
+        .map(savedLocationMapper::toApiModel)
         .collect(Collectors.toList());
   }
 
@@ -41,8 +44,7 @@ public class SavedLocationService {
    * @return the saved location
    */
   @Transactional
-  public nl.markpost.demo.weather.api.v1.model.Location saveLocation(UUID userId,
-      nl.markpost.demo.weather.api.v1.model.Location location) {
+  public Location saveLocation(UUID userId, Location location) {
     log.info("Saving location {} for user: {}", location.getName(), userId);
 
     // Check if location already exists for this user
@@ -51,18 +53,8 @@ public class SavedLocationService {
       return location;
     }
 
-    SavedLocation savedLocation = SavedLocation.builder()
-        .userId(userId)
-        .locationId(location.getId())
-        .name(location.getName())
-        .latitude(location.getLatitude())
-        .longitude(location.getLongitude())
-        .country(location.getCountry())
-        .countryCode(location.getCountryCode())
-        .admin1(location.getAdmin1())
-        .timezone(location.getTimezone())
-        .build();
-
+    SavedLocation savedLocation = savedLocationMapper.toEntity(location);
+    savedLocation.setUserId(userId);
     savedLocationRepository.save(savedLocation);
     return location;
   }
@@ -77,25 +69,5 @@ public class SavedLocationService {
   public void deleteSavedLocation(Long id, UUID userId) {
     log.info("Deleting saved location {} for user: {}", id, userId);
     savedLocationRepository.deleteByIdAndUserId(id, userId);
-  }
-
-  /**
-   * Convert SavedLocation entity to Location DTO.
-   *
-   * @param savedLocation the saved location entity
-   * @return location DTO
-   */
-  private nl.markpost.demo.weather.api.v1.model.Location toLocationDto(
-      SavedLocation savedLocation) {
-    nl.markpost.demo.weather.api.v1.model.Location location = new nl.markpost.demo.weather.api.v1.model.Location();
-    location.setId(savedLocation.getLocationId());
-    location.setName(savedLocation.getName());
-    location.setLatitude(savedLocation.getLatitude());
-    location.setLongitude(savedLocation.getLongitude());
-    location.setCountry(savedLocation.getCountry());
-    location.setCountryCode(savedLocation.getCountryCode());
-    location.setAdmin1(savedLocation.getAdmin1());
-    location.setTimezone(savedLocation.getTimezone());
-    return location;
   }
 }

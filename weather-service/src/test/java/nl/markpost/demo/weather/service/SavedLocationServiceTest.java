@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import nl.markpost.demo.weather.entity.SavedLocation;
+import nl.markpost.demo.weather.mapper.SavedLocationMapper;
 import nl.markpost.demo.weather.repository.SavedLocationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,9 @@ class SavedLocationServiceTest {
 
   @Mock
   private SavedLocationRepository savedLocationRepository;
+
+  @Mock
+  private SavedLocationMapper savedLocationMapper;
 
   @InjectMocks
   private SavedLocationService savedLocationService;
@@ -61,6 +65,7 @@ class SavedLocationServiceTest {
   @Test
   void testGetSavedLocations() {
     when(savedLocationRepository.findByUserId(userId)).thenReturn(Arrays.asList(savedLocation));
+    when(savedLocationMapper.toApiModel(savedLocation)).thenReturn(locationDto);
 
     List<nl.markpost.demo.weather.api.v1.model.Location> result = savedLocationService.getSavedLocations(
         userId);
@@ -70,12 +75,14 @@ class SavedLocationServiceTest {
     assertEquals("Amsterdam", result.get(0).getName());
     assertEquals(52.3676, result.get(0).getLatitude());
     verify(savedLocationRepository, times(1)).findByUserId(userId);
+    verify(savedLocationMapper, times(1)).toApiModel(savedLocation);
   }
 
   @Test
   void testSaveLocation_NewLocation() {
     when(savedLocationRepository.findByUserIdAndLocationId(userId, 123L)).thenReturn(
         Optional.empty());
+    when(savedLocationMapper.toEntity(locationDto)).thenReturn(savedLocation);
     when(savedLocationRepository.save(any(SavedLocation.class))).thenReturn(savedLocation);
 
     nl.markpost.demo.weather.api.v1.model.Location result = savedLocationService.saveLocation(
@@ -83,6 +90,7 @@ class SavedLocationServiceTest {
 
     assertNotNull(result);
     assertEquals("Amsterdam", result.getName());
+    verify(savedLocationMapper, times(1)).toEntity(locationDto);
     verify(savedLocationRepository, times(1)).save(any(SavedLocation.class));
   }
 
@@ -96,6 +104,7 @@ class SavedLocationServiceTest {
 
     assertNotNull(result);
     assertEquals("Amsterdam", result.getName());
+    verify(savedLocationMapper, never()).toEntity(any());
     verify(savedLocationRepository, never()).save(any(SavedLocation.class));
   }
 
