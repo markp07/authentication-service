@@ -11,7 +11,8 @@ import Sidebar from "../components/Sidebar";
 import HourlyGraphModal from "../components/HourlyGraphModal";
 import LocationSearch from "../components/LocationSearch";
 import SavedLocations from "../components/SavedLocations";
-import { IconSun, IconWind, IconArrowUp, IconArrowUpLeft, IconArrowUpRight, IconArrowDown, IconArrowDownLeft, IconArrowDownRight, IconArrowRight, IconArrowLeft, IconSearch, IconCurrentLocation, IconX, IconChartHistogram } from "@tabler/icons-react";
+import { IconArrowUp, IconArrowUpLeft, IconArrowUpRight, IconArrowDown, IconArrowDownLeft, IconArrowDownRight, IconArrowRight, IconArrowLeft } from "@tabler/icons-react";
+import { Sun, Crosshair, GraphUp, Search, Wind, XLg, ArrowUp, ArrowUpLeft, ArrowUpRight, ArrowDown, ArrowDownLeft, ArrowDownRight, ArrowRight, ArrowLeft } from 'react-bootstrap-icons';
 import type { Weather } from "../types/Weather";
 import type { Location } from "../types/Location";
 import { weatherCodeMap, isNightTime } from "../types/WeatherCodeMap";
@@ -26,7 +27,7 @@ const WEATHER_API_BASE = isDev
 
 function getWeatherIcon(code: string, size = 32, currentTime?: string, sunRise?: string, sunSet?: string) {
   const isNight = currentTime && sunRise && sunSet ? isNightTime(currentTime, sunRise, sunSet) : false;
-  return weatherCodeMap[code]?.icon(size, isNight) || <IconSun size={size} />;
+  return weatherCodeMap[code]?.icon(size, isNight) || <Sun size={size} />;
 }
 function getWeatherLabel(code: string) {
   return weatherCodeMap[code]?.label || code;
@@ -315,13 +316,13 @@ export default function Home() {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <h2 className="text-2xl sm:text-3xl font-bold">{displayWeather.location}</h2>
-                            {selectedLocationId === null && <IconCurrentLocation size={24} className="text-white" />}
+                            {selectedLocationId === null && <Crosshair size={24} className="text-white" />}
                           </div>
                           <div className="text-5xl sm:text-6xl font-extrabold my-3 sm:my-4">{Math.round(displayWeather.current.temperature)}°C</div>
                           <div className="text-lg sm:text-xl font-medium opacity-90 mb-2 sm:mb-3">{getWeatherLabel(displayWeather.current.weatherCode)}</div>
                           <div className="flex items-center gap-3 sm:gap-4 text-sm opacity-90">
                             <div className="flex items-center gap-1.5 sm:gap-2">
-                              <IconWind size={18} />
+                              <Wind size={18} />
                               <span>{displayWeather.current.windSpeed} km/h</span>
                               {getWindDirectionIcon(displayWeather.current.windDirection, 18)}
                             </div>
@@ -346,7 +347,7 @@ export default function Home() {
                         >
                           <div className="flex items-center gap-1.5 mb-0.5">
                             <span className="text-xs font-semibold">{weather.location}</span>
-                            <IconCurrentLocation size={14} />
+                            <Crosshair size={14} />
                           </div>
                           {weather && (
                             <>
@@ -403,7 +404,7 @@ export default function Home() {
                                 className="absolute top-1 right-1 flex-shrink-0 hover:bg-red-500 hover:text-white text-gray-600 dark:text-gray-400 p-0.5 rounded transition-colors z-10"
                                 aria-label="Remove location"
                               >
-                                <IconX size={12} />
+                                <XLg size={12} />
                               </button>
                             </div>
                           );
@@ -415,7 +416,7 @@ export default function Home() {
                           className="flex-shrink-0 min-w-[120px] p-2 py-1 sm:py-2 rounded-lg transition-all bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-2 border-dashed border-blue-300"
                         >
                           <div className="flex flex-col items-center justify-center h-full gap-1">
-                            <IconSearch size={24} />
+                            <Search size={16} />
                             <span className="text-xs font-semibold">Add Location</span>
                           </div>
                         </button>
@@ -430,7 +431,7 @@ export default function Home() {
                           onClick={() => setShowHourlyGraph(true)}
                           className="px-4 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm"
                         >
-                          <IconChartHistogram size={20} />
+                          <GraphUp size={20} />
                         </button>
                       </div>
                       <div className="flex gap-2 sm:gap-3 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
