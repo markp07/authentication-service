@@ -22,10 +22,9 @@ spring:
       host: redis
       port: 12005
   datasource:
-    url: jdbc:postgresql://postgres:5432/demo_authentication
-    username: demo_user
-    password: demo_password
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://postgres:5432/authentication_service?useUnicode=true&characterEncoding=UTF-8
+    username: authentication_service
+    password: ${POSTGRES_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: update
@@ -33,6 +32,13 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        connection:
+          useUnicode: true
+          characterEncoding: UTF-8
+  jackson:
+    default-property-inclusion: non_null
+    deserialization:
+      fail-on-unknown-properties: false
 
 security:
   excluded-paths: /actuator/health,/actuator/info,/actuator/prometheus,/api/weather/actuator/health,/api/weather/actuator/info,/api/weather/actuator/prometheus,/swagger-ui.html,/swagger-ui/**,/*/api-docs
@@ -62,9 +68,18 @@ spring:
       host: localhost
       port: 12005
   datasource:
-    url: jdbc:postgresql://localhost:5432/demo_authentication
-    username: demo_user
-    password: demo_password
+    url: jdbc:postgresql://localhost:12004/authentication_service
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  jackson:
+    default-property-inclusion: non_null
+    deserialization:
+      fail-on-unknown-properties: false
 weather:
   cors:
     allowed-origin-patterns: "http://localhost:3000"
