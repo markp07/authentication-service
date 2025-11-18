@@ -3,7 +3,9 @@ package nl.markpost.demo.weather.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.weather.api.v1.controller.WeatherApi;
+import nl.markpost.demo.weather.api.v1.model.WeatherResponse;
 import nl.markpost.demo.weather.mapper.WeatherModelMapper;
+import nl.markpost.demo.weather.model.Weather;
 import nl.markpost.demo.weather.service.WeatherService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,25 +31,11 @@ public class WeatherController implements WeatherApi {
    * @return ResponseEntity with weather forecast
    */
   @Override
-  public ResponseEntity<nl.markpost.demo.weather.api.v1.model.Weather> getWeather(Double latitude,
+  public ResponseEntity<WeatherResponse> getWeather(Double latitude,
       Double longitude) {
     log.info("Receive weather data at latitude: {}, longitude: {}", latitude, longitude);
-    nl.markpost.demo.weather.model.Weather weather = weatherService.getWeather(latitude, longitude);
-    return ResponseEntity.ok(weatherModelMapper.toApiModel(weather));
+    Weather weather = weatherService.getWeather(latitude, longitude);
+    return ResponseEntity.ok(weatherModelMapper.from(weather));
   }
 
-  /**
-   * Searches for locations by name.
-   *
-   * @param name the location name to search for
-   * @return ResponseEntity with list of matching locations
-   */
-  @Override
-  public ResponseEntity<java.util.List<nl.markpost.demo.weather.api.v1.model.Location>> searchLocations(
-      String name) {
-    log.info("Searching for locations with name: {}", name);
-    java.util.List<nl.markpost.demo.weather.api.v1.model.Location> locations = weatherService.searchLocations(
-        name);
-    return ResponseEntity.ok(locations);
-  }
 }

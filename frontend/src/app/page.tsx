@@ -46,8 +46,7 @@ function getWindDirectionIcon(direction: string, size = 22) {
   return <IconComponent size={size} />;
 }
 
-const SAVED_LOCATIONS_KEY = "savedLocations";
-const MAX_SAVED_LOCATIONS = 5;
+
 
 export default function Home() {
   const router = useRouter();
@@ -154,19 +153,20 @@ export default function Home() {
     if (loggedIn) fetchWeatherWithAuth();
   }, [loggedIn]);
 
-  // Load saved locations from localStorage on mount
+  // Load saved locations from backend on mount
   React.useEffect(() => {
-    if (typeof window !== "undefined" && loggedIn) {
-      const saved = localStorage.getItem(SAVED_LOCATIONS_KEY);
-      if (saved) {
+    async function loadSavedLocations() {
+      if (loggedIn) {
         try {
-          const locations: Location[] = JSON.parse(saved);
+          const { getSavedLocations } = await import("../utils/api");
+          const locations = await getSavedLocations();
           setSavedLocations(locations);
         } catch (e) {
           console.error("Failed to load saved locations:", e);
         }
       }
     }
+    loadSavedLocations();
   }, [loggedIn]);
 
   // Fetch weather for saved locations
@@ -200,37 +200,39 @@ export default function Home() {
     });
   }, [loggedIn, savedLocations]);
 
-  // Save locations to localStorage
-  const saveLocationsToStorage = (locations: Location[]) => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem(SAVED_LOCATIONS_KEY, JSON.stringify(locations));
-    }
-  };
-
-  const handleLocationSelect = (location: Location) => {
-    if (savedLocations.length >= MAX_SAVED_LOCATIONS) {
-      alert(`You can only save up to ${MAX_SAVED_LOCATIONS} locations. Please remove one first.`);
-      return;
-    }
-
+  const handleLocationSelect = async (location: Location) => {
     if (savedLocations.some(loc => loc.id === location.id)) {
       return; // Already saved
     }
 
-    const newLocations = [...savedLocations, location];
-    setSavedLocations(newLocations);
-    saveLocationsToStorage(newLocations);
+    try {
+      const { saveLocation } = await import("../utils/api");
+      await saveLocation(location);
+      setSavedLocations(prev => [...prev, location]);
+    } catch (e) {
+      console.error("Failed to save location:", e);
+      alert("Failed to save location. Please try again.");
+    }
   };
 
-  const handleRemoveLocation = (locationId: number) => {
-    const newLocations = savedLocations.filter(loc => loc.id !== locationId);
-    setSavedLocations(newLocations);
-    saveLocationsToStorage(newLocations);
-    setSavedWeatherData(prev => {
-      const next = new Map(prev);
-      next.delete(locationId);
-      return next;
-    });
+  const handleRemoveLocation = async (locationId: number) => {
+    // Find the saved location to get its database ID
+    const savedLocation = savedLocations.find(loc => loc.id === locationId);
+    if (!savedLocation) return;
+
+    try {
+      const { deleteSavedLocation } = await import("../utils/api");
+      await deleteSavedLocation(locationId);
+      setSavedLocations(prev => prev.filter(loc => loc.id !== locationId));
+      setSavedWeatherData(prev => {
+        const next = new Map(prev);
+        next.delete(locationId);
+        return next;
+      });
+    } catch (e) {
+      console.error("Failed to delete location:", e);
+      alert("Failed to delete location. Please try again.");
+    }
   };
 
   const handleLocationClick = (locationId: number | null) => {
@@ -362,30 +364,17 @@ export default function Home() {
                         const isSelected = selectedLocationId === location.id;
 
                           return (
-                            <div key={location.id} className="flex-shrink-0 min-w-[120px]">
+                            <div key={location.id} className="flex-shrink-0 min-w-[120px] relative">
                               <button
                                 onClick={() => handleLocationClick(location.id)}
-                                className={`relative w-full h-full p-2 py-1 sm:py-2 rounded-lg transition-all ${
+                                className={`w-full h-full p-2 py-1 sm:py-2 rounded-lg transition-all ${
                                   isSelected
                                     ? 'bg-blue-500 text-white '
                                     : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
                                 }`}
                               >
                                 <div className="flex items-start justify-between gap-1 mb-0.5">
-                                  <div className="text-xs text-left font-semibold truncate flex-1">{location.name}</div>
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleRemoveLocation(location.id);
-                                      if (selectedLocationId === location.id) {
-                                        handleLocationClick(null);
-                                      }
-                                    }}
-                                    className="flex-shrink-0 hover:bg-red-500 hover:text-white p-0.5 rounded transition-colors"
-                                    aria-label="Remove location"
-                                  >
-                                    <IconX size={12} />
-                                  </button>
+                                  <div className="text-xs text-left font-semibold truncate flex-1 pr-4">{location.name}</div>
                                 </div>
                                 {isLoading ? (
                                   <div className="flex items-center justify-center h-10">
@@ -401,6 +390,19 @@ export default function Home() {
                                 ) : (
                                   <div className="text-xs opacity-70">No data</div>
                                 )}
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleRemoveLocation(location.id);
+                                  if (selectedLocationId === location.id) {
+                                    handleLocationClick(null);
+                                  }
+                                }}
+                                className="absolute top-1 right-1 flex-shrink-0 hover:bg-red-500 hover:text-white text-gray-600 dark:text-gray-400 p-0.5 rounded transition-colors z-10"
+                                aria-label="Remove location"
+                              >
+                                <IconX size={12} />
                               </button>
                             </div>
                           );
@@ -556,7 +558,7 @@ export default function Home() {
             savedLocations={savedLocations}
           />
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
-            Save up to {MAX_SAVED_LOCATIONS} locations. You currently have {savedLocations.length} saved.
+            You currently have {savedLocations.length} saved location{savedLocations.length !== 1 ? 's' : ''}.
           </p>
         </div>
       </Modal>
