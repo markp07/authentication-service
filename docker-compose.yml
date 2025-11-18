@@ -54,6 +54,8 @@ services:
       - postgres
     ports:
       - '12001:12001'
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - weather_service_data:/data
     networks:
