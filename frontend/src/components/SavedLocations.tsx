@@ -2,7 +2,7 @@ import React from "react";
 import { IconX, IconMapPin } from "@tabler/icons-react";
 import type { Location } from "../types/Location";
 import type { Weather } from "../types/Weather";
-import { weatherCodeMap } from "../types/WeatherCodeMap";
+import { weatherCodeMap, isNightTime } from "../types/WeatherCodeMap";
 
 interface SavedLocationsProps {
   locations: Location[];
@@ -12,8 +12,9 @@ interface SavedLocationsProps {
   onLocationClick: (location: Location) => void;
 }
 
-function getWeatherIcon(code: string, size = 32) {
-  return weatherCodeMap[code]?.icon(size) || null;
+function getWeatherIcon(code: string, size = 32, currentTime?: string, sunRise?: string, sunSet?: string) {
+  const isNight = currentTime && sunRise && sunSet ? isNightTime(currentTime, sunRise, sunSet) : false;
+  return weatherCodeMap[code]?.icon(size, isNight) || null;
 }
 
 export default function SavedLocations({
@@ -92,7 +93,7 @@ export default function SavedLocations({
                       </div>
                     </div>
                     <div className="flex items-center justify-center">
-                      {getWeatherIcon(weather.current.weatherCode, 48)}
+                      {getWeatherIcon(weather.current.weatherCode, 48, weather.current.time, weather.daily[0]?.sunRise, weather.daily[0]?.sunSet)}
                     </div>
                   </div>
                 ) : (

@@ -11,10 +11,11 @@ import Sidebar from "../components/Sidebar";
 import HourlyGraphModal from "../components/HourlyGraphModal";
 import LocationSearch from "../components/LocationSearch";
 import SavedLocations from "../components/SavedLocations";
-import { IconSun, IconWind, IconArrowUp, IconArrowUpLeft, IconArrowUpRight, IconArrowDown, IconArrowDownLeft, IconArrowDownRight, IconArrowRight, IconArrowLeft, IconSearch, IconCurrentLocation, IconX, IconChartHistogram } from "@tabler/icons-react";
+import { IconArrowUp, IconArrowUpLeft, IconArrowUpRight, IconArrowDown, IconArrowDownLeft, IconArrowDownRight, IconArrowRight, IconArrowLeft } from "@tabler/icons-react";
+import { Sun, Crosshair, GraphUp, Search, Wind, XLg, ArrowUp, ArrowUpLeft, ArrowUpRight, ArrowDown, ArrowDownLeft, ArrowDownRight, ArrowRight, ArrowLeft } from 'react-bootstrap-icons';
 import type { Weather } from "../types/Weather";
 import type { Location } from "../types/Location";
-import { weatherCodeMap } from "../types/WeatherCodeMap";
+import { weatherCodeMap, isNightTime } from "../types/WeatherCodeMap";
 
 const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
 const AUTH_API_BASE = isDev
@@ -24,8 +25,9 @@ const WEATHER_API_BASE = isDev
   ? (process.env.NEXT_PUBLIC_WEATHER_API_URL || "http://localhost:12001")
   : "https://demo.markpost.dev";
 
-function getWeatherIcon(code: string, size = 32) {
-  return weatherCodeMap[code]?.icon(size) || <IconSun size={size} />;
+function getWeatherIcon(code: string, size = 32, currentTime?: string, sunRise?: string, sunSet?: string) {
+  const isNight = currentTime && sunRise && sunSet ? isNightTime(currentTime, sunRise, sunSet) : false;
+  return weatherCodeMap[code]?.icon(size, isNight) || <Sun size={size} />;
 }
 function getWeatherLabel(code: string) {
   return weatherCodeMap[code]?.label || code;
@@ -314,20 +316,20 @@ export default function Home() {
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
                             <h2 className="text-2xl sm:text-3xl font-bold">{displayWeather.location}</h2>
-                            {selectedLocationId === null && <IconCurrentLocation size={24} className="text-white" />}
+                            {selectedLocationId === null && <Crosshair size={24} className="text-white" />}
                           </div>
                           <div className="text-5xl sm:text-6xl font-extrabold my-3 sm:my-4">{Math.round(displayWeather.current.temperature)}°C</div>
                           <div className="text-lg sm:text-xl font-medium opacity-90 mb-2 sm:mb-3">{getWeatherLabel(displayWeather.current.weatherCode)}</div>
                           <div className="flex items-center gap-3 sm:gap-4 text-sm opacity-90">
                             <div className="flex items-center gap-1.5 sm:gap-2">
-                              <IconWind size={18} />
+                              <Wind size={18} />
                               <span>{displayWeather.current.windSpeed} km/h</span>
                               {getWindDirectionIcon(displayWeather.current.windDirection, 18)}
                             </div>
                           </div>
                         </div>
                         <div className="flex items-center justify-center self-stretch">
-                          {getWeatherIcon(displayWeather.current.weatherCode, 160)}
+                          {getWeatherIcon(displayWeather.current.weatherCode, 160, displayWeather.current.time, displayWeather.daily[0]?.sunRise, displayWeather.daily[0]?.sunSet)}
                         </div>
                       </div>
                     </div>
@@ -345,13 +347,13 @@ export default function Home() {
                         >
                           <div className="flex items-center gap-1.5 mb-0.5">
                             <span className="text-xs font-semibold">{weather.location}</span>
-                            <IconCurrentLocation size={14} />
+                            <Crosshair size={14} />
                           </div>
                           {weather && (
                             <>
                               <div className="flex items-center justify-between mt-0.5">
                                 <span className="text-base font-bold">{Math.round(weather.current.temperature)}°C</span>
-                                {getWeatherIcon(weather.current.weatherCode, 20)}
+                                {getWeatherIcon(weather.current.weatherCode, 20, weather.current.time, weather.daily[0]?.sunRise, weather.daily[0]?.sunSet)}
                               </div>
                             </>
                           )}
@@ -384,7 +386,7 @@ export default function Home() {
                                   <>
                                     <div className="flex items-center justify-between mt-0.5">
                                       <span className="text-base font-bold">{Math.round(locationWeather.current.temperature)}°C</span>
-                                      {getWeatherIcon(locationWeather.current.weatherCode, 20)}
+                                      {getWeatherIcon(locationWeather.current.weatherCode, 20, locationWeather.current.time, locationWeather.daily[0]?.sunRise, locationWeather.daily[0]?.sunSet)}
                                     </div>
                                   </>
                                 ) : (
@@ -402,7 +404,7 @@ export default function Home() {
                                 className="absolute top-1 right-1 flex-shrink-0 hover:bg-red-500 hover:text-white text-gray-600 dark:text-gray-400 p-0.5 rounded transition-colors z-10"
                                 aria-label="Remove location"
                               >
-                                <IconX size={12} />
+                                <XLg size={12} />
                               </button>
                             </div>
                           );
@@ -414,7 +416,7 @@ export default function Home() {
                           className="flex-shrink-0 min-w-[120px] p-2 py-1 sm:py-2 rounded-lg transition-all bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-2 border-dashed border-blue-300"
                         >
                           <div className="flex flex-col items-center justify-center h-full gap-1">
-                            <IconSearch size={24} />
+                            <Search size={16} />
                             <span className="text-xs font-semibold">Add Location</span>
                           </div>
                         </button>
@@ -429,16 +431,20 @@ export default function Home() {
                           onClick={() => setShowHourlyGraph(true)}
                           className="px-4 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm"
                         >
-                          <IconChartHistogram size={20} />
+                          <GraphUp size={20} />
                         </button>
                       </div>
                       <div className="flex gap-2 sm:gap-3 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                        {displayWeather.hourly.slice(0, 48).map((h, i) => (
+                        {displayWeather.hourly.slice(0, 48).map((h, i) => {
+                          // Find the corresponding daily data for this hour
+                          const hourDate = new Date(h.time).toDateString();
+                          const dailyData = displayWeather.daily.find(d => new Date(d.time).toDateString() === hourDate);
+                          return (
                           <div key={i} className="flex flex-col items-center min-w-[65px] sm:min-w-[80px] p-2 sm:p-3 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
                             <div className="text-[10px] sm:text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 sm:mb-2">
                               {i === 0 ? "Now" : new Date(h.time).toLocaleTimeString([], { hour: "2-digit", hour12: false })}
                             </div>
-                            <div className="mb-1 sm:mb-2">{getWeatherIcon(h.weatherCode, 32)}</div>
+                            <div className="mb-1 sm:mb-2">{getWeatherIcon(h.weatherCode, 32, h.time, dailyData?.sunRise, dailyData?.sunSet)}</div>
                             <div className="font-bold text-base sm:text-lg text-gray-900 dark:text-white">{Math.round(h.temperature)}°</div>
                             <div className="text-[10px] sm:text-xs text-blue-600 dark:text-blue-400 mt-0.5 sm:mt-1">{h.precipitationProbability}%</div>
                             <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">{h.precipitation.toFixed(1)}mm</div>
@@ -447,7 +453,7 @@ export default function Home() {
                               {getWindDirectionIcon(h.windDirection, 12)}
                             </div>
                           </div>
-                        ))}
+                        )})}
                       </div>
                     </div>
 
@@ -455,13 +461,17 @@ export default function Home() {
                     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-2 sm:p-5 lg:p-6">
                       <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">14-Day Forecast</h3>
                       <div className="space-y-1 sm:space-y-2">
-                        {displayWeather.daily.slice(0, 14).map((d, i) => (
+                        {displayWeather.daily.slice(0, 14).map((d, i) => {
+                          // For daily forecast, use noon (12:00) to determine day/night
+                          const noonTime = new Date(d.time);
+                          noonTime.setHours(12, 0, 0, 0);
+                          return (
                           <div key={i} className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                             <div className="flex-1 min-w-0 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
                               {i === 0 ? "Today" : new Date(d.time).toLocaleDateString("en-GB", { weekday: "short" })}
                             </div>
                             <div className="flex items-center justify-center w-8 sm:w-10 flex-shrink-0">
-                              {getWeatherIcon(d.weatherCode, 28)}
+                              {getWeatherIcon(d.weatherCode, 28, noonTime.toISOString(), d.sunRise, d.sunSet)}
                             </div>
                             <div className="flex-1 font-bold text-sm sm:text-base text-gray-900 dark:text-white text-right">
                               {Math.round(d.temperatureMax)}°
@@ -480,7 +490,7 @@ export default function Home() {
                               {getWindDirectionIcon(d.windDirection, 14)}
                             </div>
                           </div>
-                        ))}
+                        )})}
                       </div>
                     </div>
                     </>
