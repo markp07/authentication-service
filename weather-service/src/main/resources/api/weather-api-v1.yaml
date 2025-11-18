@@ -7,6 +7,8 @@ info:
 tags:
   - name: weather
     description: Endpoints for weather forecast retrieval
+  - name: locations
+    description: Endpoints for saved locations
 
 servers:
   - url: https://your-backend.com
@@ -41,7 +43,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Weather'
+                $ref: '#/components/schemas/WeatherResponse'
         '400':
           description: Bad request - Invalid coordinates
           content:
@@ -61,7 +63,7 @@ paths:
       operationId: searchLocations
       summary: Search for locations by name
       tags:
-        - weather
+        - locations
       parameters:
         - name: name
           in: query
@@ -98,7 +100,7 @@ paths:
       operationId: getSavedLocations
       summary: Get saved locations for the authenticated user
       tags:
-        - weather
+        - locations
       responses:
         '200':
           description: Saved locations retrieved successfully
@@ -120,7 +122,7 @@ paths:
       operationId: saveLocation
       summary: Save a location for the authenticated user
       tags:
-        - weather
+        - locations
       requestBody:
         required: true
         content:
@@ -153,7 +155,7 @@ paths:
       operationId: deleteSavedLocation
       summary: Delete a saved location
       tags:
-        - weather
+        - locations
       parameters:
         - name: id
           in: path
@@ -187,7 +189,51 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
-    Weather:
+    WeatherCodeResponse:
+      type: string
+      description: Weather condition code
+      enum:
+        - CLEAR_SKY
+        - MAINLY_CLEAR
+        - PARTLY_CLOUDY
+        - OVERCAST
+        - FOG
+        - DEPOSITING_RIME_FOG
+        - DRIZZLE_LIGHT
+        - DRIZZLE_MODERATE
+        - DRIZZLE_DENSE
+        - FREEZING_DRIZZLE_LIGHT
+        - FREEZING_DRIZZLE_DENSE
+        - RAIN_SLIGHT
+        - RAIN_MODERATE
+        - RAIN_HEAVY
+        - FREEZING_RAIN_LIGHT
+        - FREEZING_RAIN_HEAVY
+        - SNOW_SLIGHT
+        - SNOW_MODERATE
+        - SNOW_HEAVY
+        - SNOW_GRAINS
+        - RAIN_SHOWERS_SLIGHT
+        - RAIN_SHOWERS_MODERATE
+        - RAIN_SHOWERS_VIOLENT
+        - SNOW_SHOWERS_SLIGHT
+        - SNOW_SHOWERS_HEAVY
+        - THUNDERSTORM_SLIGHT_MODERATE
+        - THUNDERSTORM_SLIGHT_HAIL
+        - THUNDERSTORM_HEAVY_HAIL
+    WindDirectionResponse:
+      type: string
+      description: Wind direction
+      enum:
+        - N
+        - NE
+        - E
+        - SE
+        - S
+        - SW
+        - W
+        - NW
+    WeatherResponse:
       type: object
       properties:
         latitude:
@@ -209,16 +255,16 @@ components:
           format: double
           description: Elevation in meters
         current:
-          $ref: '#/components/schemas/Current'
+          $ref: '#/components/schemas/CurrentResponse'
         daily:
           type: array
           items:
-            $ref: '#/components/schemas/Daily'
+            $ref: '#/components/schemas/DailyResponse'
         hourly:
           type: array
           items:
-            $ref: '#/components/schemas/Hourly'
-    Current:
+            $ref: '#/components/schemas/HourlyResponse'
+    CurrentResponse:
       type: object
       properties:
         time:
@@ -226,37 +272,7 @@ components:
           description: Current time
           example: "2025-11-04T14:00:00"
         weatherCode:
-          type: string
-          description: Weather condition code
-          enum:
-            - CLEAR_SKY
-            - MAINLY_CLEAR
-            - PARTLY_CLOUDY
-            - OVERCAST
-            - FOG
-            - DEPOSITING_RIME_FOG
-            - DRIZZLE_LIGHT
-            - DRIZZLE_MODERATE
-            - DRIZZLE_DENSE
-            - FREEZING_DRIZZLE_LIGHT
-            - FREEZING_DRIZZLE_DENSE
-            - RAIN_SLIGHT
-            - RAIN_MODERATE
-            - RAIN_HEAVY
-            - FREEZING_RAIN_LIGHT
-            - FREEZING_RAIN_HEAVY
-            - SNOW_SLIGHT
-            - SNOW_MODERATE
-            - SNOW_HEAVY
-            - SNOW_GRAINS
-            - RAIN_SHOWERS_SLIGHT
-            - RAIN_SHOWERS_MODERATE
-            - RAIN_SHOWERS_VIOLENT
-            - SNOW_SHOWERS_SLIGHT
-            - SNOW_SHOWERS_HEAVY
-            - THUNDERSTORM_SLIGHT_MODERATE
-            - THUNDERSTORM_SLIGHT_HAIL
-            - THUNDERSTORM_HEAVY_HAIL
+          $ref: '#/components/schemas/WeatherCodeResponse'
         temperature:
           type: number
           format: double
@@ -265,18 +281,8 @@ components:
           type: integer
           description: Wind speed in km/h
         windDirection:
-          type: string
-          description: Wind direction
-          enum:
-            - N
-            - NE
-            - E
-            - SE
-            - S
-            - SW
-            - W
-            - NW
-    Daily:
+          $ref: '#/components/schemas/WindDirectionResponse'
+    DailyResponse:
       type: object
       properties:
         time:
@@ -284,37 +290,7 @@ components:
           description: Date
           example: "2025-11-04T00:00:00"
         weatherCode:
-          type: string
-          description: Weather condition code
-          enum:
-            - CLEAR_SKY
-            - MAINLY_CLEAR
-            - PARTLY_CLOUDY
-            - OVERCAST
-            - FOG
-            - DEPOSITING_RIME_FOG
-            - DRIZZLE_LIGHT
-            - DRIZZLE_MODERATE
-            - DRIZZLE_DENSE
-            - FREEZING_DRIZZLE_LIGHT
-            - FREEZING_DRIZZLE_DENSE
-            - RAIN_SLIGHT
-            - RAIN_MODERATE
-            - RAIN_HEAVY
-            - FREEZING_RAIN_LIGHT
-            - FREEZING_RAIN_HEAVY
-            - SNOW_SLIGHT
-            - SNOW_MODERATE
-            - SNOW_HEAVY
-            - SNOW_GRAINS
-            - RAIN_SHOWERS_SLIGHT
-            - RAIN_SHOWERS_MODERATE
-            - RAIN_SHOWERS_VIOLENT
-            - SNOW_SHOWERS_SLIGHT
-            - SNOW_SHOWERS_HEAVY
-            - THUNDERSTORM_SLIGHT_MODERATE
-            - THUNDERSTORM_SLIGHT_HAIL
-            - THUNDERSTORM_HEAVY_HAIL
+          $ref: '#/components/schemas/WeatherCodeResponse'
         temperatureMin:
           type: number
           format: double
@@ -334,17 +310,7 @@ components:
           type: integer
           description: Wind speed in km/h
         windDirection:
-          type: string
-          description: Wind direction
-          enum:
-            - N
-            - NE
-            - E
-            - SE
-            - S
-            - SW
-            - W
-            - NW
+          $ref: '#/components/schemas/WindDirectionResponse'
         sunRise:
           type: string
           description: Sunrise time
@@ -353,7 +319,7 @@ components:
           type: string
           description: Sunset time
           example: "2025-11-04T18:00:00"
-    Hourly:
+    HourlyResponse:
       type: object
       properties:
         time:
@@ -361,37 +327,7 @@ components:
           description: Hour timestamp
           example: "2025-11-04T14:00:00"
         weatherCode:
-          type: string
-          description: Weather condition code
-          enum:
-            - CLEAR_SKY
-            - MAINLY_CLEAR
-            - PARTLY_CLOUDY
-            - OVERCAST
-            - FOG
-            - DEPOSITING_RIME_FOG
-            - DRIZZLE_LIGHT
-            - DRIZZLE_MODERATE
-            - DRIZZLE_DENSE
-            - FREEZING_DRIZZLE_LIGHT
-            - FREEZING_DRIZZLE_DENSE
-            - RAIN_SLIGHT
-            - RAIN_MODERATE
-            - RAIN_HEAVY
-            - FREEZING_RAIN_LIGHT
-            - FREEZING_RAIN_HEAVY
-            - SNOW_SLIGHT
-            - SNOW_MODERATE
-            - SNOW_HEAVY
-            - SNOW_GRAINS
-            - RAIN_SHOWERS_SLIGHT
-            - RAIN_SHOWERS_MODERATE
-            - RAIN_SHOWERS_VIOLENT
-            - SNOW_SHOWERS_SLIGHT
-            - SNOW_SHOWERS_HEAVY
-            - THUNDERSTORM_SLIGHT_MODERATE
-            - THUNDERSTORM_SLIGHT_HAIL
-            - THUNDERSTORM_HEAVY_HAIL
+          $ref: '#/components/schemas/WeatherCodeResponse'
         temperature:
           type: number
           format: double
@@ -407,17 +343,7 @@ components:
           type: integer
           description: Wind speed in km/h
         windDirection:
-          type: string
-          description: Wind direction
-          enum:
-            - N
-            - NE
-            - E
-            - SE
-            - S
-            - SW
-            - W
-            - NW
+          $ref: '#/components/schemas/WindDirectionResponse'
     Location:
       type: object
       properties:

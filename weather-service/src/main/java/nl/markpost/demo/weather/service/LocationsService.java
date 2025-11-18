@@ -1,13 +1,17 @@
 package nl.markpost.demo.weather.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.weather.api.v1.model.Location;
+import nl.markpost.demo.weather.client.GeocodingClient;
 import nl.markpost.demo.weather.entity.SavedLocation;
+import nl.markpost.demo.weather.mapper.GeocodingMapper;
 import nl.markpost.demo.weather.mapper.SavedLocationMapper;
+import nl.markpost.demo.weather.model.GeocodingResponse;
 import nl.markpost.demo.weather.repository.SavedLocationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,10 +22,34 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class SavedLocationService {
+public class LocationsService {
 
   private final SavedLocationRepository savedLocationRepository;
+
   private final SavedLocationMapper savedLocationMapper;
+
+  private final GeocodingClient geocodingClient;
+
+  private final GeocodingMapper geocodingMapper;
+
+  /**
+   * Searches for locations by name.
+   *
+   * @param name the location name to search for
+   * @return a list of matching locations
+   */
+  public List<Location> searchLocations(String name) {
+    if (name == null || name.trim().isEmpty()) {
+      return Collections.emptyList();
+    }
+    GeocodingResponse response = geocodingClient.searchLocations(name.trim(), 5, "en", "json");
+    if (response == null || response.getResults() == null) {
+      return Collections.emptyList();
+    }
+    return response.getResults().stream()
+        .map(geocodingMapper::toLocationDto)
+        .collect(Collectors.toList());
+  }
 
   /**
    * Get all saved locations for a user.
@@ -70,4 +98,5 @@ public class SavedLocationService {
     log.info("Deleting saved location {} for user: {}", id, userId);
     savedLocationRepository.deleteByIdAndUserId(id, userId);
   }
+
 }

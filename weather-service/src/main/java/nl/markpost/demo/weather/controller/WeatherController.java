@@ -1,15 +1,11 @@
 package nl.markpost.demo.weather.controller;
 
-import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.weather.api.v1.controller.WeatherApi;
-import nl.markpost.demo.weather.api.v1.model.Location;
+import nl.markpost.demo.weather.api.v1.model.WeatherResponse;
 import nl.markpost.demo.weather.mapper.WeatherModelMapper;
-import nl.markpost.demo.weather.service.SavedLocationService;
+import nl.markpost.demo.weather.model.Weather;
 import nl.markpost.demo.weather.service.WeatherService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,8 +22,6 @@ public class WeatherController implements WeatherApi {
 
   private final WeatherService weatherService;
   private final WeatherModelMapper weatherModelMapper;
-  private final SavedLocationService savedLocationService;
-  private final HttpServletRequest request;
 
   /**
    * Retrieves weather data for the given coordinates.
@@ -37,75 +31,11 @@ public class WeatherController implements WeatherApi {
    * @return ResponseEntity with weather forecast
    */
   @Override
-  public ResponseEntity<nl.markpost.demo.weather.api.v1.model.Weather> getWeather(Double latitude,
+  public ResponseEntity<WeatherResponse> getWeather(Double latitude,
       Double longitude) {
     log.info("Receive weather data at latitude: {}, longitude: {}", latitude, longitude);
-    nl.markpost.demo.weather.model.Weather weather = weatherService.getWeather(latitude, longitude);
-    return ResponseEntity.ok(weatherModelMapper.toApiModel(weather));
+    Weather weather = weatherService.getWeather(latitude, longitude);
+    return ResponseEntity.ok(weatherModelMapper.from(weather));
   }
 
-  /**
-   * Searches for locations by name.
-   *
-   * @param name the location name to search for
-   * @return ResponseEntity with list of matching locations
-   */
-  @Override
-  public ResponseEntity<List<Location>> searchLocations(String name) {
-    log.info("Searching for locations with name: {}", name);
-    List<Location> locations = weatherService.searchLocations(name);
-    return ResponseEntity.ok(locations);
-  }
-
-  /**
-   * Gets all saved locations for the authenticated user.
-   *
-   * @return ResponseEntity with list of saved locations
-   */
-  @Override
-  public ResponseEntity<List<Location>> getSavedLocations() {
-    UUID userId = getUserIdFromToken();
-    log.info("Getting saved locations for user: {}", userId);
-    List<Location> locations = savedLocationService.getSavedLocations(userId);
-    return ResponseEntity.ok(locations);
-  }
-
-  /**
-   * Saves a location for the authenticated user.
-   *
-   * @param location the location to save
-   * @return ResponseEntity with the saved location
-   */
-  @Override
-  public ResponseEntity<Location> saveLocation(Location location) {
-    UUID userId = getUserIdFromToken();
-    log.info("Saving location {} for user: {}", location.getName(), userId);
-    Location savedLocation = savedLocationService.saveLocation(userId, location);
-    return ResponseEntity.ok(savedLocation);
-  }
-
-  /**
-   * Deletes a saved location.
-   *
-   * @param id the saved location ID
-   * @return ResponseEntity with no content
-   */
-  @Override
-  public ResponseEntity<Void> deleteSavedLocation(Long id) {
-    UUID userId = getUserIdFromToken();
-    log.info("Deleting saved location {} for user: {}", id, userId);
-    savedLocationService.deleteSavedLocation(id, userId);
-    return ResponseEntity.noContent().build();
-  }
-
-  /**
-   * Extracts the user ID from the JWT token.
-   *
-   * @return the user ID
-   */
-  private UUID getUserIdFromToken() {
-    Claims claims = (Claims) request.getAttribute("jwtClaims");
-    String userIdStr = claims.get("userId", String.class);
-    return UUID.fromString(userIdStr);
-  }
 }
