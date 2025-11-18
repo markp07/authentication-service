@@ -364,30 +364,17 @@ export default function Home() {
                         const isSelected = selectedLocationId === location.id;
 
                           return (
-                            <div key={location.id} className="flex-shrink-0 min-w-[120px]">
+                            <div key={location.id} className="flex-shrink-0 min-w-[120px] relative">
                               <button
                                 onClick={() => handleLocationClick(location.id)}
-                                className={`relative w-full h-full p-2 py-1 sm:py-2 rounded-lg transition-all ${
+                                className={`w-full h-full p-2 py-1 sm:py-2 rounded-lg transition-all ${
                                   isSelected
                                     ? 'bg-blue-500 text-white '
                                     : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
                                 }`}
                               >
                                 <div className="flex items-start justify-between gap-1 mb-0.5">
-                                  <div className="text-xs text-left font-semibold truncate flex-1">{location.name}</div>
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleRemoveLocation(location.id);
-                                      if (selectedLocationId === location.id) {
-                                        handleLocationClick(null);
-                                      }
-                                    }}
-                                    className="flex-shrink-0 hover:bg-red-500 hover:text-white p-0.5 rounded transition-colors"
-                                    aria-label="Remove location"
-                                  >
-                                    <IconX size={12} />
-                                  </button>
+                                  <div className="text-xs text-left font-semibold truncate flex-1 pr-4">{location.name}</div>
                                 </div>
                                 {isLoading ? (
                                   <div className="flex items-center justify-center h-10">
@@ -403,6 +390,19 @@ export default function Home() {
                                 ) : (
                                   <div className="text-xs opacity-70">No data</div>
                                 )}
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleRemoveLocation(location.id);
+                                  if (selectedLocationId === location.id) {
+                                    handleLocationClick(null);
+                                  }
+                                }}
+                                className="absolute top-1 right-1 flex-shrink-0 hover:bg-red-500 hover:text-white text-gray-600 dark:text-gray-400 p-0.5 rounded transition-colors z-10"
+                                aria-label="Remove location"
+                              >
+                                <IconX size={12} />
                               </button>
                             </div>
                           );
