@@ -226,6 +226,10 @@ Generated code is created during the Maven build process and placed in `target/g
 
 #### Weather Service
 - `GET /v1/forecast` - Get weather forecast for coordinates (requires authentication)
+- `GET /v1/saved-locations` - Get saved locations for authenticated user
+- `POST /v1/saved-locations` - Save a new location
+- `DELETE /v1/saved-locations/{id}` - Delete a saved location
+- `PUT /v1/saved-locations/reorder` - Reorder saved locations (drag & drop)
 
 ## 🔐 Security Features
 
