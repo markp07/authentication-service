@@ -10,9 +10,9 @@ import ResetPassword from "../components/ResetPassword";
 import Sidebar from "../components/Sidebar";
 import HourlyGraphModal from "../components/HourlyGraphModal";
 import LocationSearch from "../components/LocationSearch";
-import SavedLocations from "../components/SavedLocations";
+import LocationBar from "../components/LocationBar";
 import { IconArrowUp, IconArrowUpLeft, IconArrowUpRight, IconArrowDown, IconArrowDownLeft, IconArrowDownRight, IconArrowRight, IconArrowLeft } from "@tabler/icons-react";
-import { Sun, Crosshair, GraphUp, Search, Wind, XLg, ArrowUp, ArrowUpLeft, ArrowUpRight, ArrowDown, ArrowDownLeft, ArrowDownRight, ArrowRight, ArrowLeft } from 'react-bootstrap-icons';
+import { Sun, Crosshair, GraphUp, Wind } from 'react-bootstrap-icons';
 import type { Weather } from "../types/Weather";
 import type { Location } from "../types/Location";
 import { weatherCodeMap, isNightTime } from "../types/WeatherCodeMap";
@@ -237,6 +237,29 @@ export default function Home() {
     }
   };
 
+  const handleReorderLocations = async (locationIds: number[]) => {
+    try {
+      const { reorderSavedLocations } = await import("../utils/api");
+      await reorderSavedLocations(locationIds);
+      // Optimistically update the order
+      const reorderedLocations = locationIds
+        .map(id => savedLocations.find(loc => loc.id === id))
+        .filter((loc): loc is Location => loc !== undefined);
+      setSavedLocations(reorderedLocations);
+    } catch (e) {
+      console.error("Failed to reorder locations:", e);
+      alert("Failed to reorder locations. Please try again.");
+      // Reload locations from server on error
+      try {
+        const { getSavedLocations } = await import("../utils/api");
+        const locations = await getSavedLocations();
+        setSavedLocations(locations);
+      } catch (reloadError) {
+        console.error("Failed to reload locations:", reloadError);
+      }
+    }
+  };
+
   const handleLocationClick = (locationId: number | null) => {
     setSelectedLocationId(locationId);
     if (locationId === null) {
@@ -334,94 +357,22 @@ export default function Home() {
                       </div>
                     </div>
                     {/* Horizontal Scrollable Location Bar */}
-                    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-2 sm:p-3">
-                      <div className="flex gap-2 overflow-x-auto pb-0 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                        {/* Current Location Card */}
-                        <button
-                          onClick={() => handleLocationClick(null)}
-                          className={`flex-shrink-0 min-w-[120px] p-2 py-1 sm:py-2 rounded-lg transition-all ${
-                            selectedLocationId === null
-                              ? 'bg-blue-500 text-white'
-                              : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
-                          }`}
-                        >
-                          <div className="flex items-center gap-1.5 mb-0.5">
-                            <span className="text-xs font-semibold">{weather.location}</span>
-                            <Crosshair size={14} />
-                          </div>
-                          {weather && (
-                            <>
-                              <div className="flex items-center justify-between mt-0.5">
-                                <span className="text-base font-bold">{Math.round(weather.current.temperature)}°C</span>
-                                {getWeatherIcon(weather.current.weatherCode, 20, weather.current.time, weather.daily[0]?.sunRise, weather.daily[0]?.sunSet)}
-                              </div>
-                            </>
-                          )}
-                        </button>
-
-                      {/* Saved Location Cards */}
-                      {savedLocations.map((location) => {
-                        const locationWeather = savedWeatherData.get(location.id);
-                        const isLoading = loadingWeather.has(location.id);
-                        const isSelected = selectedLocationId === location.id;
-
-                          return (
-                            <div key={location.id} className="flex-shrink-0 min-w-[120px] relative">
-                              <button
-                                onClick={() => handleLocationClick(location.id)}
-                                className={`w-full h-full p-2 py-1 sm:py-2 rounded-lg transition-all ${
-                                  isSelected
-                                    ? 'bg-blue-500 text-white '
-                                    : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
-                                }`}
-                              >
-                                <div className="flex items-start justify-between gap-1 mb-0.5">
-                                  <div className="text-xs text-left font-semibold truncate flex-1 pr-4">{location.name}</div>
-                                </div>
-                                {isLoading ? (
-                                  <div className="flex items-center justify-center h-10">
-                                    <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-current"></div>
-                                  </div>
-                                ) : locationWeather ? (
-                                  <>
-                                    <div className="flex items-center justify-between mt-0.5">
-                                      <span className="text-base font-bold">{Math.round(locationWeather.current.temperature)}°C</span>
-                                      {getWeatherIcon(locationWeather.current.weatherCode, 20, locationWeather.current.time, locationWeather.daily[0]?.sunRise, locationWeather.daily[0]?.sunSet)}
-                                    </div>
-                                  </>
-                                ) : (
-                                  <div className="text-xs opacity-70">No data</div>
-                                )}
-                              </button>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleRemoveLocation(location.id);
-                                  if (selectedLocationId === location.id) {
-                                    handleLocationClick(null);
-                                  }
-                                }}
-                                className="absolute top-1 right-1 flex-shrink-0 hover:bg-red-500 hover:text-white text-gray-600 dark:text-gray-400 p-0.5 rounded transition-colors z-10"
-                                aria-label="Remove location"
-                              >
-                                <XLg size={12} />
-                              </button>
-                            </div>
-                          );
-                        })}
-
-                        {/* Add Location Search Button */}
-                        <button
-                          onClick={() => setShowLocationSearchModal(true)}
-                          className="flex-shrink-0 min-w-[120px] p-2 py-1 sm:py-2 rounded-lg transition-all bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-2 border-dashed border-blue-300"
-                        >
-                          <div className="flex flex-col items-center justify-center h-full gap-1">
-                            <Search size={16} />
-                            <span className="text-xs font-semibold">Add Location</span>
-                          </div>
-                        </button>
-                      </div>
-                    </div>
+                    <LocationBar
+                      currentLocationWeather={weather}
+                      savedLocations={savedLocations}
+                      savedWeatherData={savedWeatherData}
+                      loadingWeather={loadingWeather}
+                      selectedLocationId={selectedLocationId}
+                      onLocationClick={handleLocationClick}
+                      onRemoveLocation={(locationId) => {
+                        handleRemoveLocation(locationId);
+                        if (selectedLocationId === locationId) {
+                          handleLocationClick(null);
+                        }
+                      }}
+                      onReorderLocations={handleReorderLocations}
+                      onAddLocationClick={() => setShowLocationSearchModal(true)}
+                    />
 
                     {/* Hourly Forecast Card */}
                     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-2 sm:p-5 lg:p-6">

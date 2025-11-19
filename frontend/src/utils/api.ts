@@ -65,3 +65,16 @@ export async function deleteSavedLocation(id: number) {
   }
 }
 
+export async function reorderSavedLocations(locationIds: number[]) {
+  const res = await fetchWithAuthRetry(`${WEATHER_API_BASE}/api/weather/v1/saved-locations/reorder`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ locationIds }),
+  });
+  if (!res.ok && res.status !== 204) {
+    throw new Error("Failed to reorder saved locations");
+  }
+}
+
