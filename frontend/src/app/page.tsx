@@ -3,10 +3,6 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import Modal from "../components/Modal";
-import Login from "../components/Login";
-import Register from "../components/Register";
-import ForgotPassword from "../components/ForgotPassword";
-import ResetPassword from "../components/ResetPassword";
 import Sidebar from "../components/Sidebar";
 import HourlyGraphModal from "../components/HourlyGraphModal";
 import LocationSearch from "../components/LocationSearch";
@@ -52,13 +48,6 @@ function getWindDirectionIcon(direction: string, size = 22) {
 
 export default function Home() {
   const router = useRouter();
-  const [modal, setModal] = React.useState<
-    | "login"
-    | "register"
-    | "forgot"
-    | "reset"
-    | null
-  >("login");
   const [showWeather, setShowWeather] = React.useState(false);
   const [weatherError, setWeatherError] = React.useState<string | null>(null);
   const [weather, setWeather] = React.useState<Weather | null>(null);
@@ -78,9 +67,6 @@ export default function Home() {
   const [selectedLocationId, setSelectedLocationId] = React.useState<number | null>(null); // null = current location
   const [displayWeather, setDisplayWeather] = React.useState<Weather | null>(null);
 
-  // Modal open/close helpers
-  const openModal = (name: typeof modal) => setModal(name);
-  const closeModal = () => setModal(null);
 
   React.useEffect(() => {
     async function checkLogin() {
@@ -99,15 +85,18 @@ export default function Home() {
           setUsername(data.userName || null);
         } else {
           setUsername(null);
+          // Redirect to login if not authenticated
+          router.push("/login?callback=" + encodeURIComponent("/"));
         }
       } catch {
         setLoggedIn(false);
         setUsername(null);
+        router.push("/login?callback=" + encodeURIComponent("/"));
       }
       setCheckingLogin(false);
     }
     checkLogin();
-  }, []);
+  }, [router]);
 
   React.useEffect(() => {
     async function fetchWeatherWithAuth() {
@@ -149,7 +138,7 @@ export default function Home() {
         setLoggedIn(false);
         setShowWeather(false);
         setWeather(null);
-        setModal("login");
+        router.push("/login?callback=" + encodeURIComponent("/"));
       }
     }
     if (loggedIn) fetchWeatherWithAuth();
@@ -268,7 +257,7 @@ export default function Home() {
     setLoggedIn(false);
     setShowWeather(false);
     setWeather(null);
-    setModal("login");
+    router.push("/login");
   }
 
   function handleNavigate(page: "dashboard" | "profile" | "security") {
@@ -513,38 +502,6 @@ export default function Home() {
               </div>
         ) : null}
       </main>
-
-      {/* Modals */}
-      <Modal open={!loggedIn && modal === "login"} onClose={closeModal}>
-        <Login
-          onSuccess={() => {
-            setLoggedIn(true);
-            closeModal();
-          }}
-          onRegister={() => openModal("register")}
-          onForgot={() => openModal("forgot")}
-        />
-      </Modal>
-      <Modal open={modal === "register"} onClose={closeModal}>
-        <Register
-          onSuccess={() => {
-            openModal("login");
-          }}
-          onLogin={() => openModal("login")}
-        />
-      </Modal>
-      <Modal open={modal === "forgot"} onClose={closeModal}>
-        <ForgotPassword
-          onBack={() => openModal("login")}
-          onReset={() => openModal("reset")}
-        />
-      </Modal>
-      <Modal open={modal === "reset"} onClose={closeModal}>
-        <ResetPassword
-          onBack={() => openModal("forgot")}
-          onLogin={() => openModal("login")}
-        />
-      </Modal>
 
       {/* Hourly Graph Modal */}
       {displayWeather && (
