@@ -1,0 +1,84 @@
+"use client";
+
+import React, { useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import Login from "../../components/Login";
+
+const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
+const AUTH_API_BASE = isDev
+  ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:12002")
+  : "https://demo.markpost.dev";
+
+function LoginPageContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [checkingAuth, setCheckingAuth] = React.useState(true);
+
+  useEffect(() => {
+    // Check if already logged in
+    async function checkLogin() {
+      try {
+        const res = await fetch(`${AUTH_API_BASE}/api/auth/v1/user`, { credentials: "include" });
+        if (res.ok) {
+          // Already logged in, redirect to callback or home
+          const callback = searchParams.get("callback") || "/";
+          router.push(callback);
+          return;
+        }
+      } catch {
+        // Not logged in, continue to show login page
+      }
+      setCheckingAuth(false);
+    }
+    checkLogin();
+  }, [router, searchParams]);
+
+  const handleSuccess = () => {
+    const callback = searchParams.get("callback") || "/";
+    router.push(callback);
+  };
+
+  const handleRegister = () => {
+    const callback = searchParams.get("callback");
+    router.push(callback ? `/register?callback=${encodeURIComponent(callback)}` : "/register");
+  };
+
+  const handleForgot = () => {
+    const callback = searchParams.get("callback");
+    router.push(callback ? `/forgot-password?callback=${encodeURIComponent(callback)}` : "/forgot-password");
+  };
+
+  if (checkingAuth) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen w-full bg-gray-50 dark:bg-gray-900">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+        <div className="text-lg font-semibold text-blue-700 dark:text-blue-400">Loading...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen w-full bg-gray-50 dark:bg-gray-900 p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-6 min-w-[320px] w-full max-w-md">
+        <Login
+          onSuccess={handleSuccess}
+          onRegister={handleRegister}
+          onForgot={handleForgot}
+        />
+      </div>
+    </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex flex-col items-center justify-center min-h-screen w-full bg-gray-50 dark:bg-gray-900">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
+        <div className="text-lg font-semibold text-blue-700 dark:text-blue-400">Loading...</div>
+      </div>
+    }>
+      <LoginPageContent />
+    </Suspense>
+  );
+}

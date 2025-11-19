@@ -10,7 +10,7 @@ export const WEATHER_API_BASE = isDev
 
 /**
  * Generic fetch utility that retries on 401 by refreshing the token, then retries the original request.
- * If refresh also fails with 401, redirects to login.
+ * If refresh also fails with 401, redirects to login with callback URL.
  */
 export async function fetchWithAuthRetry(input: RequestInfo, init?: RequestInit): Promise<Response> {
   let res = await fetch(input, { ...init, credentials: "include" });
@@ -19,9 +19,10 @@ export async function fetchWithAuthRetry(input: RequestInfo, init?: RequestInit)
   // Try to refresh token
   const refreshRes = await fetch(`${AUTH_API_BASE}/api/auth/v1/refresh`, { method: "POST", credentials: "include" });
   if (refreshRes.status === 401) {
-    // Redirect to login
+    // Redirect to login with callback URL
     if (typeof window !== "undefined") {
-      window.location.href = "/login";
+      const currentPath = window.location.pathname;
+      window.location.href = `/login?callback=${encodeURIComponent(currentPath)}`;
     }
     throw new Error("Session expired. Redirecting to login.");
   }

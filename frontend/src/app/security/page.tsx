@@ -35,11 +35,11 @@ export default function Security() {
           const data = await res.json();
           setUsername(data.userName || null);
         } else {
-          router.push("/");
+          router.push("/login?callback=" + encodeURIComponent("/security"));
         }
       } catch {
         setLoggedIn(false);
-        router.push("/");
+        router.push("/login?callback=" + encodeURIComponent("/security"));
       }
       setCheckingLogin(false);
     }
@@ -49,7 +49,7 @@ export default function Security() {
   async function handleLogout() {
     await fetch(`${AUTH_API_BASE}/api/auth/v1/logout`, { method: "POST", credentials: "include" });
     setLoggedIn(false);
-    router.push("/");
+    router.push("/login");
   }
 
   function handleNavigate(page: "dashboard" | "profile" | "security") {
