@@ -59,7 +59,7 @@ public class LocationsService {
    */
   public List<Location> getSavedLocations(UUID userId) {
     log.info("Getting saved locations for user: {}", userId);
-    return savedLocationRepository.findByUserId(userId).stream()
+    return savedLocationRepository.findByUserIdOrderByDisplayOrderAsc(userId).stream()
         .map(savedLocationMapper::toApiModel)
         .collect(Collectors.toList());
   }
@@ -83,6 +83,16 @@ public class LocationsService {
 
     SavedLocation savedLocation = savedLocationMapper.toEntity(location);
     savedLocation.setUserId(userId);
+    
+    // Set display order to the end (max + 1)
+    List<SavedLocation> existingLocations = savedLocationRepository.findByUserIdOrderByDisplayOrderAsc(userId);
+    int maxOrder = existingLocations.stream()
+        .map(SavedLocation::getDisplayOrder)
+        .filter(order -> order != null)
+        .max(Integer::compareTo)
+        .orElse(-1);
+    savedLocation.setDisplayOrder(maxOrder + 1);
+    
     savedLocationRepository.save(savedLocation);
     return location;
   }
@@ -97,6 +107,33 @@ public class LocationsService {
   public void deleteSavedLocation(Long id, UUID userId) {
     log.info("Deleting saved location {} for user: {}", id, userId);
     savedLocationRepository.deleteByIdAndUserId(id, userId);
+  }
+
+  /**
+   * Reorder saved locations for a user.
+   *
+   * @param userId      the user ID
+   * @param locationIds list of location IDs in the desired order
+   */
+  @Transactional
+  public void reorderLocations(UUID userId, List<Long> locationIds) {
+    log.info("Reordering locations for user: {}", userId);
+    
+    List<SavedLocation> savedLocations = savedLocationRepository.findByUserIdOrderByDisplayOrderAsc(userId);
+    
+    // Create a map of locationId to SavedLocation for quick lookup
+    var locationMap = savedLocations.stream()
+        .collect(Collectors.toMap(SavedLocation::getLocationId, loc -> loc));
+    
+    // Update display order based on the new order
+    for (int i = 0; i < locationIds.size(); i++) {
+      Long locationId = locationIds.get(i);
+      SavedLocation location = locationMap.get(locationId);
+      if (location != null && location.getUserId().equals(userId)) {
+        location.setDisplayOrder(i);
+        savedLocationRepository.save(location);
+      }
+    }
   }
 
 }

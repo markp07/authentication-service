@@ -150,6 +150,35 @@ paths:
                 $ref: '#/components/schemas/Error'
       security:
         - BearerAuth: [ ]
+  /saved-locations/reorder:
+    put:
+      operationId: reorderSavedLocations
+      summary: Reorder saved locations for the authenticated user
+      tags:
+        - locations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReorderRequest'
+      responses:
+        '204':
+          description: Locations reordered successfully
+        '400':
+          description: Bad request - Invalid location IDs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - BearerAuth: [ ]
   /saved-locations/{id}:
     delete:
       operationId: deleteSavedLocation
@@ -374,6 +403,18 @@ components:
         timezone:
           type: string
           description: Timezone of the location
+    ReorderRequest:
+      type: object
+      required:
+        - locationIds
+      properties:
+        locationIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+          description: Array of location IDs in the desired order
+          example: [123, 456, 789]
     Error:
       type: object
       properties:
