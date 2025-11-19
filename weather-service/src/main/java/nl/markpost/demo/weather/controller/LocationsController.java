@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.weather.api.v1.controller.LocationsApi;
 import nl.markpost.demo.weather.api.v1.model.Location;
+import nl.markpost.demo.weather.api.v1.model.ReorderRequest;
 import nl.markpost.demo.weather.service.LocationsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -86,8 +87,7 @@ public class LocationsController implements LocationsApi {
    * @return ResponseEntity with no content
    */
   @Override
-  public ResponseEntity<Void> reorderSavedLocations(
-      nl.markpost.demo.weather.api.v1.model.ReorderRequest reorderRequest) {
+  public ResponseEntity<Void> reorderSavedLocations(ReorderRequest reorderRequest) {
     UUID userId = getUserIdFromToken();
     log.info("Reordering locations for user: {}", userId);
     locationsService.reorderLocations(userId, reorderRequest.getLocationIds());
