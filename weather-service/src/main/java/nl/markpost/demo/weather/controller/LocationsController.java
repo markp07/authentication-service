@@ -80,6 +80,21 @@ public class LocationsController implements LocationsApi {
   }
 
   /**
+   * Reorders saved locations for the authenticated user.
+   *
+   * @param reorderRequest the request containing the new order of location IDs
+   * @return ResponseEntity with no content
+   */
+  @Override
+  public ResponseEntity<Void> reorderSavedLocations(
+      nl.markpost.demo.weather.api.v1.model.ReorderRequest reorderRequest) {
+    UUID userId = getUserIdFromToken();
+    log.info("Reordering locations for user: {}", userId);
+    locationsService.reorderLocations(userId, reorderRequest.getLocationIds());
+    return ResponseEntity.noContent().build();
+  }
+
+  /**
    * Extracts the user ID from the JWT token.
    *
    * @return the user ID

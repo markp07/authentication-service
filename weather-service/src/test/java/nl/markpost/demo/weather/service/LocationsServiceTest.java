@@ -84,7 +84,7 @@ class LocationsServiceTest {
 
   @Test
   void testGetSavedLocations() {
-    when(savedLocationRepository.findByUserId(userId)).thenReturn(
+    when(savedLocationRepository.findByUserIdOrderByDisplayOrderAsc(userId)).thenReturn(
         Collections.singletonList(savedLocation));
     when(savedLocationMapper.toApiModel(savedLocation)).thenReturn(locationDto);
 
@@ -95,7 +95,7 @@ class LocationsServiceTest {
     assertEquals(1, result.size());
     assertEquals("Amsterdam", result.getFirst().getName());
     assertEquals(52.3676, result.getFirst().getLatitude());
-    verify(savedLocationRepository, times(1)).findByUserId(userId);
+    verify(savedLocationRepository, times(1)).findByUserIdOrderByDisplayOrderAsc(userId);
     verify(savedLocationMapper, times(1)).toApiModel(savedLocation);
   }
 
@@ -103,6 +103,8 @@ class LocationsServiceTest {
   void testSaveLocation_NewLocation() {
     when(savedLocationRepository.findByUserIdAndLocationId(userId, 123L)).thenReturn(
         Optional.empty());
+    when(savedLocationRepository.findByUserIdOrderByDisplayOrderAsc(userId)).thenReturn(
+        Collections.emptyList());
     when(savedLocationMapper.toEntity(locationDto)).thenReturn(savedLocation);
     when(savedLocationRepository.save(any(SavedLocation.class))).thenReturn(savedLocation);
 
@@ -134,6 +136,44 @@ class LocationsServiceTest {
     locationsService.deleteSavedLocation(1L, userId);
 
     verify(savedLocationRepository, times(1)).deleteByIdAndUserId(1L, userId);
+  }
+
+  @Test
+  @DisplayName("Should reorder saved locations")
+  void testReorderLocations() {
+    SavedLocation location1 = SavedLocation.builder()
+        .id(1L)
+        .userId(userId)
+        .locationId(100L)
+        .name("Location 1")
+        .displayOrder(0)
+        .build();
+    SavedLocation location2 = SavedLocation.builder()
+        .id(2L)
+        .userId(userId)
+        .locationId(200L)
+        .name("Location 2")
+        .displayOrder(1)
+        .build();
+    SavedLocation location3 = SavedLocation.builder()
+        .id(3L)
+        .userId(userId)
+        .locationId(300L)
+        .name("Location 3")
+        .displayOrder(2)
+        .build();
+
+    List<SavedLocation> savedLocations = List.of(location1, location2, location3);
+    when(savedLocationRepository.findByUserIdOrderByDisplayOrderAsc(userId)).thenReturn(savedLocations);
+
+    // Reorder: [300, 100, 200]
+    List<Long> newOrder = List.of(300L, 100L, 200L);
+    locationsService.reorderLocations(userId, newOrder);
+
+    verify(savedLocationRepository, times(3)).save(any(SavedLocation.class));
+    assertEquals(1, location1.getDisplayOrder()); // 100L is now at position 1
+    assertEquals(2, location2.getDisplayOrder()); // 200L is now at position 2
+    assertEquals(0, location3.getDisplayOrder()); // 300L is now at position 0
   }
 
   @Test

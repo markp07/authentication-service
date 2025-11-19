@@ -29,6 +29,7 @@ public interface SavedLocationMapper {
   @Mapping(source = "id", target = "locationId")
   @Mapping(target = "id", ignore = true)
   @Mapping(target = "userId", ignore = true)
+  @Mapping(target = "displayOrder", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
   SavedLocation toEntity(Location location);

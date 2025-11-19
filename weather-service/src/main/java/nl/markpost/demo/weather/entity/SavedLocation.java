@@ -64,6 +64,9 @@ public class SavedLocation {
   @Column
   private String timezone;
 
+  @Column(name = "display_order")
+  private Integer displayOrder;
+
   @CreationTimestamp
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;
