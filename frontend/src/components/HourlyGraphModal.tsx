@@ -134,8 +134,8 @@ export default function HourlyGraphModal({
               }`}
             >
               <IconTemperature size={20} className="sm:w-6 sm:h-6" />
-              <span className="hidden xs:inline">Temperature</span>
-              <span className="xs:hidden">Temp</span>
+              <span className="hidden sm:inline">Temperature</span>
+              <span className="sm:hidden">Temp</span>
             </button>
             <button
               onClick={() => setDataType("precipitation")}
@@ -146,8 +146,8 @@ export default function HourlyGraphModal({
               }`}
             >
               <IconDroplet size={20} className="sm:w-6 sm:h-6" />
-              <span className="hidden xs:inline">Precipitation</span>
-              <span className="xs:hidden">Rain</span>
+              <span className="hidden sm:inline">Precipitation</span>
+              <span className="sm:hidden">Rain</span>
             </button>
             <button
               onClick={() => setDataType("wind")}
@@ -158,8 +158,8 @@ export default function HourlyGraphModal({
               }`}
             >
               <IconWind size={20} className="sm:w-6 sm:h-6" />
-              <span className="hidden xs:inline">Wind Speed</span>
-              <span className="xs:hidden">Wind</span>
+              <span className="hidden sm:inline">Wind Speed</span>
+              <span className="sm:hidden">Wind</span>
             </button>
           </div>
 
@@ -265,7 +265,7 @@ export default function HourlyGraphModal({
                       fill="white"
                       stroke="rgb(37, 99, 235)"
                       strokeWidth="2"
-                      className="cursor-pointer hover:r-6 transition-all"
+                      className="cursor-pointer transition-all"
                     />
                     <circle
                       cx={x}
