@@ -22,6 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced Authentication Service OpenAPI spec with complete Passkey endpoint documentation
 
 ## [1.0.0] - 2025-11-02
+## [1.5.3] - 2025-11-24
+
+### Changed
+- chore(npm)(deps-dev): bump @types/react (#68)
+
 ## [1.5.2] - 2025-11-19
 
 ### Changed
