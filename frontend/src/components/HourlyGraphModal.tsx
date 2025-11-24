@@ -17,6 +17,24 @@ export default function HourlyGraphModal({
 }: HourlyGraphModalProps) {
   const [dataType, setDataType] = React.useState<DataType>("temperature");
   const [page, setPage] = React.useState(0); // 0 = first 24 hours, 1 = next 24 hours
+  const [containerWidth, setContainerWidth] = React.useState(800);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+
+  // Update container width on resize
+  React.useEffect(() => {
+    if (!open) return;
+    
+    const updateWidth = () => {
+      if (containerRef.current) {
+        const width = containerRef.current.clientWidth;
+        setContainerWidth(Math.max(300, width - 32)); // Minimum 300px, subtract padding
+      }
+    };
+
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, [open]);
 
   if (!open) return null;
 
@@ -41,10 +59,15 @@ export default function HourlyGraphModal({
   const maxValue = Math.max(...values);
   const range = maxValue - minValue || 1;
 
-  // Chart dimensions
-  const width = 800;
-  const height = 300;
-  const padding = { top: 20, right: 20, bottom: 40, left: 50 };
+  // Chart dimensions - now responsive
+  const width = containerWidth;
+  const height = Math.min(300, Math.max(200, width * 0.4)); // Responsive height with limits
+  const padding = { 
+    top: 20, 
+    right: width < 500 ? 10 : 20, 
+    bottom: 40, 
+    left: width < 500 ? 35 : 50 
+  };
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
 
@@ -84,61 +107,70 @@ export default function HourlyGraphModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white dark:bg-gray-900 rounded-lg shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-auto relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-2 sm:p-4">
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-5xl max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col relative">
         <button
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-900 dark:hover:text-white text-3xl font-bold focus:outline-none z-10"
+          className="absolute top-2 right-2 sm:top-4 sm:right-4 text-gray-500 hover:text-gray-900 dark:hover:text-white text-2xl sm:text-3xl font-bold focus:outline-none z-20 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           onClick={onClose}
           aria-label="Close modal"
         >
           ×
         </button>
         
-        <div className="p-6">
-          {/* Data Type Selector - Now serving as header */}
-          <div className="flex gap-3 mb-6 flex-wrap justify-center">
+        <div className="p-3 sm:p-4 md:p-6 overflow-y-auto">
+          {/* Title */}
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4 text-center pr-8">
+            24-Hour Forecast
+          </h2>
+
+          {/* Data Type Selector */}
+          <div className="flex gap-2 sm:gap-3 mb-4 sm:mb-6 flex-wrap justify-center">
             <button
               onClick={() => setDataType("temperature")}
-              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-lg transition-colors ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all ${
                 dataType === "temperature"
-                  ? "bg-blue-600 text-white shadow-lg"
+                  ? "bg-blue-600 text-white shadow-lg scale-105"
                   : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
               }`}
             >
-              <IconTemperature size={24} />
-              <span>Temperature</span>
+              <IconTemperature size={20} className="sm:w-6 sm:h-6" />
+              <span className="hidden xs:inline">Temperature</span>
+              <span className="xs:hidden">Temp</span>
             </button>
             <button
               onClick={() => setDataType("precipitation")}
-              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-lg transition-colors ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all ${
                 dataType === "precipitation"
-                  ? "bg-blue-600 text-white shadow-lg"
+                  ? "bg-blue-600 text-white shadow-lg scale-105"
                   : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
               }`}
             >
-              <IconDroplet size={24} />
-              <span>Precipitation</span>
+              <IconDroplet size={20} className="sm:w-6 sm:h-6" />
+              <span className="hidden xs:inline">Precipitation</span>
+              <span className="xs:hidden">Rain</span>
             </button>
             <button
               onClick={() => setDataType("wind")}
-              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-lg transition-colors ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all ${
                 dataType === "wind"
-                  ? "bg-blue-600 text-white shadow-lg"
+                  ? "bg-blue-600 text-white shadow-lg scale-105"
                   : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
               }`}
             >
-              <IconWind size={24} />
-              <span>Wind Speed</span>
+              <IconWind size={20} className="sm:w-6 sm:h-6" />
+              <span className="hidden xs:inline">Wind Speed</span>
+              <span className="xs:hidden">Wind</span>
             </button>
           </div>
 
           {/* Chart */}
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-6 overflow-x-auto">
+          <div ref={containerRef} className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl p-3 sm:p-4 mb-4 sm:mb-6 shadow-inner">
             <svg
               width={width}
               height={height}
-              className="mx-auto"
-              style={{ minWidth: width }}
+              className="mx-auto w-full"
+              viewBox={`0 0 ${width} ${height}`}
+              preserveAspectRatio="xMidYMid meet"
             >
               {/* Grid lines */}
               {[0, 1, 2, 3, 4].map((i) => {
@@ -157,12 +189,13 @@ export default function HourlyGraphModal({
                       strokeDasharray="4"
                     />
                     <text
-                      x={padding.left - 10}
-                      y={y + 5}
+                      x={padding.left - 5}
+                      y={y + 4}
                       textAnchor="end"
-                      className="text-xs fill-gray-600 dark:fill-gray-400"
+                      className="text-[10px] sm:text-xs fill-gray-600 dark:fill-gray-400"
+                      style={{ fontSize: width < 500 ? '9px' : '12px' }}
                     >
-                      {value.toFixed(1)}
+                      {value.toFixed(width < 500 ? 0 : 1)}
                     </text>
                   </g>
                 );
@@ -170,7 +203,9 @@ export default function HourlyGraphModal({
 
               {/* X-axis labels */}
               {displayData.map((h, i) => {
-                if (i % 3 !== 0) return null; // Show every 3rd label
+                // Show fewer labels on mobile
+                const skipInterval = width < 500 ? 4 : 3;
+                if (i % skipInterval !== 0) return null;
                 const x = padding.left + (i / (values.length - 1)) * chartWidth;
                 const time = new Date(h.time);
                 const label = time.getHours().toString().padStart(2, "0") + ":00";
@@ -180,19 +215,38 @@ export default function HourlyGraphModal({
                     x={x}
                     y={height - padding.bottom + 20}
                     textAnchor="middle"
-                    className="text-xs fill-gray-600 dark:fill-gray-400"
+                    className="text-[10px] sm:text-xs fill-gray-600 dark:fill-gray-400"
+                    style={{ fontSize: width < 500 ? '9px' : '12px' }}
                   >
                     {label}
                   </text>
                 );
               })}
 
+              {/* Gradient definition for line */}
+              <defs>
+                <linearGradient id="lineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="rgb(59, 130, 246)" stopOpacity="0.8" />
+                  <stop offset="100%" stopColor="rgb(37, 99, 235)" stopOpacity="1" />
+                </linearGradient>
+                <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="rgb(59, 130, 246)" stopOpacity="0.3" />
+                  <stop offset="100%" stopColor="rgb(59, 130, 246)" stopOpacity="0.05" />
+                </linearGradient>
+              </defs>
+
+              {/* Area under the line */}
+              <path
+                d={`${createPath()} L ${padding.left + chartWidth},${padding.top + chartHeight} L ${padding.left},${padding.top + chartHeight} Z`}
+                fill="url(#areaGradient)"
+              />
+
               {/* Line chart */}
               <path
                 d={createPath()}
                 fill="none"
-                stroke="rgb(37, 99, 235)"
-                strokeWidth="3"
+                stroke="url(#lineGradient)"
+                strokeWidth={width < 500 ? "2.5" : "3"}
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
@@ -201,16 +255,27 @@ export default function HourlyGraphModal({
               {values.map((value, index) => {
                 const x = padding.left + (index / (values.length - 1)) * chartWidth;
                 const y = padding.top + chartHeight - ((value - minValue) / range) * chartHeight;
+                const pointRadius = width < 500 ? 3 : 4;
                 return (
                   <g key={index}>
                     <circle
                       cx={x}
                       cy={y}
-                      r="4"
-                      fill="rgb(37, 99, 235)"
-                      className="hover:r-6 transition-all"
+                      r={pointRadius}
+                      fill="white"
+                      stroke="rgb(37, 99, 235)"
+                      strokeWidth="2"
+                      className="cursor-pointer hover:r-6 transition-all"
                     />
-                    <title>{`${displayData[index].time}: ${value.toFixed(1)} ${getUnit()}`}</title>
+                    <circle
+                      cx={x}
+                      cy={y}
+                      r={pointRadius + 8}
+                      fill="transparent"
+                      className="cursor-pointer"
+                    >
+                      <title>{`${new Date(displayData[index].time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}: ${value.toFixed(1)} ${getUnit()}`}</title>
+                    </circle>
                   </g>
                 );
               })}
@@ -218,28 +283,30 @@ export default function HourlyGraphModal({
           </div>
 
           {/* Page Navigation */}
-          <div className="flex justify-center gap-4">
+          <div className="flex justify-center gap-2 sm:gap-3">
             <button
               onClick={() => setPage(0)}
               disabled={page === 0}
-              className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg font-medium text-sm sm:text-base transition-all ${
                 page === 0
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
+                  ? "bg-blue-600 text-white shadow-lg"
+                  : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 hover:shadow-md"
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
-              First 24 Hours
+              <span className="hidden sm:inline">First 24 Hours</span>
+              <span className="sm:hidden">First 24h</span>
             </button>
             <button
               onClick={() => setPage(1)}
               disabled={page === 1 || hourlyData.length <= 24}
-              className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+              className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg font-medium text-sm sm:text-base transition-all ${
                 page === 1
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
+                  ? "bg-blue-600 text-white shadow-lg"
+                  : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 hover:shadow-md"
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
-              Next 24 Hours
+              <span className="hidden sm:inline">Next 24 Hours</span>
+              <span className="sm:hidden">Next 24h</span>
             </button>
           </div>
         </div>
