@@ -57,7 +57,7 @@ export default function HourlyGraphModal({
   };
 
   const values = getValues(displayData);
-  const minValue = Math.min(...values);
+  const minValue = dataType === "precipitation" ? 0 : Math.min(...values); // For precipitation, always start from 0
   const maxValue = Math.max(...values);
   const range = maxValue - minValue || 1;
 
@@ -224,7 +224,11 @@ export default function HourlyGraphModal({
                 // Show fewer labels on mobile
                 const skipInterval = width < 500 ? 4 : 3;
                 if (i % skipInterval !== 0) return null;
-                const x = padding.left + (i / (values.length - 1)) * chartWidth;
+                // For bar chart, center labels under bars; for line chart, use data point positions
+                const barSpacing = chartWidth / values.length;
+                const x = dataType === "precipitation" 
+                  ? padding.left + (i * barSpacing) + barSpacing / 2
+                  : padding.left + (i / (values.length - 1)) * chartWidth;
                 const time = new Date(h.time);
                 const label = time.getHours().toString().padStart(2, "0") + ":00";
                 return (
@@ -241,7 +245,7 @@ export default function HourlyGraphModal({
                 );
               })}
 
-              {/* Gradient definition for line */}
+              {/* Gradient definition for line and bars */}
               <defs>
                 <linearGradient id="lineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
                   <stop offset="0%" stopColor="rgb(59, 130, 246)" stopOpacity="0.8" />
@@ -251,52 +255,86 @@ export default function HourlyGraphModal({
                   <stop offset="0%" stopColor="rgb(59, 130, 246)" stopOpacity="0.3" />
                   <stop offset="100%" stopColor="rgb(59, 130, 246)" stopOpacity="0.05" />
                 </linearGradient>
+                <linearGradient id="barGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="rgb(59, 130, 246)" stopOpacity="0.9" />
+                  <stop offset="100%" stopColor="rgb(37, 99, 235)" stopOpacity="1" />
+                </linearGradient>
               </defs>
 
-              {/* Area under the line */}
-              <path
-                d={`${createPath()} L ${padding.left + chartWidth},${padding.top + chartHeight} L ${padding.left},${padding.top + chartHeight} Z`}
-                fill="url(#areaGradient)"
-              />
-
-              {/* Line chart */}
-              <path
-                d={createPath()}
-                fill="none"
-                stroke="url(#lineGradient)"
-                strokeWidth={width < 500 ? "2.5" : "3"}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-
-              {/* Data points */}
-              {values.map((value, index) => {
-                const x = padding.left + (index / (values.length - 1)) * chartWidth;
-                const y = padding.top + chartHeight - ((value - minValue) / range) * chartHeight;
-                const pointRadius = width < 500 ? 3 : 4;
+              {/* Render bar chart for precipitation */}
+              {dataType === "precipitation" && values.map((value, index) => {
+                const barWidth = Math.max(4, (chartWidth / values.length) * 0.7);
+                const barSpacing = chartWidth / values.length;
+                const x = padding.left + (index * barSpacing) + (barSpacing - barWidth) / 2;
+                const barHeight = maxValue > 0 ? (value / maxValue) * chartHeight : 0;
+                const y = padding.top + chartHeight - barHeight;
                 return (
                   <g key={index}>
-                    <circle
-                      cx={x}
-                      cy={y}
-                      r={pointRadius}
-                      fill="white"
-                      stroke="rgb(37, 99, 235)"
-                      strokeWidth="2"
-                      className="cursor-pointer transition-all"
-                    />
-                    <circle
-                      cx={x}
-                      cy={y}
-                      r={pointRadius + 8}
-                      fill="transparent"
-                      className="cursor-pointer"
+                    <rect
+                      x={x}
+                      y={y}
+                      width={barWidth}
+                      height={barHeight}
+                      fill="url(#barGradient)"
+                      rx={width < 500 ? 1 : 2}
+                      ry={width < 500 ? 1 : 2}
+                      className="cursor-pointer hover:opacity-80 transition-opacity"
                     >
                       <title>{`${new Date(displayData[index].time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}: ${value.toFixed(1)} ${getUnit()}`}</title>
-                    </circle>
+                    </rect>
                   </g>
                 );
               })}
+
+              {/* Render line chart for temperature and wind */}
+              {dataType !== "precipitation" && (
+                <>
+                  {/* Area under the line */}
+                  <path
+                    d={`${createPath()} L ${padding.left + chartWidth},${padding.top + chartHeight} L ${padding.left},${padding.top + chartHeight} Z`}
+                    fill="url(#areaGradient)"
+                  />
+
+                  {/* Line chart */}
+                  <path
+                    d={createPath()}
+                    fill="none"
+                    stroke="url(#lineGradient)"
+                    strokeWidth={width < 500 ? "2.5" : "3"}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+
+                  {/* Data points */}
+                  {values.map((value, index) => {
+                    const x = padding.left + (index / (values.length - 1)) * chartWidth;
+                    const y = padding.top + chartHeight - ((value - minValue) / range) * chartHeight;
+                    const pointRadius = width < 500 ? 3 : 4;
+                    return (
+                      <g key={index}>
+                        <circle
+                          cx={x}
+                          cy={y}
+                          r={pointRadius}
+                          fill="white"
+                          stroke="rgb(37, 99, 235)"
+                          strokeWidth="2"
+                          className="cursor-pointer transition-all"
+                        />
+                        <circle
+                          cx={x}
+                          cy={y}
+                          r={pointRadius + 8}
+                          fill="transparent"
+                          className="cursor-pointer"
+                        >
+                          <title>{`${new Date(displayData[index].time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}: ${value.toFixed(1)} ${getUnit()}`}</title>
+                        </circle>
+                      </g>
+                    );
+                  })}
+                </>
+              )}
             </svg>
 
             {/* Wind Direction Indicators - shown only when wind data type is selected */}
