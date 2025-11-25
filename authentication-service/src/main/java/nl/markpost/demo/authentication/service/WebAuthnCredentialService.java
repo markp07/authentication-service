@@ -3,6 +3,8 @@ package nl.markpost.demo.authentication.service;
 import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -79,10 +81,14 @@ public class WebAuthnCredentialService {
    */
   @Transactional(readOnly = true)
   public Optional<String> getUsernameForUserHandle(ByteArray userHandle) {
-    String uuidStr = new String(userHandle.getBytes(), java.nio.charset.StandardCharsets.UTF_8);
-    UUID userId = UUID.fromString(uuidStr);
-    User user = userService.getUserById(userId);
-    return Optional.of(user.getEmail());
+    try {
+      UUID userId = parseUuidFromBytes(userHandle.getBytes());
+      User user = userService.getUserById(userId);
+      return Optional.of(user.getEmail());
+    } catch (IllegalArgumentException e) {
+      log.warn("Invalid UUID in userHandle", e);
+      return Optional.empty();
+    }
   }
 
   /**
@@ -94,9 +100,9 @@ public class WebAuthnCredentialService {
    */
   @Transactional(readOnly = true)
   public Optional<RegisteredCredential> lookup(ByteArray credentialId, ByteArray userHandle) {
-    String uuidStr = new String(userHandle.getBytes(), java.nio.charset.StandardCharsets.UTF_8);
     try {
-      userService.getUserById(UUID.fromString(uuidStr));
+      UUID userId = parseUuidFromBytes(userHandle.getBytes());
+      userService.getUserById(userId);
       String credentialIdBase64 = credentialId.getBase64Url();
       PasskeyCredential cred = passkeyCredentialRepository.findByCredentialId(credentialIdBase64)
           .orElseThrow(
@@ -114,7 +120,7 @@ public class WebAuthnCredentialService {
         throw new RuntimeException("Failed to build registered credential", e);
       }
     } catch (IllegalArgumentException e) {
-      log.error("[WebAuthnCredentialService] Invalid UUID in userHandle: " + uuidStr, e);
+      log.error("[WebAuthnCredentialService] Invalid UUID in userHandle", e);
       return Optional.empty();
     }
   }
@@ -127,10 +133,8 @@ public class WebAuthnCredentialService {
    */
   @Transactional(readOnly = true)
   public Set<RegisteredCredential> lookupAll(ByteArray userHandle) {
-    // UserHandle contains UUID
-    String uuidStr = new String(userHandle.getBytes(), java.nio.charset.StandardCharsets.UTF_8);
     try {
-      UUID userId = UUID.fromString(uuidStr);
+      UUID userId = parseUuidFromBytes(userHandle.getBytes());
       User user = userService.getUserById(userId);
       return passkeyCredentialRepository.findByUserId(user.getId()).stream()
           .map(cred -> {
@@ -147,9 +151,42 @@ public class WebAuthnCredentialService {
           })
           .collect(Collectors.toSet());
     } catch (IllegalArgumentException e) {
-      log.warn("Invalid UUID in userHandle: " + uuidStr);
+      log.warn("Invalid UUID in userHandle", e);
       return Set.of();
     }
+  }
+
+  /**
+   * Parses a UUID from bytes, handling both UTF-8 encoded UUID strings (36 bytes)
+   * and raw UUID bytes (16 bytes).
+   *
+   * @param bytes the byte array containing the UUID
+   * @return the parsed UUID
+   * @throws IllegalArgumentException if the bytes cannot be parsed as a UUID
+   */
+  private UUID parseUuidFromBytes(byte[] bytes) {
+    // First, try to parse as UTF-8 string (36 characters for standard UUID format)
+    if (bytes.length == 36) {
+      String uuidStr = new String(bytes, StandardCharsets.UTF_8);
+      try {
+        return UUID.fromString(uuidStr);
+      } catch (IllegalArgumentException e) {
+        // Not a valid UTF-8 UUID string, try other methods
+      }
+    }
+
+    // Try to parse as raw 16-byte UUID
+    if (bytes.length == 16) {
+      ByteBuffer bb = ByteBuffer.wrap(bytes);
+      long mostSigBits = bb.getLong();
+      long leastSigBits = bb.getLong();
+      return new UUID(mostSigBits, leastSigBits);
+    }
+
+    // Last attempt: try to decode as UTF-8 string regardless of length
+    // (in case of different encoding scenarios)
+    String uuidStr = new String(bytes, StandardCharsets.UTF_8);
+    return UUID.fromString(uuidStr);
   }
 }
 
