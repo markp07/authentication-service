@@ -156,21 +156,19 @@ public class WebAuthnCredentialService {
   }
 
   /**
-   * Parses a UUID from bytes, handling UTF-8 encoded UUID strings.
-   * This method prioritizes UTF-8 string parsing since that's the format used
-   * during passkey registration.
+   * Parses a UUID from bytes as a UTF-8 encoded UUID string.
+   * This is the format used during passkey registration.
    *
-   * @param bytes the byte array containing the UUID
+   * @param bytes the byte array containing the UUID as UTF-8 string
    * @return the parsed UUID
-   * @throws IllegalArgumentException if the bytes cannot be parsed as a UUID
+   * @throws IllegalArgumentException if the bytes cannot be parsed as a UUID string
    */
   private UUID parseUuidFromBytes(byte[] bytes) {
-    // Try to parse as UTF-8 string (standard format used during registration)
+    // Parse as UTF-8 string (standard format used during registration)
     String uuidStr = new String(bytes, StandardCharsets.UTF_8);
     try {
       return UUID.fromString(uuidStr);
     } catch (IllegalArgumentException e) {
-      // Log the failure with byte length for debugging
       throw new IllegalArgumentException(
           "Unable to parse UUID from bytes: invalid format (length=" + bytes.length + ")", e);
     }
