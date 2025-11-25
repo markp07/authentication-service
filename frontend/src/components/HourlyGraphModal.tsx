@@ -1,5 +1,5 @@
 import React from "react";
-import { IconTemperature, IconDroplet, IconWind } from "@tabler/icons-react";
+import { IconTemperature, IconDroplet, IconWind, IconArrowUp, IconArrowUpRight, IconArrowRight, IconArrowDownRight, IconArrowDown, IconArrowDownLeft, IconArrowLeft, IconArrowUpLeft } from "@tabler/icons-react";
 import type { Hourly } from "../types/Hourly";
 
 interface HourlyGraphModalProps {
@@ -104,6 +104,22 @@ export default function HourlyGraphModal({
       case "wind":
         return "km/h";
     }
+  };
+
+  // Get wind direction icon based on direction string
+  const getWindDirectionIcon = (direction: string, size: number = 16) => {
+    const iconMap: { [key: string]: React.ComponentType<{ size: number; className?: string }> } = {
+      N: IconArrowDown,
+      NE: IconArrowDownLeft,
+      E: IconArrowLeft,
+      SE: IconArrowUpLeft,
+      S: IconArrowUp,
+      SW: IconArrowUpRight,
+      W: IconArrowRight,
+      NW: IconArrowDownRight,
+    };
+    const IconComponent = iconMap[direction] || IconArrowUp;
+    return <IconComponent size={size} className="text-blue-600 dark:text-blue-400" />;
   };
 
   return (
@@ -280,6 +296,27 @@ export default function HourlyGraphModal({
                 );
               })}
             </svg>
+
+            {/* Wind Direction Indicators - shown only when wind data type is selected */}
+            {dataType === "wind" && (
+              <div className="mt-2 px-1 sm:px-2">
+                <div className="flex justify-between items-center" style={{ marginLeft: `${(padding.left / width) * 100}%`, marginRight: `${(padding.right / width) * 100}%` }}>
+                  {displayData.map((h, index) => {
+                    const iconSize = width < 500 ? 14 : 18;
+                    return (
+                      <div 
+                        key={index} 
+                        className="flex flex-col items-center" 
+                        style={{ width: `${100 / displayData.length}%` }}
+                        title={`${h.windDirection} - ${h.windSpeed} km/h`}
+                      >
+                        {getWindDirectionIcon(h.windDirection, iconSize)}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Page Navigation */}
