@@ -22,6 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced Authentication Service OpenAPI spec with complete Passkey endpoint documentation
 
 ## [1.0.0] - 2025-11-02
+## [1.5.5] - 2025-11-25
+
+### Changed
+- Make 24-hour forecast modal responsive for mobile devices and fix modal alignment (#69)
+
 ## [1.5.4] - 2025-11-24
 
 ### Changed
