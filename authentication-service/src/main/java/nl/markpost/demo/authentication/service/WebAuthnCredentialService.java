@@ -185,8 +185,13 @@ public class WebAuthnCredentialService {
 
     // Last attempt: try to decode as UTF-8 string regardless of length
     // (in case of different encoding scenarios)
-    String uuidStr = new String(bytes, StandardCharsets.UTF_8);
-    return UUID.fromString(uuidStr);
+    try {
+      String uuidStr = new String(bytes, StandardCharsets.UTF_8);
+      return UUID.fromString(uuidStr);
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException(
+          "Unable to parse UUID from bytes: unsupported format (length=" + bytes.length + ")", e);
+    }
   }
 }
 
