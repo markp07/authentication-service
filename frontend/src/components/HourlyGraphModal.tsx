@@ -1,5 +1,5 @@
 import React from "react";
-import { IconTemperature, IconDroplet, IconWind, IconArrowUp, IconArrowUpRight, IconArrowRight, IconArrowDownRight, IconArrowDown, IconArrowDownLeft, IconArrowLeft, IconArrowUpLeft } from "@tabler/icons-react";
+import { IconTemperature, IconDroplet, IconWind, IconArrowUp, IconArrowUpRight, IconArrowRight, IconArrowDownRight, IconArrowDown, IconArrowDownLeft, IconArrowLeft, IconArrowUpLeft, IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import type { Hourly } from "../types/Hourly";
 
 interface HourlyGraphModalProps {
@@ -27,7 +27,9 @@ export default function HourlyGraphModal({
     const updateWidth = () => {
       if (containerRef.current) {
         const width = containerRef.current.clientWidth;
-        setContainerWidth(Math.max(300, width - 32)); // Minimum 300px, subtract padding
+        // Reduced padding subtraction for mobile (8px vs 32px)
+        const paddingSubtract = width < 500 ? 8 : 32;
+        setContainerWidth(Math.max(300, width - paddingSubtract));
       }
     };
 
@@ -180,7 +182,7 @@ export default function HourlyGraphModal({
           </div>
 
           {/* Chart */}
-          <div ref={containerRef} className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl p-3 sm:p-4 mb-4 sm:mb-6 shadow-inner">
+          <div ref={containerRef} className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 rounded-xl p-1 sm:p-4 mb-4 sm:mb-6 shadow-inner">
             <svg
               width={width}
               height={height}
@@ -322,28 +324,28 @@ export default function HourlyGraphModal({
           {/* Page Navigation */}
           <div className="flex justify-center gap-2 sm:gap-3">
             <button
-              onClick={() => setPage(0)}
+              onClick={() => setPage(Math.max(0, page - 1))}
               disabled={page === 0}
-              className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg font-medium text-sm sm:text-base transition-all ${
+              className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg font-medium text-sm sm:text-base transition-all ${
                 page === 0
-                  ? "bg-blue-600 text-white shadow-lg"
+                  ? "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
                   : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 hover:shadow-md"
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
-              <span className="hidden sm:inline">First 24 Hours</span>
-              <span className="sm:hidden">First 24h</span>
+              <IconChevronLeft size={18} />
+              <span>Previous</span>
             </button>
             <button
-              onClick={() => setPage(1)}
-              disabled={page === 1 || hourlyData.length <= 24}
-              className={`px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg font-medium text-sm sm:text-base transition-all ${
-                page === 1
-                  ? "bg-blue-600 text-white shadow-lg"
+              onClick={() => setPage(page + 1)}
+              disabled={hourlyData.length <= (page + 1) * 24}
+              className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg font-medium text-sm sm:text-base transition-all ${
+                hourlyData.length <= (page + 1) * 24
+                  ? "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
                   : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 hover:shadow-md"
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
-              <span className="hidden sm:inline">Next 24 Hours</span>
-              <span className="sm:hidden">Next 24h</span>
+              <span>Next</span>
+              <IconChevronRight size={18} />
             </button>
           </div>
         </div>
