@@ -3,7 +3,6 @@ package nl.markpost.demo.authentication.service;
 import com.yubico.webauthn.RegisteredCredential;
 import com.yubico.webauthn.data.ByteArray;
 import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.Set;
@@ -157,40 +156,23 @@ public class WebAuthnCredentialService {
   }
 
   /**
-   * Parses a UUID from bytes, handling both UTF-8 encoded UUID strings (36 bytes)
-   * and raw UUID bytes (16 bytes).
+   * Parses a UUID from bytes, handling UTF-8 encoded UUID strings.
+   * This method prioritizes UTF-8 string parsing since that's the format used
+   * during passkey registration.
    *
    * @param bytes the byte array containing the UUID
    * @return the parsed UUID
    * @throws IllegalArgumentException if the bytes cannot be parsed as a UUID
    */
   private UUID parseUuidFromBytes(byte[] bytes) {
-    // First, try to parse as UTF-8 string (36 characters for standard UUID format)
-    if (bytes.length == 36) {
-      String uuidStr = new String(bytes, StandardCharsets.UTF_8);
-      try {
-        return UUID.fromString(uuidStr);
-      } catch (IllegalArgumentException e) {
-        // Not a valid UTF-8 UUID string, try other methods
-      }
-    }
-
-    // Try to parse as raw 16-byte UUID
-    if (bytes.length == 16) {
-      ByteBuffer bb = ByteBuffer.wrap(bytes);
-      long mostSigBits = bb.getLong();
-      long leastSigBits = bb.getLong();
-      return new UUID(mostSigBits, leastSigBits);
-    }
-
-    // Last attempt: try to decode as UTF-8 string regardless of length
-    // (in case of different encoding scenarios)
+    // Try to parse as UTF-8 string (standard format used during registration)
+    String uuidStr = new String(bytes, StandardCharsets.UTF_8);
     try {
-      String uuidStr = new String(bytes, StandardCharsets.UTF_8);
       return UUID.fromString(uuidStr);
     } catch (IllegalArgumentException e) {
+      // Log the failure with byte length for debugging
       throw new IllegalArgumentException(
-          "Unable to parse UUID from bytes: unsupported format (length=" + bytes.length + ")", e);
+          "Unable to parse UUID from bytes: invalid format (length=" + bytes.length + ")", e);
     }
   }
 }

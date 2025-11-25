@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import com.yubico.webauthn.data.ByteArray;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.UUID;
@@ -51,24 +50,6 @@ class WebAuthnCredentialServiceTest {
     String uuidString = testUserId.toString();
     byte[] utf8Bytes = uuidString.getBytes(StandardCharsets.UTF_8);
     ByteArray userHandle = new ByteArray(utf8Bytes);
-
-    when(userService.getUserById(testUserId)).thenReturn(testUser);
-
-    Optional<String> result = webAuthnCredentialService.getUsernameForUserHandle(userHandle);
-
-    assertTrue(result.isPresent());
-    assertEquals("test@example.com", result.get());
-  }
-
-  @Test
-  @DisplayName("Should get username for raw 16-byte UUID userHandle")
-  void getUsernameForUserHandle_raw16ByteUuid() {
-    // Create raw 16-byte UUID
-    ByteBuffer bb = ByteBuffer.allocate(16);
-    bb.putLong(testUserId.getMostSignificantBits());
-    bb.putLong(testUserId.getLeastSignificantBits());
-    byte[] rawBytes = bb.array();
-    ByteArray userHandle = new ByteArray(rawBytes);
 
     when(userService.getUserById(testUserId)).thenReturn(testUser);
 
