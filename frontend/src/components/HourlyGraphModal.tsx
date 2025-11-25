@@ -127,39 +127,39 @@ export default function HourlyGraphModal({
           <div className="flex gap-2 sm:gap-3 mb-4 sm:mb-6 flex-wrap justify-center">
             <button
               onClick={() => setDataType("temperature")}
-              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all ${
+              className={`flex items-center justify-center gap-1.5 sm:gap-2 p-3 sm:px-5 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all ${
                 dataType === "temperature"
                   ? "bg-blue-600 text-white shadow-lg scale-105"
                   : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
               }`}
+              title="Temperature"
             >
-              <IconTemperature size={20} className="sm:w-6 sm:h-6" />
+              <IconTemperature size={24} className="sm:w-6 sm:h-6" />
               <span className="hidden sm:inline">Temperature</span>
-              <span className="sm:hidden">Temp</span>
             </button>
             <button
               onClick={() => setDataType("precipitation")}
-              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all ${
+              className={`flex items-center justify-center gap-1.5 sm:gap-2 p-3 sm:px-5 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all ${
                 dataType === "precipitation"
                   ? "bg-blue-600 text-white shadow-lg scale-105"
                   : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
               }`}
+              title="Precipitation"
             >
-              <IconDroplet size={20} className="sm:w-6 sm:h-6" />
+              <IconDroplet size={24} className="sm:w-6 sm:h-6" />
               <span className="hidden sm:inline">Precipitation</span>
-              <span className="sm:hidden">Rain</span>
             </button>
             <button
               onClick={() => setDataType("wind")}
-              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all ${
+              className={`flex items-center justify-center gap-1.5 sm:gap-2 p-3 sm:px-5 sm:py-3 rounded-lg font-semibold text-sm sm:text-base transition-all ${
                 dataType === "wind"
                   ? "bg-blue-600 text-white shadow-lg scale-105"
                   : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
               }`}
+              title="Wind Speed"
             >
-              <IconWind size={20} className="sm:w-6 sm:h-6" />
+              <IconWind size={24} className="sm:w-6 sm:h-6" />
               <span className="hidden sm:inline">Wind Speed</span>
-              <span className="sm:hidden">Wind</span>
             </button>
           </div>
 
