@@ -63,6 +63,7 @@ class EmailServiceImplTest {
     ReflectionTestUtils.setField(service, "emailVerificationSubject", "Verify your email");
     ReflectionTestUtils.setField(service, "emailVerificationBody",
         "Hello {userName}, click here: {verificationLink}");
+    ReflectionTestUtils.setField(service, "baseUrl", "https://example.com");
     MimeMessage mimeMessage = mock(MimeMessage.class);
     when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
     doNothing().when(mailSender).send(mimeMessage);
@@ -77,6 +78,7 @@ class EmailServiceImplTest {
     ReflectionTestUtils.setField(service, "emailVerificationSubject", "Verify your email");
     ReflectionTestUtils.setField(service, "emailVerificationBody",
         "Hello {userName}, click here: {verificationLink}");
+    ReflectionTestUtils.setField(service, "baseUrl", "https://example.com");
     MimeMessage mimeMessage = mock(MimeMessage.class);
     when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
     doThrow(new RuntimeException("Simulated failure")).when(mailSender).send(mimeMessage);

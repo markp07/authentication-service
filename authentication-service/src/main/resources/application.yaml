@@ -67,6 +67,7 @@ email:
   service:
     enabled: ${EMAIL_SERVICE_ENABLED:false}
   from: ${EMAIL_FROM:no-reply@example.com}
+  base-url: ${EMAIL_BASE_URL:https://demo.markpost.dev}
   subject:
     reset-password: "Password Reset Request"
     email-verification: "Verify Your Email Address"

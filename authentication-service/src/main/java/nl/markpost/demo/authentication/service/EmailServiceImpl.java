@@ -22,6 +22,8 @@ public class EmailServiceImpl implements EmailService {
   private String emailVerificationSubject;
   @Value("${email.body.email-verification:Please verify your email}")
   private String emailVerificationBody;
+  @Value("${email.base-url:https://demo.markpost.dev}")
+  private String baseUrl;
 
   private final JavaMailSender mailSender;
 
@@ -48,7 +50,7 @@ public class EmailServiceImpl implements EmailService {
 
   @Override
   public void sendEmailVerificationEmail(String to, String verificationToken, String userName) {
-    String verificationLink = "https://demo.markpost.dev/api/auth/v1/email/verify?token=" + verificationToken;
+    String verificationLink = baseUrl + "/api/auth/v1/email/verify?token=" + verificationToken;
     String body = emailVerificationBody.replace("{verificationLink}", verificationLink)
         .replace("{userName}", userName);
     try {

@@ -25,6 +25,9 @@ public class DummyEmailServiceImpl implements EmailService {
   @Value("${email.body.email-verification:Please verify your email}")
   private String emailVerificationBody;
 
+  @Value("${email.base-url:https://demo.markpost.dev}")
+  private String baseUrl;
+
   @Override
   public void sendResetPasswordEmail(String to, String resetToken, String userName) {
     String body = resetPasswordBody.replace("{resetToken}", resetToken)
@@ -34,7 +37,7 @@ public class DummyEmailServiceImpl implements EmailService {
 
   @Override
   public void sendEmailVerificationEmail(String to, String verificationToken, String userName) {
-    String verificationLink = "https://demo.markpost.dev/api/auth/v1/email/verify?token=" + verificationToken;
+    String verificationLink = baseUrl + "/api/auth/v1/email/verify?token=" + verificationToken;
     String body = emailVerificationBody.replace("{verificationLink}", verificationLink)
         .replace("{userName}", userName);
     log.info("[DUMMY EMAIL] To: {}\nSubject: {}\nBody: {}", to, emailVerificationSubject, body);

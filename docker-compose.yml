@@ -44,6 +44,7 @@ services:
       SMTP_USERNAME: ${SMTP_USERNAME:-}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       EMAIL_FROM: ${EMAIL_FROM:-no-reply@example.com}
+      EMAIL_BASE_URL: ${EMAIL_BASE_URL:-https://demo.markpost.dev}
     volumes:
       - authentication_service_data:/data
     networks:
