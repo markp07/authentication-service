@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { AUTH_API_BASE, fetchWithAuthRetry } from "../utils/api";
 import { User } from "../types/User";
-import { IconUser, IconMail, IconEdit, IconCheck, IconX, IconTrash, IconShield, IconCalendar } from "@tabler/icons-react";
+import { IconUser, IconMail, IconEdit, IconCheck, IconX, IconTrash, IconShield, IconCalendar, IconSend } from "@tabler/icons-react";
 import { generateProfilePictureUrl } from "../utils/profilePicture";
 
 interface ProfilePageProps {
@@ -18,6 +18,9 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
   const [userNameError, setUserNameError] = useState<string | null>(null);
   const [userNameSuccess, setUserNameSuccess] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [resendingVerification, setResendingVerification] = useState(false);
+  const [verificationMessage, setVerificationMessage] = useState<string | null>(null);
+  const [verificationError, setVerificationError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchUser() {
@@ -67,6 +70,27 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
       setUserNameError("Network error.");
     }
     setSaving(false);
+  }
+
+  async function handleResendVerification() {
+    setResendingVerification(true);
+    setVerificationMessage(null);
+    setVerificationError(null);
+    try {
+      const res = await fetchWithAuthRetry(`${AUTH_API_BASE}/api/auth/v1/email/resend-verification`, {
+        method: "POST",
+      });
+      if (res.ok) {
+        setVerificationMessage("Verification email sent! Please check your inbox.");
+      } else if (res.status === 429) {
+        setVerificationError("Please wait before requesting another verification email (max 1 per hour).");
+      } else {
+        setVerificationError("Failed to send verification email.");
+      }
+    } catch {
+      setVerificationError("Network error.");
+    }
+    setResendingVerification(false);
   }
 
   if (loading) {
@@ -232,14 +256,32 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
           </div>
           <div className="flex items-center justify-between py-2">
             <span className="text-gray-600 dark:text-gray-400">Email</span>
-            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-              user?.emailVerified
-                ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
-            }`}>
-              {user?.emailVerified ? "Verified" : "Unverified"}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                user?.emailVerified
+                  ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                  : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
+              }`}>
+                {user?.emailVerified ? "Verified" : "Unverified"}
+              </span>
+              {!user?.emailVerified && (
+                <button
+                  onClick={handleResendVerification}
+                  disabled={resendingVerification}
+                  className="flex items-center gap-1 px-3 py-1 text-sm bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg font-medium transition-colors disabled:opacity-50"
+                >
+                  <IconSend size={14} />
+                  {resendingVerification ? "Sending..." : "Resend"}
+                </button>
+              )}
+            </div>
           </div>
+          {verificationMessage && (
+            <div className="text-green-600 dark:text-green-400 text-sm mt-2">{verificationMessage}</div>
+          )}
+          {verificationError && (
+            <div className="text-red-600 dark:text-red-400 text-sm mt-2">{verificationError}</div>
+          )}
         </div>
       </div>
 

@@ -77,6 +77,15 @@ public class User implements UserDetails {
   @Column(name = "email_verified")
   private Boolean emailVerified;
 
+  @Column(name = "email_verification_token")
+  private String emailVerificationToken;
+
+  @Column(name = "email_verification_token_created_at")
+  private LocalDateTime emailVerificationTokenCreatedAt;
+
+  @Column(name = "last_verification_email_sent_at")
+  private LocalDateTime lastVerificationEmailSentAt;
+
   @CreationTimestamp
   private LocalDateTime createdAt;
 

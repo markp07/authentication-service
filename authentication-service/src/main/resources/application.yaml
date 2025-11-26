@@ -44,10 +44,10 @@ spring:
     deserialization:
       fail-on-unknown-properties: false
   mail:
-    host: smtp.example.com
-    port: 587
-    username: your_smtp_username
-    password: your_smtp_password
+    host: ${SMTP_HOST:smtp.example.com}
+    port: ${SMTP_PORT:587}
+    username: ${SMTP_USERNAME:your_smtp_username}
+    password: ${SMTP_PASSWORD:your_smtp_password}
     protocol: smtp
     properties:
       mail:
@@ -57,18 +57,22 @@ spring:
             enable: true
 
 security:
-  excluded-paths: /actuator/health,/actuator/info,/actuator/prometheus,/api/auth/actuator/health,/api/auth/actuator/info,/api/auth/actuator/prometheus,/swagger-ui.html,/swagger-ui/**,/*/api-docs,/v1/register,/v1/login,/v1/refresh,/v1/2fa/verify,/v1/password/forgot,/v1/password/reset,/v1/public-key,/v1/passkey/login/start,/v1/passkey/login/finish,/v1/passkey/login/usernameless/start,/v1/passkey/login/usernameless/finish
+  excluded-paths: /actuator/health,/actuator/info,/actuator/prometheus,/api/auth/actuator/health,/api/auth/actuator/info,/api/auth/actuator/prometheus,/swagger-ui.html,/swagger-ui/**,/*/api-docs,/v1/register,/v1/login,/v1/refresh,/v1/2fa/verify,/v1/password/forgot,/v1/password/reset,/v1/public-key,/v1/passkey/login/start,/v1/passkey/login/finish,/v1/passkey/login/usernameless/start,/v1/passkey/login/usernameless/finish,/v1/email/verify
 
 authentication:
   cors:
     allowed-origin-patterns: http://localhost:12006,https://demo.markpost.dev
 
 email:
-  from: "no-reply@example.com"
+  service:
+    enabled: ${EMAIL_SERVICE_ENABLED:false}
+  from: ${EMAIL_FROM:no-reply@example.com}
   subject:
     reset-password: "Password Reset Request"
+    email-verification: "Verify Your Email Address"
   body:
     reset-password: "Hi {userName},\nTo reset your password, use the following link: https://demo.markpost.dev/?token={resetToken}\nRegards,\nAuthentication Demo Service"
+    email-verification: "Hi {userName},\nPlease verify your email address by clicking the following link: {verificationLink}\nThis link will expire in 24 hours.\nRegards,\nAuthentication Demo Service"
 
 cookie:
   secure: true

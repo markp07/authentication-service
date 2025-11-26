@@ -17,6 +17,8 @@ tags:
     description: Endpoint for retrieving public key
   - name: user
     description: Endpoints for user profile management
+  - name: email
+    description: Endpoints for email verification
 
 servers:
   - url: https://your-backend.com
@@ -429,6 +431,59 @@ paths:
                 $ref: '#/components/schemas/Message'
         '403':
           description: Invalid backup code
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: [ ]
+  /email/verify:
+    get:
+      operationId: verifyEmail
+      summary: Verify email address using verification token
+      tags:
+        - email
+      parameters:
+        - name: token
+          in: query
+          required: true
+          description: Email verification token
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Email verified successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '400':
+          description: Invalid or expired token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /email/resend-verification:
+    post:
+      operationId: resendVerificationEmail
+      summary: Resend email verification email (max 1 per hour)
+      tags:
+        - email
+      responses:
+        '200':
+          description: Verification email sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Too many requests - can only resend once per hour
           content:
             application/json:
               schema:
