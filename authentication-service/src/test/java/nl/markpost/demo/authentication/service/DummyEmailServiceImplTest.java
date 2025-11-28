@@ -23,5 +23,16 @@ class DummyEmailServiceImplTest {
     service.sendResetPasswordEmail("user@example.com", "token123", "TestUser");
     // No assertion needed, just ensure no exception and code path is covered
   }
-}
 
+  @Test
+  @DisplayName("Should log dummy email verification email with correct values")
+  void sendEmailVerificationEmail_logsCorrectly() {
+    ReflectionTestUtils.setField(service, "from", "noreply@example.com");
+    ReflectionTestUtils.setField(service, "emailVerificationSubject", "Verify your email");
+    ReflectionTestUtils.setField(service, "emailVerificationBody",
+        "Hello {userName}, click here: {verificationLink}");
+    ReflectionTestUtils.setField(service, "baseUrl", "https://example.com");
+    service.sendEmailVerificationEmail("user@example.com", "token123", "TestUser");
+    // No assertion needed, just ensure no exception and code path is covered
+  }
+}

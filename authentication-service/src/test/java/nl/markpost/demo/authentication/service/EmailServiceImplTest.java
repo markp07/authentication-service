@@ -55,4 +55,34 @@ class EmailServiceImplTest {
     assertThrows(RuntimeException.class,
         () -> service.sendResetPasswordEmail("user@example.com", "token123", "TestUser"));
   }
+
+  @Test
+  @DisplayName("Should send email verification email successfully")
+  void sendEmailVerificationEmail_success() throws MessagingException {
+    ReflectionTestUtils.setField(service, "from", "noreply@example.com");
+    ReflectionTestUtils.setField(service, "emailVerificationSubject", "Verify your email");
+    ReflectionTestUtils.setField(service, "emailVerificationBody",
+        "Hello {userName}, click here: {verificationLink}");
+    ReflectionTestUtils.setField(service, "baseUrl", "https://example.com");
+    MimeMessage mimeMessage = mock(MimeMessage.class);
+    when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
+    doNothing().when(mailSender).send(mimeMessage);
+    service.sendEmailVerificationEmail("user@example.com", "token123", "TestUser");
+    verify(mailSender, times(1)).send(mimeMessage);
+  }
+
+  @Test
+  @DisplayName("Should throw RuntimeException when email verification fails")
+  void sendEmailVerificationEmail_messagingException() {
+    ReflectionTestUtils.setField(service, "from", "noreply@example.com");
+    ReflectionTestUtils.setField(service, "emailVerificationSubject", "Verify your email");
+    ReflectionTestUtils.setField(service, "emailVerificationBody",
+        "Hello {userName}, click here: {verificationLink}");
+    ReflectionTestUtils.setField(service, "baseUrl", "https://example.com");
+    MimeMessage mimeMessage = mock(MimeMessage.class);
+    when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
+    doThrow(new RuntimeException("Simulated failure")).when(mailSender).send(mimeMessage);
+    assertThrows(RuntimeException.class,
+        () -> service.sendEmailVerificationEmail("user@example.com", "token123", "TestUser"));
+  }
 }

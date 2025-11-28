@@ -18,7 +18,9 @@ public enum Messages {
   RESET_SUCCESS("RESET_SUCCESS", "Password reset successfully"),
   ACCOUNT_DELETED("ACCOUNT_DELETED", "Account deleted successfully"),
   TWO_FA_DISABLED("TWO_FA_DISABLED", "2fa disabled successfully"),
-  TWO_FA_BACKUP_CODE_INVALID("TWO_FA_BACKUP_CODE_INVALID", "Invalid backup code");
+  TWO_FA_BACKUP_CODE_INVALID("TWO_FA_BACKUP_CODE_INVALID", "Invalid backup code"),
+  EMAIL_VERIFIED("EMAIL_VERIFIED", "Email verified successfully"),
+  VERIFICATION_EMAIL_SENT("VERIFICATION_EMAIL_SENT", "Verification email sent successfully");
 
   private final String code;
   private final String description;

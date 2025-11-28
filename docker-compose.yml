@@ -38,6 +38,13 @@ services:
       - '12002:12002'
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      EMAIL_SERVICE_ENABLED: ${EMAIL_SERVICE_ENABLED:-false}
+      SMTP_HOST: ${SMTP_HOST:-smtp.example.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      EMAIL_FROM: ${EMAIL_FROM:-no-reply@example.com}
+      EMAIL_BASE_URL: ${EMAIL_BASE_URL:-https://demo.markpost.dev}
     volumes:
       - authentication_service_data:/data
     networks:
