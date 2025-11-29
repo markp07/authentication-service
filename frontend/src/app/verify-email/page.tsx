@@ -3,11 +3,7 @@
 import React, { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { IconMailCheck, IconMailX, IconLoader2 } from "@tabler/icons-react";
-
-const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
-const AUTH_API_BASE = isDev
-  ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:12002")
-  : "https://demo.markpost.dev";
+import { AUTH_API_BASE } from "../../utils/api";
 
 function VerifyEmailContent() {
   const router = useRouter();
