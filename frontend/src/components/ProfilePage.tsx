@@ -114,7 +114,7 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
   const formatDate = (dateString?: string) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    return date.toLocaleDateString('nl-NL', { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
   return (
