@@ -38,6 +38,10 @@ jobs:
           npm ci
           npm run build
 
+      - name: Run frontend tests
+        working-directory: frontend
+        run: npm test
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
