@@ -13,6 +13,9 @@ public class DummyEmailServiceImpl implements EmailService {
   @Value("${email.from}")
   private String from;
 
+  @Value("${email.from-name:}")
+  private String fromName;
+
   @Value("${email.subject.reset-password}")
   private String resetPasswordSubject;
 
@@ -32,14 +35,22 @@ public class DummyEmailServiceImpl implements EmailService {
   public void sendResetPasswordEmail(String to, String resetToken, String userName) {
     String body = resetPasswordBody.replace("{resetToken}", resetToken)
         .replace("{userName}", userName);
-    log.info("[DUMMY EMAIL] To: {}\nSubject: {}\nBody: {}", to, resetPasswordSubject, body);
+    logEmail(to, resetPasswordSubject, body);
   }
 
   @Override
   public void sendEmailVerificationEmail(String to, String verificationToken, String userName) {
-    String verificationLink = baseUrl + "/api/auth/v1/email/verify?token=" + verificationToken;
+    String verificationLink = baseUrl + "/verify-email?token=" + verificationToken;
+    String manualVerificationLink = baseUrl + "/verify-email";
     String body = emailVerificationBody.replace("{verificationLink}", verificationLink)
+        .replace("{manualVerificationLink}", manualVerificationLink)
+        .replace("{verificationToken}", verificationToken)
         .replace("{userName}", userName);
-    log.info("[DUMMY EMAIL] To: {}\nSubject: {}\nBody: {}", to, emailVerificationSubject, body);
+    logEmail(to, emailVerificationSubject, body);
+  }
+
+  private void logEmail(String to, String subject, String body) {
+    String fromDisplay = fromName != null && !fromName.isEmpty() ? fromName + " <" + from + ">" : from;
+    log.info("[DUMMY EMAIL] From: {}\nTo: {}\nSubject: {}\nBody: {}", fromDisplay, to, subject, body);
   }
 }

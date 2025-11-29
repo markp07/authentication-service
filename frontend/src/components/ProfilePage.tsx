@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { AUTH_API_BASE, fetchWithAuthRetry } from "../utils/api";
 import { User } from "../types/User";
-import { IconUser, IconMail, IconEdit, IconCheck, IconX, IconTrash, IconShield, IconCalendar, IconSend } from "@tabler/icons-react";
+import { IconUser, IconMail, IconEdit, IconCheck, IconX, IconTrash, IconCalendar, IconSend, IconLink } from "@tabler/icons-react";
 import { generateProfilePictureUrl } from "../utils/profilePicture";
 
 interface ProfilePageProps {
@@ -21,6 +21,7 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
   const [resendingVerification, setResendingVerification] = useState(false);
   const [verificationMessage, setVerificationMessage] = useState<string | null>(null);
   const [verificationError, setVerificationError] = useState<string | null>(null);
+  const [verificationEmailSent, setVerificationEmailSent] = useState(false);
 
   useEffect(() => {
     async function fetchUser() {
@@ -82,6 +83,7 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
       });
       if (res.ok) {
         setVerificationMessage("Verification email sent! Please check your inbox.");
+        setVerificationEmailSent(true);
       } else if (res.status === 429) {
         setVerificationError("Please wait before requesting another verification email (max 1 per hour).");
       } else {
@@ -114,7 +116,7 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
   const formatDate = (dateString?: string) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
-    return date.toLocaleDateString('nl-NL', { year: 'numeric', month: 'long', day: 'numeric' });
+    return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
   };
 
   return (
@@ -235,26 +237,6 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Account Status</h3>
         <div className="space-y-3">
           <div className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-            <span className="text-gray-600 dark:text-gray-400">Two-Factor Authentication</span>
-            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-              user?.twoFactorEnabled
-                ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
-            }`}>
-              {user?.twoFactorEnabled ? "Enabled" : "Disabled"}
-            </span>
-          </div>
-          <div className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-            <span className="text-gray-600 dark:text-gray-400">Passkey</span>
-            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-              user?.passkeyEnabled
-                ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
-            }`}>
-              {user?.passkeyEnabled ? "Enabled" : "Disabled"}
-            </span>
-          </div>
-          <div className="flex items-center justify-between py-2">
             <span className="text-gray-600 dark:text-gray-400">Email</span>
             <div className="flex items-center gap-2">
               <span className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -282,6 +264,37 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
           {verificationError && (
             <div className="text-red-600 dark:text-red-400 text-sm mt-2">{verificationError}</div>
           )}
+          {verificationEmailSent && !user?.emailVerified && (
+            <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+              <a
+                href="/verify-email"
+                className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                <IconLink size={14} />
+                Enter verification token manually
+              </a>
+            </div>
+          )}
+          <div className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+            <span className="text-gray-600 dark:text-gray-400">Two-Factor Authentication</span>
+            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+              user?.twoFactorEnabled
+                ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+            }`}>
+              {user?.twoFactorEnabled ? "Enabled" : "Disabled"}
+            </span>
+          </div>
+          <div className="flex items-center justify-between py-2">
+            <span className="text-gray-600 dark:text-gray-400">Passkey</span>
+            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+              user?.passkeyEnabled
+                ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+            }`}>
+              {user?.passkeyEnabled ? "Enabled" : "Disabled"}
+            </span>
+          </div>
         </div>
       </div>
 
