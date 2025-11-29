@@ -237,26 +237,6 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Account Status</h3>
         <div className="space-y-3">
           <div className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-            <span className="text-gray-600 dark:text-gray-400">Two-Factor Authentication</span>
-            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-              user?.twoFactorEnabled
-                ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
-            }`}>
-              {user?.twoFactorEnabled ? "Enabled" : "Disabled"}
-            </span>
-          </div>
-          <div className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-            <span className="text-gray-600 dark:text-gray-400">Passkey</span>
-            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-              user?.passkeyEnabled
-                ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
-            }`}>
-              {user?.passkeyEnabled ? "Enabled" : "Disabled"}
-            </span>
-          </div>
-          <div className="flex items-center justify-between py-2">
             <span className="text-gray-600 dark:text-gray-400">Email</span>
             <div className="flex items-center gap-2">
               <span className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -295,6 +275,26 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
               </a>
             </div>
           )}
+          <div className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+            <span className="text-gray-600 dark:text-gray-400">Two-Factor Authentication</span>
+            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+              user?.twoFactorEnabled
+                ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+            }`}>
+              {user?.twoFactorEnabled ? "Enabled" : "Disabled"}
+            </span>
+          </div>
+          <div className="flex items-center justify-between py-2">
+            <span className="text-gray-600 dark:text-gray-400">Passkey</span>
+            <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+              user?.passkeyEnabled
+                ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+            }`}>
+              {user?.passkeyEnabled ? "Enabled" : "Disabled"}
+            </span>
+          </div>
         </div>
       </div>
 
