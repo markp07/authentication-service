@@ -35,8 +35,7 @@ public class DummyEmailServiceImpl implements EmailService {
   public void sendResetPasswordEmail(String to, String resetToken, String userName) {
     String body = resetPasswordBody.replace("{resetToken}", resetToken)
         .replace("{userName}", userName);
-    String fromDisplay = fromName != null && !fromName.isEmpty() ? fromName + " <" + from + ">" : from;
-    log.info("[DUMMY EMAIL] From: {}\nTo: {}\nSubject: {}\nBody: {}", fromDisplay, to, resetPasswordSubject, body);
+    logEmail(to, resetPasswordSubject, body);
   }
 
   @Override
@@ -47,7 +46,11 @@ public class DummyEmailServiceImpl implements EmailService {
         .replace("{manualVerificationLink}", manualVerificationLink)
         .replace("{verificationToken}", verificationToken)
         .replace("{userName}", userName);
+    logEmail(to, emailVerificationSubject, body);
+  }
+
+  private void logEmail(String to, String subject, String body) {
     String fromDisplay = fromName != null && !fromName.isEmpty() ? fromName + " <" + from + ">" : from;
-    log.info("[DUMMY EMAIL] From: {}\nTo: {}\nSubject: {}\nBody: {}", fromDisplay, to, emailVerificationSubject, body);
+    log.info("[DUMMY EMAIL] From: {}\nTo: {}\nSubject: {}\nBody: {}", fromDisplay, to, subject, body);
   }
 }

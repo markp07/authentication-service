@@ -39,17 +39,7 @@ public class EmailServiceImpl implements EmailService {
   public void sendResetPasswordEmail(String to, String resetToken, String userName) {
     String body = resetPasswordBody.replace("{resetToken}", resetToken)
         .replace("{userName}", userName);
-    try {
-      MimeMessage message = mailSender.createMimeMessage();
-      MimeMessageHelper helper = new MimeMessageHelper(message, true);
-      setFromAddress(helper);
-      helper.setTo(to);
-      helper.setSubject(resetPasswordSubject);
-      helper.setText(body, false);
-      mailSender.send(message);
-    } catch (MessagingException | UnsupportedEncodingException e) {
-      throw new RuntimeException("Failed to send email", e);
-    }
+    sendEmail(to, resetPasswordSubject, body);
   }
 
   @Override
@@ -60,16 +50,20 @@ public class EmailServiceImpl implements EmailService {
         .replace("{manualVerificationLink}", manualVerificationLink)
         .replace("{verificationToken}", verificationToken)
         .replace("{userName}", userName);
+    sendEmail(to, emailVerificationSubject, body);
+  }
+
+  private void sendEmail(String to, String subject, String body) {
     try {
       MimeMessage message = mailSender.createMimeMessage();
       MimeMessageHelper helper = new MimeMessageHelper(message, true);
       setFromAddress(helper);
       helper.setTo(to);
-      helper.setSubject(emailVerificationSubject);
+      helper.setSubject(subject);
       helper.setText(body, false);
       mailSender.send(message);
     } catch (MessagingException | UnsupportedEncodingException e) {
-      throw new RuntimeException("Failed to send verification email", e);
+      throw new RuntimeException("Failed to send email", e);
     }
   }
 
