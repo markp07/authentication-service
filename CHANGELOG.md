@@ -22,6 +22,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced Authentication Service OpenAPI spec with complete Passkey endpoint documentation
 
 ## [1.0.0] - 2025-11-02
+## [1.5.6] - 2025-11-29
+
+### Changed
+- Update date format created date on profile page
+- Fix profile date format, add email verification flow, externalize email config (#71)
+
 ## [1.5.5] - 2025-11-25
 
 ### Changed
