@@ -180,7 +180,7 @@ export default function LocationBar({
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-2 sm:p-3">
-      <div className="flex gap-2 overflow-x-auto pb-0 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+      <div className="flex gap-2 overflow-x-auto overflow-y-hidden pb-0 scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
         {/* Current Location Card - Not draggable */}
         <button
           onClick={() => onLocationClick(null)}
