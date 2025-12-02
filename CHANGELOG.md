@@ -22,6 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced Authentication Service OpenAPI spec with complete Passkey endpoint documentation
 
 ## [1.0.0] - 2025-11-02
+## [1.5.8] - 2025-12-02
+
+### Changed
+- Disable vertical scrolling on saved locations bar (#75)
+
 ## [1.5.7] - 2025-11-29
 
 ### Changed
