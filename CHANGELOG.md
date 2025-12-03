@@ -22,6 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced Authentication Service OpenAPI spec with complete Passkey endpoint documentation
 
 ## [1.0.0] - 2025-11-02
+## [1.5.9] - 2025-12-03
+
+### Changed
+- Fix saved location deletion using locationId instead of database id (#76)
+
 ## [1.5.8] - 2025-12-02
 
 ### Changed
