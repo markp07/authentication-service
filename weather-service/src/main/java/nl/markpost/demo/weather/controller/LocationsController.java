@@ -69,7 +69,7 @@ public class LocationsController implements LocationsApi {
   /**
    * Deletes a saved location.
    *
-   * @param id the saved location ID
+   * @param id the location ID (external geocoding ID, passed as id in the API)
    * @return ResponseEntity with no content
    */
   @Override
