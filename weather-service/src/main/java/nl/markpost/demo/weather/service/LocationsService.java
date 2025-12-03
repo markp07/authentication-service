@@ -100,13 +100,13 @@ public class LocationsService {
   /**
    * Delete a saved location.
    *
-   * @param id     the saved location ID
-   * @param userId the user ID
+   * @param locationId the location ID (external geocoding ID)
+   * @param userId     the user ID
    */
   @Transactional
-  public void deleteSavedLocation(Long id, UUID userId) {
-    log.info("Deleting saved location {} for user: {}", id, userId);
-    savedLocationRepository.deleteByIdAndUserId(id, userId);
+  public void deleteSavedLocation(Long locationId, UUID userId) {
+    log.info("Deleting saved location {} for user: {}", locationId, userId);
+    savedLocationRepository.deleteByLocationIdAndUserId(locationId, userId);
   }
 
   /**
