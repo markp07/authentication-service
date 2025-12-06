@@ -133,9 +133,9 @@ class LocationsServiceTest {
 
   @Test
   void testDeleteSavedLocation() {
-    locationsService.deleteSavedLocation(123L, userId);
+    locationsService.deleteSavedLocation(1L, userId);
 
-    verify(savedLocationRepository, times(1)).deleteByLocationIdAndUserId(123L, userId);
+    verify(savedLocationRepository, times(1)).deleteByLocationIdAndUserId(1L, userId);
   }
 
   @Test
