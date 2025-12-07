@@ -25,7 +25,7 @@ export default function HourlyGraphModal({
   dailyData,
 }: HourlyGraphModalProps) {
   const [dataType, setDataType] = React.useState<DataType>("temperature");
-  const [page, setPage] = React.useState(0); // 0 = first 24 hours, 1 = next 24 hours
+  const [page, setPage] = React.useState(0); // Page index (18 or 24 hours per page based on screen size)
   const [containerWidth, setContainerWidth] = React.useState(800);
   const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -48,12 +48,14 @@ export default function HourlyGraphModal({
   }, [open]);
 
   // Reset page when transitioning between small/large screen to avoid out-of-bounds
+  // Note: `page` is intentionally not in dependencies - we only check/reset when screen size or data length changes
   React.useEffect(() => {
     const hoursPerPage = containerWidth < SMALL_SCREEN_BREAKPOINT ? HOURS_PER_PAGE_SMALL : HOURS_PER_PAGE_LARGE;
     const maxPage = Math.ceil(hourlyData.length / hoursPerPage) - 1;
     if (page > maxPage) {
       setPage(Math.max(0, maxPage));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [containerWidth, hourlyData.length]);
 
   // Create a memoized map of dates to daily data for efficient lookup
