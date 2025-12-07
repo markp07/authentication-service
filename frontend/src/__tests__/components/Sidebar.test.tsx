@@ -55,4 +55,25 @@ describe('Sidebar Component', () => {
     
     expect(screen.getByText(/Welcome, User/)).toBeInTheDocument();
   });
+
+  it('should display fallback version when environment variable is not set', () => {
+    // Temporarily unset the environment variable
+    const originalVersion = process.env.NEXT_PUBLIC_APP_VERSION;
+    delete process.env.NEXT_PUBLIC_APP_VERSION;
+
+    render(
+      <Sidebar
+        username="testuser"
+        activePage="dashboard"
+        onNavigate={mockOnNavigate}
+        onLogout={mockOnLogout}
+      />
+    );
+    
+    // Check that the fallback version is displayed
+    expect(screen.getByText(/v0\.0\.0/)).toBeInTheDocument();
+
+    // Restore the original value
+    process.env.NEXT_PUBLIC_APP_VERSION = originalVersion;
+  });
 });
