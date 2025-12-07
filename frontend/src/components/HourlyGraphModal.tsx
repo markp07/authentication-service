@@ -42,6 +42,15 @@ export default function HourlyGraphModal({
     return () => window.removeEventListener('resize', updateWidth);
   }, [open]);
 
+  // Reset page when transitioning between small/large screen to avoid out-of-bounds
+  React.useEffect(() => {
+    const hoursPerPage = containerWidth < 500 ? 18 : 24;
+    const maxPage = Math.ceil(hourlyData.length / hoursPerPage) - 1;
+    if (page > maxPage) {
+      setPage(Math.max(0, maxPage));
+    }
+  }, [containerWidth, hourlyData.length, page]);
+
   // Create a memoized map of dates to daily data for efficient lookup
   const dailyDataMap = React.useMemo(() => {
     const map = new Map<string, Daily>();
@@ -53,8 +62,10 @@ export default function HourlyGraphModal({
 
   if (!open) return null;
 
-  const startIndex = page * 24;
-  const endIndex = startIndex + 24;
+  // Determine hours per page based on screen size
+  const hoursPerPage = containerWidth < 500 ? 18 : 24;
+  const startIndex = page * hoursPerPage;
+  const endIndex = startIndex + hoursPerPage;
   const displayData = hourlyData.slice(startIndex, endIndex);
 
   // Get values based on selected data type
@@ -422,9 +433,9 @@ export default function HourlyGraphModal({
             </button>
             <button
               onClick={() => setPage(page + 1)}
-              disabled={hourlyData.length <= (page + 1) * 24}
+              disabled={hourlyData.length <= (page + 1) * hoursPerPage}
               className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg font-medium text-sm sm:text-base transition-all ${
-                hourlyData.length <= (page + 1) * 24
+                hourlyData.length <= (page + 1) * hoursPerPage
                   ? "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
                   : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 hover:shadow-md"
               } disabled:opacity-50 disabled:cursor-not-allowed`}
