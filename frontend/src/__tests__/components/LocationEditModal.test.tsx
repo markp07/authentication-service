@@ -5,7 +5,6 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import LocationEditModal from '../../components/LocationEditModal';
 import type { Location } from '../../types/Location';
-import type { Weather } from '../../types/Weather';
 
 // Mock the child components
 jest.mock('../../components/Modal', () => {
@@ -97,43 +96,6 @@ describe('LocationEditModal Component', () => {
     },
   ];
 
-  const mockWeather: Weather = {
-    location: 'Test',
-    latitude: 0,
-    longitude: 0,
-    timezone: 'UTC',
-    current: {
-      time: '2024-01-01T12:00:00Z',
-      temperature: 20,
-      weatherCode: '0',
-      windSpeed: 10,
-      windDirection: 'N',
-      humidity: 50,
-      precipitation: 0,
-      precipitationProbability: 0,
-    },
-    hourly: [],
-    daily: [{
-      time: '2024-01-01',
-      weatherCode: '0',
-      temperatureMax: 25,
-      temperatureMin: 15,
-      sunRise: '2024-01-01T06:00:00Z',
-      sunSet: '2024-01-01T18:00:00Z',
-      precipitationProbabilityMax: 10,
-      precipitation: 0,
-      windSpeed: 10,
-      windDirection: 'N',
-    }],
-  };
-
-  const mockWeatherData = new Map<number, Weather>([
-    [1, { ...mockWeather, location: 'New York' }],
-    [2, { ...mockWeather, location: 'Paris' }],
-  ]);
-
-  const mockLoadingWeather = new Set<number>();
-
   beforeEach(() => {
     mockOnClose.mockClear();
     mockOnRemoveLocation.mockClear();
@@ -147,8 +109,6 @@ describe('LocationEditModal Component', () => {
         open={false}
         onClose={mockOnClose}
         locations={mockLocations}
-        weatherData={mockWeatherData}
-        loadingWeather={mockLoadingWeather}
         onRemoveLocation={mockOnRemoveLocation}
         onReorderLocations={mockOnReorderLocations}
         onAddLocation={mockOnAddLocation}
@@ -165,8 +125,6 @@ describe('LocationEditModal Component', () => {
         open={true}
         onClose={mockOnClose}
         locations={mockLocations}
-        weatherData={mockWeatherData}
-        loadingWeather={mockLoadingWeather}
         onRemoveLocation={mockOnRemoveLocation}
         onReorderLocations={mockOnReorderLocations}
         onAddLocation={mockOnAddLocation}
@@ -183,8 +141,6 @@ describe('LocationEditModal Component', () => {
         open={true}
         onClose={mockOnClose}
         locations={mockLocations}
-        weatherData={mockWeatherData}
-        loadingWeather={mockLoadingWeather}
         onRemoveLocation={mockOnRemoveLocation}
         onReorderLocations={mockOnReorderLocations}
         onAddLocation={mockOnAddLocation}
@@ -201,8 +157,6 @@ describe('LocationEditModal Component', () => {
         open={true}
         onClose={mockOnClose}
         locations={mockLocations}
-        weatherData={mockWeatherData}
-        loadingWeather={mockLoadingWeather}
         onRemoveLocation={mockOnRemoveLocation}
         onReorderLocations={mockOnReorderLocations}
         onAddLocation={mockOnAddLocation}
@@ -221,8 +175,6 @@ describe('LocationEditModal Component', () => {
         open={true}
         onClose={mockOnClose}
         locations={mockLocations}
-        weatherData={mockWeatherData}
-        loadingWeather={mockLoadingWeather}
         onRemoveLocation={mockOnRemoveLocation}
         onReorderLocations={mockOnReorderLocations}
         onAddLocation={mockOnAddLocation}
@@ -250,8 +202,6 @@ describe('LocationEditModal Component', () => {
         open={true}
         onClose={mockOnClose}
         locations={mockLocations}
-        weatherData={mockWeatherData}
-        loadingWeather={mockLoadingWeather}
         onRemoveLocation={mockOnRemoveLocation}
         onReorderLocations={mockOnReorderLocations}
         onAddLocation={mockOnAddLocation}
@@ -270,8 +220,8 @@ describe('LocationEditModal Component', () => {
         open={true}
         onClose={mockOnClose}
         locations={[]}
-        weatherData={new Map()}
-        loadingWeather={new Set()}
+        
+        
         onRemoveLocation={mockOnRemoveLocation}
         onReorderLocations={mockOnReorderLocations}
         onAddLocation={mockOnAddLocation}
@@ -283,34 +233,12 @@ describe('LocationEditModal Component', () => {
     expect(screen.getByText('Search and add up to 5 locations to view their weather')).toBeInTheDocument();
   });
 
-  it('should show weather data for saved locations', () => {
-    render(
-      <LocationEditModal
-        open={true}
-        onClose={mockOnClose}
-        locations={mockLocations}
-        weatherData={mockWeatherData}
-        loadingWeather={mockLoadingWeather}
-        onRemoveLocation={mockOnRemoveLocation}
-        onReorderLocations={mockOnReorderLocations}
-        onAddLocation={mockOnAddLocation}
-        weatherApiBase="http://localhost"
-      />
-    );
-
-    // Temperature should be shown
-    const temperatures = screen.getAllByText(/20°C/);
-    expect(temperatures.length).toBeGreaterThan(0);
-  });
-
   it('should show drag and drop hint text', () => {
     render(
       <LocationEditModal
         open={true}
         onClose={mockOnClose}
         locations={mockLocations}
-        weatherData={mockWeatherData}
-        loadingWeather={mockLoadingWeather}
         onRemoveLocation={mockOnRemoveLocation}
         onReorderLocations={mockOnReorderLocations}
         onAddLocation={mockOnAddLocation}

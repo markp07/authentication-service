@@ -461,8 +461,6 @@ export default function Home() {
         open={showLocationEditModal}
         onClose={() => setShowLocationEditModal(false)}
         locations={savedLocations}
-        weatherData={savedWeatherData}
-        loadingWeather={loadingWeather}
         onRemoveLocation={(locationId) => {
           handleRemoveLocation(locationId);
           if (selectedLocationId === locationId) {

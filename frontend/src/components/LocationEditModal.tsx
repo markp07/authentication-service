@@ -3,8 +3,6 @@ import { IconX, IconMapPin, IconGripVertical, IconPlus } from "@tabler/icons-rea
 import Modal from "./Modal";
 import LocationSearch from "./LocationSearch";
 import type { Location } from "../types/Location";
-import type { Weather } from "../types/Weather";
-import { weatherCodeMap, isNightTime } from "../types/WeatherCodeMap";
 import {
   DndContext,
   closestCenter,
@@ -27,30 +25,19 @@ interface LocationEditModalProps {
   open: boolean;
   onClose: () => void;
   locations: Location[];
-  weatherData: Map<number, Weather>;
-  loadingWeather: Set<number>;
   onRemoveLocation: (locationId: number) => void;
   onReorderLocations: (locationIds: number[]) => void;
   onAddLocation: (location: Location) => void;
   weatherApiBase: string;
 }
 
-function getWeatherIcon(code: string, size = 32, currentTime?: string, sunRise?: string, sunSet?: string) {
-  const isNight = currentTime && sunRise && sunSet ? isNightTime(currentTime, sunRise, sunSet) : false;
-  return weatherCodeMap[code]?.icon(size, isNight) || null;
-}
-
 interface SortableLocationItemProps {
   location: Location;
-  weather?: Weather;
-  isLoading: boolean;
   onRemoveLocation: (locationId: number) => void;
 }
 
 function SortableLocationItem({
   location,
-  weather,
-  isLoading,
   onRemoveLocation,
 }: SortableLocationItemProps) {
   const {
@@ -74,11 +61,11 @@ function SortableLocationItem({
       style={style}
       className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow relative group border border-gray-200 dark:border-gray-700"
     >
-      {/* Drag handle */}
+      {/* Drag handle - vertically centered */}
       <div
         {...attributes}
         {...listeners}
-        className="absolute top-3 left-3 z-10 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-grab active:cursor-grabbing p-1"
+        className="absolute top-1/2 -translate-y-1/2 left-3 z-10 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 cursor-grab active:cursor-grabbing p-1"
         aria-label="Drag to reorder"
       >
         <IconGripVertical size={20} />
@@ -97,7 +84,7 @@ function SortableLocationItem({
       </button>
 
       <div className="p-4 pl-10">
-        <div className="flex items-start justify-between mb-3">
+        <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0 pr-8">
             <h3 className="text-lg font-bold text-gray-900 dark:text-white truncate">
               {location.name}
@@ -107,30 +94,6 @@ function SortableLocationItem({
             </p>
           </div>
         </div>
-
-        {isLoading ? (
-          <div className="flex items-center justify-center h-20">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-          </div>
-        ) : weather ? (
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="text-3xl font-bold text-gray-900 dark:text-white">
-                {Math.round(weather.current.temperature)}°C
-              </div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                {weatherCodeMap[weather.current.weatherCode]?.label || ""}
-              </div>
-            </div>
-            <div className="flex items-center justify-center">
-              {getWeatherIcon(weather.current.weatherCode, 48, weather.current.time, weather.daily[0]?.sunRise, weather.daily[0]?.sunSet)}
-            </div>
-          </div>
-        ) : (
-          <div className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
-            Weather data unavailable
-          </div>
-        )}
       </div>
     </div>
   );
@@ -140,8 +103,6 @@ export default function LocationEditModal({
   open,
   onClose,
   locations,
-  weatherData,
-  loadingWeather,
   onRemoveLocation,
   onReorderLocations,
   onAddLocation,
@@ -245,20 +206,13 @@ export default function LocationEditModal({
                 strategy={verticalListSortingStrategy}
               >
                 <div className="space-y-3">
-                  {items.map((location) => {
-                    const weather = weatherData.get(location.id);
-                    const isLoading = loadingWeather.has(location.id);
-
-                    return (
-                      <SortableLocationItem
-                        key={location.id}
-                        location={location}
-                        weather={weather}
-                        isLoading={isLoading}
-                        onRemoveLocation={onRemoveLocation}
-                      />
-                    );
-                  })}
+                  {items.map((location) => (
+                    <SortableLocationItem
+                      key={location.id}
+                      location={location}
+                      onRemoveLocation={onRemoveLocation}
+                    />
+                  ))}
                 </div>
               </SortableContext>
             </DndContext>
