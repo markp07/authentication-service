@@ -22,6 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced Authentication Service OpenAPI spec with complete Passkey endpoint documentation
 
 ## [1.0.0] - 2025-11-02
+## [1.6.2] - 2025-12-07
+
+### Changed
+- Add token validation with exponential backoff retry and open redirect protection (#79)
+
 ## [1.6.1] - 2025-12-07
 
 ### Changed
