@@ -220,8 +220,6 @@ describe('LocationEditModal Component', () => {
         open={true}
         onClose={mockOnClose}
         locations={[]}
-        
-        
         onRemoveLocation={mockOnRemoveLocation}
         onReorderLocations={mockOnReorderLocations}
         onAddLocation={mockOnAddLocation}
