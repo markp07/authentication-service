@@ -13,6 +13,11 @@ interface HourlyGraphModalProps {
 
 type DataType = "temperature" | "precipitation" | "wind";
 
+// Screen width breakpoint for responsive hours per page
+const SMALL_SCREEN_BREAKPOINT = 500;
+const HOURS_PER_PAGE_SMALL = 18;
+const HOURS_PER_PAGE_LARGE = 24;
+
 export default function HourlyGraphModal({
   open,
   onClose,
@@ -32,7 +37,7 @@ export default function HourlyGraphModal({
       if (containerRef.current) {
         const width = containerRef.current.clientWidth;
         // Reduced padding subtraction for mobile (8px vs 32px)
-        const paddingSubtract = width < 500 ? 8 : 32;
+        const paddingSubtract = width < SMALL_SCREEN_BREAKPOINT ? 8 : 32;
         setContainerWidth(Math.max(300, width - paddingSubtract));
       }
     };
@@ -44,12 +49,12 @@ export default function HourlyGraphModal({
 
   // Reset page when transitioning between small/large screen to avoid out-of-bounds
   React.useEffect(() => {
-    const hoursPerPage = containerWidth < 500 ? 18 : 24;
+    const hoursPerPage = containerWidth < SMALL_SCREEN_BREAKPOINT ? HOURS_PER_PAGE_SMALL : HOURS_PER_PAGE_LARGE;
     const maxPage = Math.ceil(hourlyData.length / hoursPerPage) - 1;
     if (page > maxPage) {
       setPage(Math.max(0, maxPage));
     }
-  }, [containerWidth, hourlyData.length, page]);
+  }, [containerWidth, hourlyData.length]);
 
   // Create a memoized map of dates to daily data for efficient lookup
   const dailyDataMap = React.useMemo(() => {
@@ -63,7 +68,7 @@ export default function HourlyGraphModal({
   if (!open) return null;
 
   // Determine hours per page based on screen size
-  const hoursPerPage = containerWidth < 500 ? 18 : 24;
+  const hoursPerPage = containerWidth < SMALL_SCREEN_BREAKPOINT ? HOURS_PER_PAGE_SMALL : HOURS_PER_PAGE_LARGE;
   const startIndex = page * hoursPerPage;
   const endIndex = startIndex + hoursPerPage;
   const displayData = hourlyData.slice(startIndex, endIndex);
@@ -90,9 +95,9 @@ export default function HourlyGraphModal({
   const height = Math.min(300, Math.max(200, width * 0.4)); // Responsive height with limits
   const padding = { 
     top: 20, 
-    right: width < 500 ? 10 : 20, 
+    right: width < SMALL_SCREEN_BREAKPOINT ? 10 : 20, 
     bottom: 40, 
-    left: width < 500 ? 35 : 50 
+    left: width < SMALL_SCREEN_BREAKPOINT ? 35 : 50 
   };
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
@@ -248,9 +253,9 @@ export default function HourlyGraphModal({
                       y={y + 4}
                       textAnchor="end"
                       className="text-[10px] sm:text-xs fill-gray-600 dark:fill-gray-400"
-                      style={{ fontSize: width < 500 ? '9px' : '12px' }}
+                      style={{ fontSize: width < SMALL_SCREEN_BREAKPOINT ? '9px' : '12px' }}
                     >
-                      {value.toFixed(width < 500 ? 0 : 1)}
+                      {value.toFixed(width < SMALL_SCREEN_BREAKPOINT ? 0 : 1)}
                     </text>
                   </g>
                 );
@@ -259,7 +264,7 @@ export default function HourlyGraphModal({
               {/* X-axis labels */}
               {displayData.map((h, i) => {
                 // Show fewer labels on mobile
-                const skipInterval = width < 500 ? 4 : 3;
+                const skipInterval = width < SMALL_SCREEN_BREAKPOINT ? 4 : 3;
                 if (i % skipInterval !== 0) return null;
                 // For bar chart, center labels under bars; for line chart, use data point positions
                 const barSpacing = chartWidth / values.length;
@@ -275,7 +280,7 @@ export default function HourlyGraphModal({
                     y={height - padding.bottom + 20}
                     textAnchor="middle"
                     className="text-[10px] sm:text-xs fill-gray-600 dark:fill-gray-400"
-                    style={{ fontSize: width < 500 ? '9px' : '12px' }}
+                    style={{ fontSize: width < SMALL_SCREEN_BREAKPOINT ? '9px' : '12px' }}
                   >
                     {label}
                   </text>
@@ -313,8 +318,8 @@ export default function HourlyGraphModal({
                       width={barWidth}
                       height={barHeight}
                       fill="url(#barGradient)"
-                      rx={width < 500 ? 1 : 2}
-                      ry={width < 500 ? 1 : 2}
+                      rx={width < SMALL_SCREEN_BREAKPOINT ? 1 : 2}
+                      ry={width < SMALL_SCREEN_BREAKPOINT ? 1 : 2}
                       className="cursor-pointer hover:opacity-80 transition-opacity"
                     >
                       <title>{`${new Date(displayData[index].time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}: ${value.toFixed(1)} ${getUnit()}`}</title>
@@ -337,7 +342,7 @@ export default function HourlyGraphModal({
                     d={createPath()}
                     fill="none"
                     stroke="url(#lineGradient)"
-                    strokeWidth={width < 500 ? "2.5" : "3"}
+                    strokeWidth={width < SMALL_SCREEN_BREAKPOINT ? "2.5" : "3"}
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
@@ -346,7 +351,7 @@ export default function HourlyGraphModal({
                   {values.map((value, index) => {
                     const x = padding.left + (index / (values.length - 1)) * chartWidth;
                     const y = padding.top + chartHeight - ((value - minValue) / range) * chartHeight;
-                    const pointRadius = width < 500 ? 3 : 4;
+                    const pointRadius = width < SMALL_SCREEN_BREAKPOINT ? 3 : 4;
                     return (
                       <g key={index}>
                         <circle
@@ -379,7 +384,7 @@ export default function HourlyGraphModal({
               <div className="mt-1 px-1 sm:px-2">
                 <div className="flex justify-between items-center" style={{ marginLeft: `${(padding.left / width) * 100}%`, marginRight: `${(padding.right / width) * 100}%` }}>
                   {displayData.map((h, index) => {
-                    const iconSize = width < 500 ? 20 : 24;
+                    const iconSize = width < SMALL_SCREEN_BREAKPOINT ? 20 : 24;
                     return (
                       <div 
                         key={index} 
@@ -400,7 +405,7 @@ export default function HourlyGraphModal({
               <div className="mt-2 px-1 sm:px-2">
                 <div className="flex justify-between items-center" style={{ marginLeft: `${(padding.left / width) * 100}%`, marginRight: `${(padding.right / width) * 100}%` }}>
                   {displayData.map((h, index) => {
-                    const iconSize = width < 500 ? 14 : 18;
+                    const iconSize = width < SMALL_SCREEN_BREAKPOINT ? 14 : 18;
                     return (
                       <div 
                         key={index} 
