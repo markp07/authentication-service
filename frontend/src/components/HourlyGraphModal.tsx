@@ -42,6 +42,15 @@ export default function HourlyGraphModal({
     return () => window.removeEventListener('resize', updateWidth);
   }, [open]);
 
+  // Create a memoized map of dates to daily data for efficient lookup
+  const dailyDataMap = React.useMemo(() => {
+    const map = new Map<string, Daily>();
+    dailyData.forEach(d => {
+      map.set(new Date(d.time).toDateString(), d);
+    });
+    return map;
+  }, [dailyData]);
+
   if (!open) return null;
 
   const startIndex = page * 24;
@@ -131,9 +140,14 @@ export default function HourlyGraphModal({
   // Get weather icon based on weather code and time
   const getWeatherIcon = (hourly: Hourly, size = 24) => {
     const hourDate = new Date(hourly.time).toDateString();
-    const dailyInfo = dailyData.find(d => new Date(d.time).toDateString() === hourDate);
+    const dailyInfo = dailyDataMap.get(hourDate);
     const isNight = dailyInfo ? isNightTime(hourly.time, dailyInfo.sunRise, dailyInfo.sunSet) : false;
-    return weatherCodeMap[hourly.weatherCode]?.icon(size, isNight) || weatherCodeMap.CLEAR_SKY.icon(size, isNight);
+    const weatherIcon = weatherCodeMap[hourly.weatherCode];
+    if (weatherIcon) {
+      return weatherIcon.icon(size, isNight);
+    }
+    // Fallback to CLEAR_SKY if available, otherwise return null
+    return weatherCodeMap.CLEAR_SKY?.icon(size, isNight) || null;
   };
 
   return (
