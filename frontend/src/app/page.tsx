@@ -460,6 +460,7 @@ export default function Home() {
           open={showHourlyGraph}
           onClose={() => setShowHourlyGraph(false)}
           hourlyData={displayWeather.hourly}
+          dailyData={displayWeather.daily}
         />
       )}
 
