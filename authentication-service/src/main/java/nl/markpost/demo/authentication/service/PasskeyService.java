@@ -137,6 +137,7 @@ public class PasskeyService {
     RegistrationResult result = relyingParty.finishRegistration(finishOptions);
 
     PasskeyCredential passkey = passkeyCredentialMapper.from(result, user, name);
+    passkey.setId(null);
     passkeyCredentialRepository.save(passkey);
     session.removeAttribute(PASSKEY_REGISTRATION);
   }
