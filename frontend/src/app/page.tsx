@@ -12,6 +12,7 @@ import { Sun, Crosshair, GraphUp, Wind } from 'react-bootstrap-icons';
 import type { Weather } from "../types/Weather";
 import type { Location } from "../types/Location";
 import { weatherCodeMap, isNightTime } from "../types/WeatherCodeMap";
+import { fetchWithRetry } from "../utils/retry";
 
 const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
 const AUTH_API_BASE = isDev
@@ -115,7 +116,7 @@ export default function Home() {
         }
         const lat = position.coords.latitude;
         const lon = position.coords.longitude;
-        const res = await fetch(`${WEATHER_API_BASE}/api/weather/v1/forecast?latitude=${lat}&longitude=${lon}`, { credentials: "include" });
+        const res = await fetchWithRetry(`${WEATHER_API_BASE}/api/weather/v1/forecast?latitude=${lat}&longitude=${lon}`);
         if (res.status === 401) return "401";
         if (!res.ok) {
           setWeatherError("Failed to load weather.");
@@ -167,9 +168,8 @@ export default function Home() {
     async function fetchWeatherForLocation(location: Location) {
       setLoadingWeather(prev => new Set(prev).add(location.id));
       try {
-        const res = await fetch(
-          `${WEATHER_API_BASE}/api/weather/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}`,
-          { credentials: "include" }
+        const res = await fetchWithRetry(
+          `${WEATHER_API_BASE}/api/weather/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}`
         );
         if (res.ok) {
           const data: Weather = await res.json();
