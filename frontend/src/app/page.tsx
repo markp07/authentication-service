@@ -2,11 +2,10 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import Modal from "../components/Modal";
 import Sidebar from "../components/Sidebar";
 import HourlyGraphModal from "../components/HourlyGraphModal";
-import LocationSearch from "../components/LocationSearch";
 import LocationBar from "../components/LocationBar";
+import LocationEditModal from "../components/LocationEditModal";
 import { IconArrowUp, IconArrowUpLeft, IconArrowUpRight, IconArrowDown, IconArrowDownLeft, IconArrowDownRight, IconArrowRight, IconArrowLeft } from "@tabler/icons-react";
 import { Sun, Crosshair, GraphUp, Wind } from 'react-bootstrap-icons';
 import type { Weather } from "../types/Weather";
@@ -64,7 +63,7 @@ export default function Home() {
   const [loadingWeather, setLoadingWeather] = React.useState<Set<number>>(new Set());
   
   // UI state
-  const [showLocationSearchModal, setShowLocationSearchModal] = React.useState(false);
+  const [showLocationEditModal, setShowLocationEditModal] = React.useState(false);
   const [selectedLocationId, setSelectedLocationId] = React.useState<number | null>(null); // null = current location
   const [displayWeather, setDisplayWeather] = React.useState<Weather | null>(null);
 
@@ -353,14 +352,7 @@ export default function Home() {
                       loadingWeather={loadingWeather}
                       selectedLocationId={selectedLocationId}
                       onLocationClick={handleLocationClick}
-                      onRemoveLocation={(locationId) => {
-                        handleRemoveLocation(locationId);
-                        if (selectedLocationId === locationId) {
-                          handleLocationClick(null);
-                        }
-                      }}
-                      onReorderLocations={handleReorderLocations}
-                      onAddLocationClick={() => setShowLocationSearchModal(true)}
+                      onEditClick={() => setShowLocationEditModal(true)}
                     />
 
                     {/* Hourly Forecast Card */}
@@ -464,23 +456,25 @@ export default function Home() {
         />
       )}
 
-      {/* Location Search Modal */}
-      <Modal open={showLocationSearchModal} onClose={() => setShowLocationSearchModal(false)}>
-        <div className="p-4">
-          <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Search Location</h2>
-          <LocationSearch
-            weatherApiBase={WEATHER_API_BASE}
-            onLocationSelect={(loc) => {
-              handleLocationSelect(loc);
-              setShowLocationSearchModal(false);
-            }}
-            savedLocations={savedLocations}
-          />
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
-            You currently have {savedLocations.length} saved location{savedLocations.length !== 1 ? 's' : ''}.
-          </p>
-        </div>
-      </Modal>
+      {/* Location Edit Modal */}
+      <LocationEditModal
+        open={showLocationEditModal}
+        onClose={() => setShowLocationEditModal(false)}
+        locations={savedLocations}
+        weatherData={savedWeatherData}
+        loadingWeather={loadingWeather}
+        onRemoveLocation={(locationId) => {
+          handleRemoveLocation(locationId);
+          if (selectedLocationId === locationId) {
+            handleLocationClick(null);
+          }
+        }}
+        onReorderLocations={handleReorderLocations}
+        onAddLocation={(loc) => {
+          handleLocationSelect(loc);
+        }}
+        weatherApiBase={WEATHER_API_BASE}
+      />
     </div>
   );
 }
