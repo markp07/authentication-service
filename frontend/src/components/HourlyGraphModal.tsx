@@ -1,11 +1,14 @@
 import React from "react";
 import { IconTemperature, IconDroplet, IconWind, IconArrowUp, IconArrowUpRight, IconArrowRight, IconArrowDownRight, IconArrowDown, IconArrowDownLeft, IconArrowLeft, IconArrowUpLeft, IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import type { Hourly } from "../types/Hourly";
+import type { Daily } from "../types/Daily";
+import { weatherCodeMap, isNightTime } from "../types/WeatherCodeMap";
 
 interface HourlyGraphModalProps {
   open: boolean;
   onClose: () => void;
   hourlyData: Hourly[];
+  dailyData: Daily[];
 }
 
 type DataType = "temperature" | "precipitation" | "wind";
@@ -14,6 +17,7 @@ export default function HourlyGraphModal({
   open,
   onClose,
   hourlyData,
+  dailyData,
 }: HourlyGraphModalProps) {
   const [dataType, setDataType] = React.useState<DataType>("temperature");
   const [page, setPage] = React.useState(0); // 0 = first 24 hours, 1 = next 24 hours
@@ -122,6 +126,14 @@ export default function HourlyGraphModal({
     };
     const IconComponent = iconMap[direction] || IconArrowUp;
     return <IconComponent size={size} className="text-blue-600 dark:text-blue-400" />;
+  };
+
+  // Get weather icon based on weather code and time
+  const getWeatherIcon = (hourly: Hourly, size = 24) => {
+    const hourDate = new Date(hourly.time).toDateString();
+    const dailyInfo = dailyData.find(d => new Date(d.time).toDateString() === hourDate);
+    const isNight = dailyInfo ? isNightTime(hourly.time, dailyInfo.sunRise, dailyInfo.sunSet) : false;
+    return weatherCodeMap[hourly.weatherCode]?.icon(size, isNight) || weatherCodeMap.CLEAR_SKY.icon(size, isNight);
   };
 
   return (
@@ -336,6 +348,27 @@ export default function HourlyGraphModal({
                 </>
               )}
             </svg>
+
+            {/* Weather Code Icons - shown for temperature and precipitation graphs */}
+            {(dataType === "temperature" || dataType === "precipitation") && (
+              <div className="mt-1 px-1 sm:px-2">
+                <div className="flex justify-between items-center" style={{ marginLeft: `${(padding.left / width) * 100}%`, marginRight: `${(padding.right / width) * 100}%` }}>
+                  {displayData.map((h, index) => {
+                    const iconSize = width < 500 ? 20 : 24;
+                    return (
+                      <div 
+                        key={index} 
+                        className="flex flex-col items-center" 
+                        style={{ width: `${100 / displayData.length}%` }}
+                        title={weatherCodeMap[h.weatherCode]?.label || h.weatherCode}
+                      >
+                        {getWeatherIcon(h, iconSize)}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Wind Direction Indicators - shown only when wind data type is selected */}
             {dataType === "wind" && (
