@@ -188,13 +188,13 @@ export default function LocationEditModal({
               No Saved Locations
             </h3>
             <p className="text-gray-600 dark:text-gray-400 text-sm">
-              Search and add up to 5 locations to view their weather
+              Search and add locations to view their weather
             </p>
           </div>
         ) : (
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-              Saved Locations ({locations.length}/5)
+              Saved Locations ({locations.length})
             </h3>
             <DndContext
               sensors={sensors}

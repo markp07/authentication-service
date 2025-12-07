@@ -211,7 +211,7 @@ describe('LocationEditModal Component', () => {
 
     expect(screen.getByText('New York')).toBeInTheDocument();
     expect(screen.getByText('Paris')).toBeInTheDocument();
-    expect(screen.getByText('Saved Locations (2/5)')).toBeInTheDocument();
+    expect(screen.getByText(/Saved Locations \(2\)/)).toBeInTheDocument();
   });
 
   it('should show empty state when no locations are saved', () => {
@@ -228,7 +228,7 @@ describe('LocationEditModal Component', () => {
     );
 
     expect(screen.getByText('No Saved Locations')).toBeInTheDocument();
-    expect(screen.getByText('Search and add up to 5 locations to view their weather')).toBeInTheDocument();
+    expect(screen.getByText('Search and add locations to view their weather')).toBeInTheDocument();
   });
 
   it('should show drag and drop hint text', () => {

@@ -185,7 +185,7 @@ export default function SavedLocations({
           No Saved Locations
         </h3>
         <p className="text-gray-600 dark:text-gray-400 text-sm">
-          Search and add up to 5 locations to view their weather
+          Search and add locations to view their weather
         </p>
       </div>
     );
@@ -194,7 +194,7 @@ export default function SavedLocations({
   return (
     <div className="space-y-3">
       <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-        Saved Locations ({locations.length}/5)
+        Saved Locations ({locations.length})
       </h2>
       <DndContext
         sensors={sensors}
