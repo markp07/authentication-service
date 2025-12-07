@@ -3,6 +3,7 @@
 import React, { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Login from "../../components/Login";
+import { validateAuthToken } from "../../utils/retry";
 
 const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
 const AUTH_API_BASE = isDev
@@ -15,14 +16,35 @@ function LoginPageContent() {
   const [checkingAuth, setCheckingAuth] = React.useState(true);
 
   useEffect(() => {
-    // Check if already logged in
+    // Check if already logged in, especially when there's a callback URL
     async function checkLogin() {
+      const callback = searchParams.get("callback");
+      
+      // If there's a callback URL, validate token with retry mechanism
+      if (callback) {
+        // Validate callback URL is a relative path to prevent open redirect attacks
+        if (!callback.startsWith("/") || callback.startsWith("//")) {
+          setCheckingAuth(false);
+          return;
+        }
+        
+        const isValid = await validateAuthToken(AUTH_API_BASE);
+        if (isValid) {
+          // Token is valid or was refreshed successfully, redirect to callback
+          router.push(callback);
+          return;
+        }
+        // Token is invalid and refresh failed, show login screen
+        setCheckingAuth(false);
+        return;
+      }
+      
+      // No callback URL, do simple check without retry
       try {
         const res = await fetch(`${AUTH_API_BASE}/api/auth/v1/user`, { credentials: "include" });
         if (res.ok) {
-          // Already logged in, redirect to callback or home
-          const callback = searchParams.get("callback") || "/";
-          router.push(callback);
+          // Already logged in, redirect to home
+          router.push("/");
           return;
         }
       } catch {
@@ -34,25 +56,40 @@ function LoginPageContent() {
   }, [router, searchParams]);
 
   const handleSuccess = () => {
-    const callback = searchParams.get("callback") || "/";
-    router.push(callback);
+    const callback = searchParams.get("callback");
+    // Validate callback URL is a relative path to prevent open redirect attacks
+    if (callback && callback.startsWith("/") && !callback.startsWith("//")) {
+      router.push(callback);
+    } else {
+      router.push("/");
+    }
   };
 
   const handleRegister = () => {
     const callback = searchParams.get("callback");
-    router.push(callback ? `/register?callback=${encodeURIComponent(callback)}` : "/register");
+    // Only pass callback if it's a valid relative path
+    if (callback && callback.startsWith("/") && !callback.startsWith("//")) {
+      router.push(`/register?callback=${encodeURIComponent(callback)}`);
+    } else {
+      router.push("/register");
+    }
   };
 
   const handleForgot = () => {
     const callback = searchParams.get("callback");
-    router.push(callback ? `/forgot-password?callback=${encodeURIComponent(callback)}` : "/forgot-password");
+    // Only pass callback if it's a valid relative path
+    if (callback && callback.startsWith("/") && !callback.startsWith("//")) {
+      router.push(`/forgot-password?callback=${encodeURIComponent(callback)}`);
+    } else {
+      router.push("/forgot-password");
+    }
   };
 
   if (checkingAuth) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen w-full bg-gray-50 dark:bg-gray-900">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
-        <div className="text-lg font-semibold text-blue-700 dark:text-blue-400">Loading...</div>
+        <div className="text-lg font-semibold text-blue-700 dark:text-blue-400">Authenticating...</div>
       </div>
     );
   }
@@ -75,7 +112,7 @@ export default function LoginPage() {
     <Suspense fallback={
       <div className="flex flex-col items-center justify-center min-h-screen w-full bg-gray-50 dark:bg-gray-900">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
-        <div className="text-lg font-semibold text-blue-700 dark:text-blue-400">Loading...</div>
+        <div className="text-lg font-semibold text-blue-700 dark:text-blue-400">Authenticating...</div>
       </div>
     }>
       <LoginPageContent />
