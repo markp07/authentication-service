@@ -26,7 +26,7 @@ jobs:
           cache: 'maven'
 
       - name: Build backend JARs
-        run: mvn -B -T 1C clean package --fail-at-end --show-version
+        run: mvn -B -T 1C clean package --fail-at-end --show-version -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
       - name: Set up Node.js 20
         uses: actions/setup-node@v4
