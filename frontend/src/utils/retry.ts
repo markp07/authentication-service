@@ -29,6 +29,7 @@ function is5xxError(status: number): boolean {
 /**
  * Fetch with retry mechanism for 5xx errors
  * Implements exponential backoff with configurable max retries and time limit
+ * Note: Always sets credentials to 'include' for cookie-based authentication
  */
 export async function fetchWithRetry(
   input: RequestInfo,
@@ -42,9 +43,8 @@ export async function fetchWithRetry(
   } = options;
 
   const startTime = Date.now();
-  let attempt = 0;
 
-  while (attempt <= maxRetries) {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       const response = await fetch(input, { ...init, credentials: "include" });
       
@@ -53,7 +53,7 @@ export async function fetchWithRetry(
         return response;
       }
 
-      // If we've exhausted retries or time, return the error response
+      // If we've exhausted retries, return the error response
       if (attempt >= maxRetries) {
         return response;
       }
@@ -69,14 +69,13 @@ export async function fetchWithRetry(
 
       // Wait before retrying
       await new Promise(resolve => setTimeout(resolve, delay));
-      attempt++;
     } catch (error) {
-      // Network error - don't retry, throw immediately
+      // Network error (connection refused, timeout, abort, etc.) - don't retry
       throw error;
     }
   }
 
-  // Should never reach here, but TypeScript needs this
+  // Should never reach here due to loop structure, but TypeScript needs this
   throw new Error("Retry logic error");
 }
 

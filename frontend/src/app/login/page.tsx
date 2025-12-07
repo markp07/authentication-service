@@ -22,6 +22,12 @@ function LoginPageContent() {
       
       // If there's a callback URL, validate token with retry mechanism
       if (callback) {
+        // Validate callback URL is a relative path to prevent open redirect attacks
+        if (!callback.startsWith("/") || callback.startsWith("//")) {
+          setCheckingAuth(false);
+          return;
+        }
+        
         const isValid = await validateAuthToken(AUTH_API_BASE);
         if (isValid) {
           // Token is valid or was refreshed successfully, redirect to callback
@@ -50,18 +56,33 @@ function LoginPageContent() {
   }, [router, searchParams]);
 
   const handleSuccess = () => {
-    const callback = searchParams.get("callback") || "/";
-    router.push(callback);
+    const callback = searchParams.get("callback");
+    // Validate callback URL is a relative path to prevent open redirect attacks
+    if (callback && callback.startsWith("/") && !callback.startsWith("//")) {
+      router.push(callback);
+    } else {
+      router.push("/");
+    }
   };
 
   const handleRegister = () => {
     const callback = searchParams.get("callback");
-    router.push(callback ? `/register?callback=${encodeURIComponent(callback)}` : "/register");
+    // Only pass callback if it's a valid relative path
+    if (callback && callback.startsWith("/") && !callback.startsWith("//")) {
+      router.push(`/register?callback=${encodeURIComponent(callback)}`);
+    } else {
+      router.push("/register");
+    }
   };
 
   const handleForgot = () => {
     const callback = searchParams.get("callback");
-    router.push(callback ? `/forgot-password?callback=${encodeURIComponent(callback)}` : "/forgot-password");
+    // Only pass callback if it's a valid relative path
+    if (callback && callback.startsWith("/") && !callback.startsWith("//")) {
+      router.push(`/forgot-password?callback=${encodeURIComponent(callback)}`);
+    } else {
+      router.push("/forgot-password");
+    }
   };
 
   if (checkingAuth) {
