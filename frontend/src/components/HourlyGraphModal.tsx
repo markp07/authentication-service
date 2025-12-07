@@ -387,45 +387,59 @@ export default function HourlyGraphModal({
 
                 {/* Weather Code Icons - shown for temperature and precipitation graphs */}
                 {(dataType === "temperature" || dataType === "precipitation") && (
-                  <div className="mt-1 px-1 sm:px-2">
-                    <div className="flex justify-between items-center" style={{ paddingLeft: `${padding.left}px`, paddingRight: `${padding.right}px` }}>
-                      {displayData.map((h, index) => {
-                        const iconSize = viewportWidth < SMALL_SCREEN_BREAKPOINT ? 20 : 24;
-                        const iconWidth = (totalWidth - padding.left - padding.right) / displayData.length;
-                        return (
-                          <div 
-                            key={index} 
-                            className="flex flex-col items-center" 
-                            style={{ width: `${iconWidth}px` }}
-                            title={weatherCodeMap[h.weatherCode]?.label || h.weatherCode}
-                          >
-                            {getWeatherIcon(h, iconSize)}
-                          </div>
-                        );
-                      })}
-                    </div>
+                  <div className="mt-1 px-1 sm:px-2 relative" style={{ width: `${totalWidth}px`, height: '40px' }}>
+                    {displayData.map((h, index) => {
+                      const iconSize = viewportWidth < SMALL_SCREEN_BREAKPOINT ? 20 : 24;
+                      // Position icons at the same x-coordinate as data points
+                      let xPos;
+                      if (dataType === "precipitation") {
+                        // For bar chart, center icon under each bar
+                        const barSpacing = chartWidth / values.length;
+                        xPos = padding.left + (index * barSpacing) + barSpacing / 2;
+                      } else {
+                        // For line chart, position at data points
+                        xPos = padding.left + (index / (values.length - 1)) * chartWidth;
+                      }
+                      return (
+                        <div 
+                          key={index} 
+                          className="absolute flex flex-col items-center" 
+                          style={{ 
+                            left: `${xPos}px`,
+                            transform: 'translateX(-50%)',
+                            top: '0'
+                          }}
+                          title={weatherCodeMap[h.weatherCode]?.label || h.weatherCode}
+                        >
+                          {getWeatherIcon(h, iconSize)}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
 
                 {/* Wind Direction Indicators - shown only when wind data type is selected */}
                 {dataType === "wind" && (
-                  <div className="mt-2 px-1 sm:px-2">
-                    <div className="flex justify-between items-center" style={{ paddingLeft: `${padding.left}px`, paddingRight: `${padding.right}px` }}>
-                      {displayData.map((h, index) => {
-                        const iconSize = viewportWidth < SMALL_SCREEN_BREAKPOINT ? 14 : 18;
-                        const iconWidth = (totalWidth - padding.left - padding.right) / displayData.length;
-                        return (
-                          <div 
-                            key={index} 
-                            className="flex flex-col items-center" 
-                            style={{ width: `${iconWidth}px` }}
-                            title={`${h.windDirection} - ${h.windSpeed} km/h`}
-                          >
-                            {getWindDirectionIcon(h.windDirection, iconSize)}
-                          </div>
-                        );
-                      })}
-                    </div>
+                  <div className="mt-2 px-1 sm:px-2 relative" style={{ width: `${totalWidth}px`, height: '30px' }}>
+                    {displayData.map((h, index) => {
+                      const iconSize = viewportWidth < SMALL_SCREEN_BREAKPOINT ? 14 : 18;
+                      // Position icons at the same x-coordinate as data points on line chart
+                      const xPos = padding.left + (index / (values.length - 1)) * chartWidth;
+                      return (
+                        <div 
+                          key={index} 
+                          className="absolute flex flex-col items-center" 
+                          style={{ 
+                            left: `${xPos}px`,
+                            transform: 'translateX(-50%)',
+                            top: '0'
+                          }}
+                          title={`${h.windDirection} - ${h.windSpeed} km/h`}
+                        >
+                          {getWindDirectionIcon(h.windDirection, iconSize)}
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>
