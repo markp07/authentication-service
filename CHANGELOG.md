@@ -22,6 +22,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced Authentication Service OpenAPI spec with complete Passkey endpoint documentation
 
 ## [1.0.0] - 2025-11-02
+## [1.6.7] - 2025-12-07
+
+### Changed
+- Refactor location bar UI: uniform widths, text truncation, centralized edit modal, and unlimited locations (#82)
+
 ## [1.6.6] - 2025-12-07
 
 ### Changed
