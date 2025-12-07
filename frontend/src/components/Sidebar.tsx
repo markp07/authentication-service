@@ -48,7 +48,7 @@ export default function Sidebar({ username, activePage, onNavigate, onLogout }: 
             <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400">Weather</h1>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Welcome, {username || "User"}</p>
             <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-              v1.2.0 • {new Date(process.env.NEXT_PUBLIC_BUILD_TIME || Date.now()).toLocaleString()}
+              v{process.env.NEXT_PUBLIC_APP_VERSION || '0.0.0'} • {new Date(process.env.NEXT_PUBLIC_BUILD_TIME || Date.now()).toLocaleString()}
             </p>
           </div>
 
