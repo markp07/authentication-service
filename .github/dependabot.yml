@@ -7,6 +7,8 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
+    reviewers:
+      - "markp07"
     open-pull-requests-limit: 10
     commit-message:
       prefix: "chore(maven)"
@@ -23,12 +25,30 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
+    reviewers:
+      - "markp07"
     open-pull-requests-limit: 10
     commit-message:
       prefix: "chore(npm)"
       include: "scope"
     groups:
       npm-dependencies:
+        patterns:
+          - "*"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(github-actions)"
+      include: "scope"
+    groups:
+      github-actions:
         patterns:
           - "*"
 
@@ -39,6 +59,8 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
+    reviewers:
+      - "markp07"
     open-pull-requests-limit: 5
     commit-message:
       prefix: "chore(docker)"
@@ -55,6 +77,8 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
+    reviewers:
+      - "markp07"
     open-pull-requests-limit: 5
     commit-message:
       prefix: "chore(docker)"
@@ -71,6 +95,8 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
+    reviewers:
+      - "markp07"
     open-pull-requests-limit: 5
     commit-message:
       prefix: "chore(docker)"
@@ -87,6 +113,8 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
+    reviewers:
+      - "markp07"
     open-pull-requests-limit: 5
     commit-message:
       prefix: "chore(docker)"
