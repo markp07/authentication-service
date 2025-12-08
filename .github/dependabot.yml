@@ -7,6 +7,8 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
+    reviewers:
+      - "markp07"
     open-pull-requests-limit: 10
     commit-message:
       prefix: "chore(maven)"
@@ -23,6 +25,8 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
+    reviewers:
+      - "markp07"
     open-pull-requests-limit: 10
     commit-message:
       prefix: "chore(npm)"
@@ -37,6 +41,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "monday"
+      time: "09:00"
     open-pull-requests-limit: 5
     commit-message:
       prefix: "chore(github-actions)"
@@ -53,6 +59,8 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
+    reviewers:
+      - "markp07"
     open-pull-requests-limit: 5
     commit-message:
       prefix: "chore(docker)"
@@ -69,6 +77,8 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
+    reviewers:
+      - "markp07"
     open-pull-requests-limit: 5
     commit-message:
       prefix: "chore(docker)"
@@ -85,6 +95,8 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
+    reviewers:
+      - "markp07"
     open-pull-requests-limit: 5
     commit-message:
       prefix: "chore(docker)"
@@ -101,6 +113,8 @@ updates:
       interval: "weekly"
       day: "monday"
       time: "09:00"
+    reviewers:
+      - "markp07"
     open-pull-requests-limit: 5
     commit-message:
       prefix: "chore(docker)"
