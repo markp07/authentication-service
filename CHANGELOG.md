@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - chore(npm)(deps): bump the npm-dependencies group (#84)
 
 ## [1.6.7] - 2025-12-07
+## [1.6.9] - 2025-12-08
+
+### Changed
+- chore: update GitHub Actions configuration and add weekly schedule fo… (#86)
+
 
 ### Changed
 - Refactor location bar UI: uniform widths, text truncation, centralized edit modal, and unlimited locations (#82)
