@@ -32,6 +32,20 @@ updates:
         patterns:
           - "*"
 
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "chore(github-actions)"
+      include: "scope"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+
   # Docker images in docker-compose.yml
   - package-ecosystem: "docker"
     directory: "/"
