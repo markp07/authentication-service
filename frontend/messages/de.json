@@ -62,9 +62,11 @@
   },
   "resetPassword": {
     "title": "Passwort zurücksetzen",
+    "resetToken": "Reset-Token",
     "newPassword": "Neues Passwort",
     "confirmPassword": "Passwort bestätigen",
     "resetButton": "Passwort zurücksetzen",
+    "backToLogin": "Zurück zur Anmeldung",
     "passwordMismatch": "Passwörter stimmen nicht überein.",
     "resetSuccess": "Passwort erfolgreich zurückgesetzt!",
     "resetError": "Passwort-Reset fehlgeschlagen.",

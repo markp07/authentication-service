@@ -62,9 +62,11 @@
   },
   "resetPassword": {
     "title": "Wachtwoord resetten",
+    "resetToken": "Reset token",
     "newPassword": "Nieuw wachtwoord",
     "confirmPassword": "Wachtwoord bevestigen",
     "resetButton": "Wachtwoord resetten",
+    "backToLogin": "Terug naar inloggen",
     "passwordMismatch": "Wachtwoorden komen niet overeen.",
     "resetSuccess": "Wachtwoord succesvol gereset!",
     "resetError": "Wachtwoord reset mislukt.",

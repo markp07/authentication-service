@@ -62,9 +62,11 @@
   },
   "resetPassword": {
     "title": "Reset Password",
+    "resetToken": "Reset Token",
     "newPassword": "New Password",
     "confirmPassword": "Confirm Password",
     "resetButton": "Reset Password",
+    "backToLogin": "Back to Login",
     "passwordMismatch": "Passwords do not match.",
     "resetSuccess": "Password reset successful!",
     "resetError": "Password reset failed.",

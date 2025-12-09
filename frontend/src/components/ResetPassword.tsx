@@ -64,7 +64,7 @@ export default function ResetPassword({ onBack, onLogin }: ResetPasswordProps) {
       {success && <div className="text-green-600 text-sm bg-green-100 rounded px-2 py-1">{success}</div>}
       <input
         type="text"
-        placeholder="Reset Token"
+        placeholder={t('resetToken')}
         className="border rounded px-3 py-2 bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
         required
         value={resetToken}
@@ -98,7 +98,7 @@ export default function ResetPassword({ onBack, onLogin }: ResetPasswordProps) {
           {tCommon('back')}
         </button>
         <button type="button" className="text-blue-600 hover:underline" onClick={onLogin}>
-          {t('title')}
+          {t('backToLogin')}
         </button>
       </div>
     </form>

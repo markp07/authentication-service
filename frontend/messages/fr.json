@@ -62,9 +62,11 @@
   },
   "resetPassword": {
     "title": "Réinitialiser le mot de passe",
+    "resetToken": "Jeton de réinitialisation",
     "newPassword": "Nouveau mot de passe",
     "confirmPassword": "Confirmer le mot de passe",
     "resetButton": "Réinitialiser le mot de passe",
+    "backToLogin": "Retour à la connexion",
     "passwordMismatch": "Les mots de passe ne correspondent pas.",
     "resetSuccess": "Mot de passe réinitialisé avec succès !",
     "resetError": "Échec de la réinitialisation du mot de passe.",
