@@ -1,0 +1,143 @@
+{
+  "common": {
+    "loading": "Laden...",
+    "error": "Fout",
+    "success": "Succes",
+    "cancel": "Annuleren",
+    "save": "Opslaan",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "close": "Sluiten",
+    "confirm": "Bevestigen",
+    "back": "Terug"
+  },
+  "sidebar": {
+    "welcome": "Welkom, {username}",
+    "dashboard": "Dashboard",
+    "profile": "Profiel",
+    "security": "Beveiliging",
+    "logout": "Uitloggen",
+    "language": "Taal"
+  },
+  "login": {
+    "title": "Inloggen",
+    "email": "E-mail",
+    "password": "Wachtwoord",
+    "loginButton": "Inloggen",
+    "forgotPassword": "Wachtwoord vergeten?",
+    "noAccount": "Nog geen account?",
+    "register": "Registreren",
+    "or": "of",
+    "usePasskey": "Gebruik Passkey",
+    "usePassword": "Gebruik Wachtwoord",
+    "twoFactorTitle": "Twee-factor Authenticatie",
+    "twoFactorPrompt": "Voer uw 6-cijferige code in",
+    "verify": "Verifiëren",
+    "loginSuccess": "Inloggen succesvol!",
+    "loginError": "Inloggen mislukt. Controleer uw inloggegevens.",
+    "networkError": "Netwerkfout. Probeer het opnieuw."
+  },
+  "register": {
+    "title": "Registreren",
+    "email": "E-mail",
+    "username": "Gebruikersnaam",
+    "password": "Wachtwoord",
+    "confirmPassword": "Wachtwoord bevestigen",
+    "registerButton": "Registreren",
+    "haveAccount": "Al een account?",
+    "login": "Inloggen",
+    "passwordMismatch": "Wachtwoorden komen niet overeen.",
+    "registerSuccess": "Registratie succesvol! U kunt nu inloggen.",
+    "registerError": "Registratie mislukt. Probeer het opnieuw.",
+    "networkError": "Netwerkfout."
+  },
+  "forgotPassword": {
+    "title": "Wachtwoord vergeten",
+    "email": "E-mail",
+    "sendResetLink": "Reset link versturen",
+    "backToLogin": "Terug naar inloggen",
+    "emailSent": "Reset link verzonden! Controleer uw e-mail.",
+    "emailError": "Verzenden van reset link mislukt.",
+    "networkError": "Netwerkfout."
+  },
+  "resetPassword": {
+    "title": "Wachtwoord resetten",
+    "newPassword": "Nieuw wachtwoord",
+    "confirmPassword": "Wachtwoord bevestigen",
+    "resetButton": "Wachtwoord resetten",
+    "passwordMismatch": "Wachtwoorden komen niet overeen.",
+    "resetSuccess": "Wachtwoord succesvol gereset!",
+    "resetError": "Wachtwoord reset mislukt.",
+    "networkError": "Netwerkfout."
+  },
+  "dashboard": {
+    "title": "Weer Dashboard",
+    "currentLocation": "Huidige locatie",
+    "hourlyForecast": "Uurlijkse voorspelling",
+    "dailyForecast": "14-daagse voorspelling",
+    "now": "Nu",
+    "today": "Vandaag",
+    "loadingWeather": "Weergegevens laden...",
+    "locationError": "Kan locatie niet ophalen.",
+    "weatherError": "Weer laden mislukt.",
+    "temperature": "Temperatuur",
+    "wind": "Wind",
+    "precipitation": "Neerslag",
+    "precipitationProbability": "Kans op regen"
+  },
+  "profile": {
+    "title": "Profiel",
+    "username": "Gebruikersnaam",
+    "email": "E-mail",
+    "changeUsername": "Gebruikersnaam wijzigen",
+    "deleteAccount": "Account verwijderen",
+    "deleteAccountConfirm": "Weet u zeker dat u uw account wilt verwijderen?",
+    "deleteAccountWarning": "Deze actie kan niet ongedaan worden gemaakt.",
+    "accountDeleted": "Account succesvol verwijderd.",
+    "updateSuccess": "Profiel succesvol bijgewerkt.",
+    "updateError": "Profiel bijwerken mislukt."
+  },
+  "security": {
+    "title": "Beveiliging",
+    "changePassword": "Wachtwoord wijzigen",
+    "currentPassword": "Huidig wachtwoord",
+    "newPassword": "Nieuw wachtwoord",
+    "confirmPassword": "Wachtwoord bevestigen",
+    "passwordChanged": "Wachtwoord succesvol gewijzigd.",
+    "passwordError": "Wachtwoord wijzigen mislukt.",
+    "twoFactor": "Twee-factor Authenticatie",
+    "twoFactorEnabled": "2FA is ingeschakeld",
+    "twoFactorDisabled": "2FA is uitgeschakeld",
+    "enable2FA": "2FA inschakelen",
+    "disable2FA": "2FA uitschakelen",
+    "setup2FA": "2FA instellen",
+    "passkeys": "Passkeys",
+    "passkeysList": "Geregistreerde Passkeys",
+    "addPasskey": "Passkey toevoegen",
+    "removePasskey": "Passkey verwijderen"
+  },
+  "modal": {
+    "close": "Sluiten",
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "delete": "Verwijderen",
+    "confirm": "Bevestigen"
+  },
+  "weather": {
+    "clear": "Helder",
+    "cloudy": "Bewolkt",
+    "partlyCloudy": "Deels bewolkt",
+    "overcast": "Zwaar bewolkt",
+    "fog": "Mist",
+    "drizzle": "Motregen",
+    "rain": "Regen",
+    "snow": "Sneeuw",
+    "thunderstorm": "Onweer"
+  },
+  "languages": {
+    "en": "Engels",
+    "nl": "Nederlands",
+    "de": "Duits",
+    "fr": "Frans"
+  }
+}

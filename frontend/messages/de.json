@@ -1,0 +1,143 @@
+{
+  "common": {
+    "loading": "Laden...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "close": "Schließen",
+    "confirm": "Bestätigen",
+    "back": "Zurück"
+  },
+  "sidebar": {
+    "welcome": "Willkommen, {username}",
+    "dashboard": "Dashboard",
+    "profile": "Profil",
+    "security": "Sicherheit",
+    "logout": "Abmelden",
+    "language": "Sprache"
+  },
+  "login": {
+    "title": "Anmelden",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "loginButton": "Anmelden",
+    "forgotPassword": "Passwort vergessen?",
+    "noAccount": "Noch kein Konto?",
+    "register": "Registrieren",
+    "or": "oder",
+    "usePasskey": "Passkey verwenden",
+    "usePassword": "Passwort verwenden",
+    "twoFactorTitle": "Zwei-Faktor-Authentifizierung",
+    "twoFactorPrompt": "Geben Sie Ihren 6-stelligen Code ein",
+    "verify": "Überprüfen",
+    "loginSuccess": "Anmeldung erfolgreich!",
+    "loginError": "Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Anmeldedaten.",
+    "networkError": "Netzwerkfehler. Bitte versuchen Sie es erneut."
+  },
+  "register": {
+    "title": "Registrieren",
+    "email": "E-Mail",
+    "username": "Benutzername",
+    "password": "Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "registerButton": "Registrieren",
+    "haveAccount": "Bereits ein Konto?",
+    "login": "Anmelden",
+    "passwordMismatch": "Passwörter stimmen nicht überein.",
+    "registerSuccess": "Registrierung erfolgreich! Sie können sich jetzt anmelden.",
+    "registerError": "Registrierung fehlgeschlagen. Versuchen Sie es erneut.",
+    "networkError": "Netzwerkfehler."
+  },
+  "forgotPassword": {
+    "title": "Passwort vergessen",
+    "email": "E-Mail",
+    "sendResetLink": "Reset-Link senden",
+    "backToLogin": "Zurück zur Anmeldung",
+    "emailSent": "Reset-Link gesendet! Überprüfen Sie Ihre E-Mail.",
+    "emailError": "Senden des Reset-Links fehlgeschlagen.",
+    "networkError": "Netzwerkfehler."
+  },
+  "resetPassword": {
+    "title": "Passwort zurücksetzen",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "resetButton": "Passwort zurücksetzen",
+    "passwordMismatch": "Passwörter stimmen nicht überein.",
+    "resetSuccess": "Passwort erfolgreich zurückgesetzt!",
+    "resetError": "Passwort-Reset fehlgeschlagen.",
+    "networkError": "Netzwerkfehler."
+  },
+  "dashboard": {
+    "title": "Wetter Dashboard",
+    "currentLocation": "Aktueller Standort",
+    "hourlyForecast": "Stündliche Vorhersage",
+    "dailyForecast": "14-Tage-Vorhersage",
+    "now": "Jetzt",
+    "today": "Heute",
+    "loadingWeather": "Wetterdaten werden geladen...",
+    "locationError": "Standort konnte nicht abgerufen werden.",
+    "weatherError": "Wetter konnte nicht geladen werden.",
+    "temperature": "Temperatur",
+    "wind": "Wind",
+    "precipitation": "Niederschlag",
+    "precipitationProbability": "Regenwahrscheinlichkeit"
+  },
+  "profile": {
+    "title": "Profil",
+    "username": "Benutzername",
+    "email": "E-Mail",
+    "changeUsername": "Benutzername ändern",
+    "deleteAccount": "Konto löschen",
+    "deleteAccountConfirm": "Sind Sie sicher, dass Sie Ihr Konto löschen möchten?",
+    "deleteAccountWarning": "Diese Aktion kann nicht rückgängig gemacht werden.",
+    "accountDeleted": "Konto erfolgreich gelöscht.",
+    "updateSuccess": "Profil erfolgreich aktualisiert.",
+    "updateError": "Profil-Aktualisierung fehlgeschlagen."
+  },
+  "security": {
+    "title": "Sicherheit",
+    "changePassword": "Passwort ändern",
+    "currentPassword": "Aktuelles Passwort",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "passwordChanged": "Passwort erfolgreich geändert.",
+    "passwordError": "Passwort-Änderung fehlgeschlagen.",
+    "twoFactor": "Zwei-Faktor-Authentifizierung",
+    "twoFactorEnabled": "2FA ist aktiviert",
+    "twoFactorDisabled": "2FA ist deaktiviert",
+    "enable2FA": "2FA aktivieren",
+    "disable2FA": "2FA deaktivieren",
+    "setup2FA": "2FA einrichten",
+    "passkeys": "Passkeys",
+    "passkeysList": "Registrierte Passkeys",
+    "addPasskey": "Passkey hinzufügen",
+    "removePasskey": "Passkey entfernen"
+  },
+  "modal": {
+    "close": "Schließen",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "confirm": "Bestätigen"
+  },
+  "weather": {
+    "clear": "Klar",
+    "cloudy": "Bewölkt",
+    "partlyCloudy": "Teilweise bewölkt",
+    "overcast": "Bedeckt",
+    "fog": "Nebel",
+    "drizzle": "Nieselregen",
+    "rain": "Regen",
+    "snow": "Schnee",
+    "thunderstorm": "Gewitter"
+  },
+  "languages": {
+    "en": "Englisch",
+    "nl": "Niederländisch",
+    "de": "Deutsch",
+    "fr": "Französisch"
+  }
+}

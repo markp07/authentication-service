@@ -1,0 +1,143 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "confirm": "Confirm",
+    "back": "Back"
+  },
+  "sidebar": {
+    "welcome": "Welcome, {username}",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "security": "Security",
+    "logout": "Log out",
+    "language": "Language"
+  },
+  "login": {
+    "title": "Login",
+    "email": "Email",
+    "password": "Password",
+    "loginButton": "Login",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "Don't have an account?",
+    "register": "Register",
+    "or": "or",
+    "usePasskey": "Use Passkey",
+    "usePassword": "Use Password",
+    "twoFactorTitle": "Two-Factor Authentication",
+    "twoFactorPrompt": "Enter your 6-digit code",
+    "verify": "Verify",
+    "loginSuccess": "Login successful!",
+    "loginError": "Login failed. Please check your credentials.",
+    "networkError": "Network error. Please try again."
+  },
+  "register": {
+    "title": "Register",
+    "email": "Email",
+    "username": "Username",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "registerButton": "Register",
+    "haveAccount": "Already have an account?",
+    "login": "Login",
+    "passwordMismatch": "Passwords do not match.",
+    "registerSuccess": "Registration successful! You can now log in.",
+    "registerError": "Registration failed. Try again.",
+    "networkError": "Network error."
+  },
+  "forgotPassword": {
+    "title": "Forgot Password",
+    "email": "Email",
+    "sendResetLink": "Send Reset Link",
+    "backToLogin": "Back to Login",
+    "emailSent": "Reset link sent! Check your email.",
+    "emailError": "Failed to send reset link.",
+    "networkError": "Network error."
+  },
+  "resetPassword": {
+    "title": "Reset Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "resetButton": "Reset Password",
+    "passwordMismatch": "Passwords do not match.",
+    "resetSuccess": "Password reset successful!",
+    "resetError": "Password reset failed.",
+    "networkError": "Network error."
+  },
+  "dashboard": {
+    "title": "Weather Dashboard",
+    "currentLocation": "Current Location",
+    "hourlyForecast": "Hourly Forecast",
+    "dailyForecast": "14-Day Forecast",
+    "now": "Now",
+    "today": "Today",
+    "loadingWeather": "Loading weather data...",
+    "locationError": "Could not get location.",
+    "weatherError": "Failed to load weather.",
+    "temperature": "Temperature",
+    "wind": "Wind",
+    "precipitation": "Precipitation",
+    "precipitationProbability": "Rain Probability"
+  },
+  "profile": {
+    "title": "Profile",
+    "username": "Username",
+    "email": "Email",
+    "changeUsername": "Change Username",
+    "deleteAccount": "Delete Account",
+    "deleteAccountConfirm": "Are you sure you want to delete your account?",
+    "deleteAccountWarning": "This action cannot be undone.",
+    "accountDeleted": "Account deleted successfully.",
+    "updateSuccess": "Profile updated successfully.",
+    "updateError": "Failed to update profile."
+  },
+  "security": {
+    "title": "Security",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm Password",
+    "passwordChanged": "Password changed successfully.",
+    "passwordError": "Failed to change password.",
+    "twoFactor": "Two-Factor Authentication",
+    "twoFactorEnabled": "2FA is enabled",
+    "twoFactorDisabled": "2FA is disabled",
+    "enable2FA": "Enable 2FA",
+    "disable2FA": "Disable 2FA",
+    "setup2FA": "Setup 2FA",
+    "passkeys": "Passkeys",
+    "passkeysList": "Registered Passkeys",
+    "addPasskey": "Add Passkey",
+    "removePasskey": "Remove Passkey"
+  },
+  "modal": {
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm": "Confirm"
+  },
+  "weather": {
+    "clear": "Clear",
+    "cloudy": "Cloudy",
+    "partlyCloudy": "Partly Cloudy",
+    "overcast": "Overcast",
+    "fog": "Fog",
+    "drizzle": "Drizzle",
+    "rain": "Rain",
+    "snow": "Snow",
+    "thunderstorm": "Thunderstorm"
+  },
+  "languages": {
+    "en": "English",
+    "nl": "Dutch",
+    "de": "German",
+    "fr": "French"
+  }
+}
