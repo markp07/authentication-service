@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslations } from 'next-intl';
 import { AUTH_API_BASE, fetchWithAuthRetry } from "../utils/api";
 import { User } from "../types/User";
 import { IconUser, IconMail, IconEdit, IconCheck, IconX, IconTrash, IconCalendar, IconSend, IconLink } from "@tabler/icons-react";
@@ -10,6 +11,7 @@ interface ProfilePageProps {
 }
 
 export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePageProps) {
+  const t = useTranslations('profile');
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -34,10 +36,10 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
           setUser(userData);
           setUserName(userData.userName || "");
         } else {
-          setError("Failed to load user profile.");
+          setError(t('failedToLoad'));
         }
       } catch {
-        setError("Network error.");
+        setError(t('networkError'));
       }
       setLoading(false);
     }
@@ -48,7 +50,7 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
     setUserNameError(null);
     setUserNameSuccess(null);
     if (!userName.trim()) {
-      setUserNameError("Username cannot be empty.");
+      setUserNameError(t('usernameEmpty'));
       return;
     }
     setSaving(true);
@@ -59,13 +61,13 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
         body: JSON.stringify({ userName }),
       });
       if (res.ok) {
-        setUserNameSuccess("Username updated successfully.");
+        setUserNameSuccess(t('usernameUpdateSuccess'));
         setEditing(false);
         if (user) {
           setUser({ ...user, userName } as User);
         }
       } else {
-        setUserNameError("Failed to update username.");
+        setUserNameError(t('usernameUpdateError'));
       }
     } catch {
       setUserNameError("Network error.");
@@ -82,12 +84,12 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
         method: "POST",
       });
       if (res.ok) {
-        setVerificationMessage("Verification email sent! Please check your inbox.");
+        setVerificationMessage(t('verificationSent'));
         setVerificationEmailSent(true);
       } else if (res.status === 429) {
-        setVerificationError("Please wait before requesting another verification email (max 1 per hour).");
+        setVerificationError(t('verificationRateLimit'));
       } else {
-        setVerificationError("Failed to send verification email.");
+        setVerificationError(t('verificationError'));
       }
     } catch {
       setVerificationError("Network error.");
@@ -114,14 +116,14 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
   }
 
   const formatDate = (dateString?: string) => {
-    if (!dateString) return "N/A";
+    if (!dateString) return t('notAvailable');
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+    return date.toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' });
   };
 
   return (
     <div className="p-6 space-y-6 max-w-4xl">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Profile</h1>
+      <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('title')}</h1>
 
       {/* User Header Card */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
@@ -156,14 +158,14 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Username
+                {t('username')}
               </label>
               <input
                 type="text"
                 value={userName}
                 onChange={(e) => setUserName(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                placeholder="Enter new username"
+                placeholder={t('enterNewUsername')}
               />
             </div>
             {userNameError && (
@@ -179,7 +181,7 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
                 className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
               >
                 <IconCheck size={18} />
-                {saving ? "Saving..." : "Save"}
+                {saving ? t('saving') : t('save')}
               </button>
               <button
                 onClick={() => {
@@ -192,7 +194,7 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
                 className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium transition-colors"
               >
                 <IconX size={18} />
-                Cancel
+                {t('cancel')}
               </button>
             </div>
           </div>
