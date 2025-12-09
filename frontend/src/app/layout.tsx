@@ -26,6 +26,8 @@ export default async function RootLayout({
   try {
     messages = (await import(`../../messages/${locale}.json`)).default;
   } catch (error) {
+    // Fallback to English if locale messages are not found
+    console.warn(`Failed to load messages for locale '${locale}', falling back to English`, error);
     messages = (await import(`../../messages/en.json`)).default;
   }
 

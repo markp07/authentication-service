@@ -23,6 +23,7 @@ export function setLocale(locale: Locale): void {
   expires.setFullYear(expires.getFullYear() + 1);
   document.cookie = `NEXT_LOCALE=${locale}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
   
-  // Reload to apply the new locale
+  // Full page reload is required because next-intl loads messages server-side
+  // The locale needs to be available during SSR for proper hydration
   window.location.reload();
 }

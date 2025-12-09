@@ -1,14 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { getLocale, setLocale, locales, type Locale } from '../i18n/client';
 import { IconWorld } from '@tabler/icons-react';
 
 export default function LanguageSelector() {
   const t = useTranslations('languages');
-  const [currentLocale, setCurrentLocale] = useState<Locale>(getLocale());
+  const [currentLocale, setCurrentLocale] = useState<Locale>('en');
   const [isOpen, setIsOpen] = useState(false);
+
+  // Get locale from cookie on mount
+  useEffect(() => {
+    setCurrentLocale(getLocale());
+  }, []);
 
   const handleLocaleChange = (locale: Locale) => {
     setCurrentLocale(locale);
