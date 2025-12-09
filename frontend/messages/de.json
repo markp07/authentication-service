@@ -11,6 +11,15 @@
     "confirm": "Bestätigen",
     "back": "Zurück"
   },
+  "pageTitle": {
+    "login": "Anmelden - Wetter",
+    "register": "Registrieren - Wetter",
+    "forgotPassword": "Passwort Vergessen - Wetter",
+    "resetPassword": "Passwort Zurücksetzen - Wetter",
+    "dashboard": "Wetter Dashboard",
+    "profile": "Profil - Wetter",
+    "security": "Sicherheit - Wetter"
+  },
   "sidebar": {
     "welcome": "Willkommen, {username}",
     "dashboard": "Dashboard",
@@ -21,6 +30,7 @@
   },
   "login": {
     "title": "Anmelden",
+    "chooseMethod": "Wählen Sie Ihre Anmeldemethode",
     "email": "E-Mail",
     "password": "Passwort",
     "loginButton": "Anmelden",

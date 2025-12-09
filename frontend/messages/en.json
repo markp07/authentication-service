@@ -11,6 +11,15 @@
     "confirm": "Confirm",
     "back": "Back"
   },
+  "pageTitle": {
+    "login": "Login - Weather",
+    "register": "Register - Weather",
+    "forgotPassword": "Forgot Password - Weather",
+    "resetPassword": "Reset Password - Weather",
+    "dashboard": "Weather Dashboard",
+    "profile": "Profile - Weather",
+    "security": "Security - Weather"
+  },
   "sidebar": {
     "welcome": "Welcome, {username}",
     "dashboard": "Dashboard",
@@ -21,6 +30,7 @@
   },
   "login": {
     "title": "Login",
+    "chooseMethod": "Choose your login method",
     "email": "Email",
     "password": "Password",
     "loginButton": "Login",

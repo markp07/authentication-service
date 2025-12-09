@@ -2,6 +2,7 @@
 
 import React, { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from 'next-intl';
 import ForgotPassword from "../../components/ForgotPassword";
 import PublicLanguageSelector from "../../components/PublicLanguageSelector";
 
@@ -13,7 +14,13 @@ const AUTH_API_BASE = isDev
 function ForgotPasswordPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations('pageTitle');
   const [checkingAuth, setCheckingAuth] = React.useState(true);
+
+  // Update document title based on selected language
+  useEffect(() => {
+    document.title = t('forgotPassword');
+  }, [t]);
 
   useEffect(() => {
     // Check if already logged in

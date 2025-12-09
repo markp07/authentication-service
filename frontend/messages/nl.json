@@ -11,6 +11,15 @@
     "confirm": "Bevestigen",
     "back": "Terug"
   },
+  "pageTitle": {
+    "login": "Inloggen - Weer",
+    "register": "Registreren - Weer",
+    "forgotPassword": "Wachtwoord Vergeten - Weer",
+    "resetPassword": "Wachtwoord Resetten - Weer",
+    "dashboard": "Weer Dashboard",
+    "profile": "Profiel - Weer",
+    "security": "Beveiliging - Weer"
+  },
   "sidebar": {
     "welcome": "Welkom, {username}",
     "dashboard": "Dashboard",
@@ -21,6 +30,7 @@
   },
   "login": {
     "title": "Inloggen",
+    "chooseMethod": "Kies uw inlogmethode",
     "email": "E-mail",
     "password": "Wachtwoord",
     "loginButton": "Inloggen",

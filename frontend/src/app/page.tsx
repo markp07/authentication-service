@@ -51,6 +51,7 @@ export default function Home() {
   const router = useRouter();
   const t = useTranslations('dashboard');
   const tCommon = useTranslations('common');
+  const tTitle = useTranslations('pageTitle');
   const [showWeather, setShowWeather] = React.useState(false);
   const [weatherError, setWeatherError] = React.useState<string | null>(null);
   const [weather, setWeather] = React.useState<Weather | null>(null);
@@ -70,6 +71,10 @@ export default function Home() {
   const [selectedLocationId, setSelectedLocationId] = React.useState<number | null>(null); // null = current location
   const [displayWeather, setDisplayWeather] = React.useState<Weather | null>(null);
 
+  // Update document title based on selected language
+  React.useEffect(() => {
+    document.title = tTitle('dashboard');
+  }, [tTitle]);
 
   React.useEffect(() => {
     async function checkLogin() {

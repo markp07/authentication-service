@@ -236,7 +236,7 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
       {/* Start Screen - Choose login method */}
       {step === 'start' && (
         <div className="flex flex-col gap-4">
-          <p className="text-gray-600 dark:text-gray-300 text-center">Choose your login method</p>
+          <p className="text-gray-600 dark:text-gray-300 text-center">{t('chooseMethod')}</p>
 
           <button
             type="button"

@@ -11,6 +11,15 @@
     "confirm": "Confirmer",
     "back": "Retour"
   },
+  "pageTitle": {
+    "login": "Connexion - Météo",
+    "register": "Inscription - Météo",
+    "forgotPassword": "Mot de Passe Oublié - Météo",
+    "resetPassword": "Réinitialiser le Mot de Passe - Météo",
+    "dashboard": "Tableau de Bord Météo",
+    "profile": "Profil - Météo",
+    "security": "Sécurité - Météo"
+  },
   "sidebar": {
     "welcome": "Bienvenue, {username}",
     "dashboard": "Tableau de bord",
@@ -21,6 +30,7 @@
   },
   "login": {
     "title": "Connexion",
+    "chooseMethod": "Choisissez votre méthode de connexion",
     "email": "Email",
     "password": "Mot de passe",
     "loginButton": "Se connecter",
