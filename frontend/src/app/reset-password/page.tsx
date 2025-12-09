@@ -3,6 +3,7 @@
 import React, { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ResetPassword from "../../components/ResetPassword";
+import PublicLanguageSelector from "../../components/PublicLanguageSelector";
 
 const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
 const AUTH_API_BASE = isDev
@@ -54,6 +55,7 @@ function ResetPasswordPageContent() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full bg-gray-50 dark:bg-gray-900 p-4">
+      <PublicLanguageSelector />
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-6 min-w-[320px] w-full max-w-md">
         <ResetPassword
           onBack={handleBack}
