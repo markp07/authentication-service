@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { getLocale, setLocale, locales, type Locale } from '../i18n/client';
-import { IconWorld } from '@tabler/icons-react';
+import { IconWorld, IconChevronDown } from '@tabler/icons-react';
 
 export default function PublicLanguageSelector() {
   const t = useTranslations('languages');
@@ -41,6 +41,7 @@ export default function PublicLanguageSelector() {
         >
           <IconWorld size={20} />
           <span className="font-medium text-sm">{t(currentLocale)}</span>
+          <IconChevronDown size={16} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
         </button>
 
         {isOpen && (

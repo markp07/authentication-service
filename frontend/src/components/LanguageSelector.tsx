@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { getLocale, setLocale, locales, type Locale } from '../i18n/client';
-import { IconWorld } from '@tabler/icons-react';
+import { IconWorld, IconChevronDown } from '@tabler/icons-react';
 
 export default function LanguageSelector() {
   const t = useTranslations('languages');
@@ -29,7 +29,8 @@ export default function LanguageSelector() {
         aria-label="Select language"
       >
         <IconWorld size={20} />
-        <span className="font-medium">{t(currentLocale)}</span>
+        <span className="flex-1 font-medium text-left">{t(currentLocale)}</span>
+        <IconChevronDown size={16} className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (

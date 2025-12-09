@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { NextIntlClientProvider } from 'next-intl';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { locales, defaultLocale, type Locale } from '../i18n/config';
 
 export const metadata: Metadata = {
@@ -9,10 +9,45 @@ export const metadata: Metadata = {
   description: "A modern weather app with authentication and user profile.",
 };
 
+function getBrowserLocaleFromHeaders(headersList: Headers): Locale {
+  const acceptLanguage = headersList.get('accept-language');
+  
+  if (acceptLanguage) {
+    // Parse Accept-Language header (e.g., "en-US,en;q=0.9,nl;q=0.8")
+    const languages = acceptLanguage
+      .split(',')
+      .map(lang => {
+        const [code, q] = lang.trim().split(';q=');
+        return {
+          code: code.split('-')[0].toLowerCase(),
+          quality: q ? parseFloat(q) : 1.0
+        };
+      })
+      .sort((a, b) => b.quality - a.quality);
+    
+    // Find the first supported language
+    for (const { code } of languages) {
+      if (locales.includes(code as Locale)) {
+        return code as Locale;
+      }
+    }
+  }
+  
+  return defaultLocale;
+}
+
 async function getLocale(): Promise<Locale> {
   const cookieStore = await cookies();
-  const locale = cookieStore.get('NEXT_LOCALE')?.value;
-  return (locales.includes(locale as Locale) ? locale : defaultLocale) as Locale;
+  const cookieLocale = cookieStore.get('NEXT_LOCALE')?.value;
+  
+  // If user has selected a language (cookie exists), use that
+  if (cookieLocale && locales.includes(cookieLocale as Locale)) {
+    return cookieLocale as Locale;
+  }
+  
+  // Otherwise, detect from browser
+  const headersList = await headers();
+  return getBrowserLocaleFromHeaders(headersList);
 }
 
 export default async function RootLayout({
