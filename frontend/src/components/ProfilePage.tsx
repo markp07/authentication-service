@@ -70,7 +70,7 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
         setUserNameError(t('usernameUpdateError'));
       }
     } catch {
-      setUserNameError("Network error.");
+      setUserNameError(t('networkError'));
     }
     setSaving(false);
   }
@@ -92,7 +92,7 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
         setVerificationError(t('verificationError'));
       }
     } catch {
-      setVerificationError("Network error.");
+      setVerificationError(t('networkError'));
     }
     setResendingVerification(false);
   }
