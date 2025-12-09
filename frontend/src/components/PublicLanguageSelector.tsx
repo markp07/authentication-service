@@ -21,11 +21,21 @@ export default function PublicLanguageSelector() {
     setIsOpen(false);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      setIsOpen(false);
+    }
+  };
+
   return (
     <div className="fixed top-4 right-4 z-50">
       <div className="relative">
         <button
+          id="language-selector-button"
           onClick={() => setIsOpen(!isOpen)}
+          onKeyDown={handleKeyDown}
+          aria-expanded={isOpen}
+          aria-haspopup="true"
           className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 shadow-lg border border-gray-200 dark:border-gray-700 transition-all duration-200"
           aria-label="Select language"
         >
@@ -39,14 +49,21 @@ export default function PublicLanguageSelector() {
             <div
               className="fixed inset-0 z-40"
               onClick={() => setIsOpen(false)}
+              onKeyDown={handleKeyDown}
             />
             
             {/* Dropdown */}
-            <div className="absolute top-full right-0 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden z-50 min-w-[140px]">
+            <div 
+              role="menu"
+              aria-labelledby="language-selector-button"
+              className="absolute top-full right-0 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden z-50 min-w-[140px]"
+            >
               {locales.map((locale) => (
                 <button
                   key={locale}
+                  role="menuitem"
                   onClick={() => handleLocaleChange(locale)}
+                  onKeyDown={handleKeyDown}
                   className={`w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
                     currentLocale === locale
                       ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 font-medium'
