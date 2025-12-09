@@ -7,8 +7,11 @@ export { locales, defaultLocale, type Locale };
 function getBrowserLocale(): Locale {
   if (typeof window === 'undefined') return defaultLocale;
   
-  // Get browser language
-  const browserLang = navigator.language || (navigator as any).userLanguage;
+  // Get browser language - check both standard and legacy properties
+  const browserLang = navigator.language || 
+    ('userLanguage' in navigator ? (navigator as { userLanguage: string }).userLanguage : '');
+  
+  if (!browserLang) return defaultLocale;
   
   // Extract the language code (e.g., 'en-US' -> 'en', 'nl-NL' -> 'nl')
   const langCode = browserLang.split('-')[0].toLowerCase();

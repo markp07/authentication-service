@@ -18,9 +18,11 @@ function getBrowserLocaleFromHeaders(headersList: Headers): Locale {
       .split(',')
       .map(lang => {
         const [code, q] = lang.trim().split(';q=');
+        const quality = q ? parseFloat(q) : 1.0;
         return {
           code: code.split('-')[0].toLowerCase(),
-          quality: q ? parseFloat(q) : 1.0
+          // Validate quality value, default to 0 if invalid
+          quality: !isNaN(quality) && quality >= 0 && quality <= 1 ? quality : 0
         };
       })
       .sort((a, b) => b.quality - a.quality);
