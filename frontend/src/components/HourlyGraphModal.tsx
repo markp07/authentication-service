@@ -1,8 +1,10 @@
 import React from "react";
+import { useTranslations } from 'next-intl';
 import { IconTemperature, IconDroplet, IconWind, IconArrowUp, IconArrowUpRight, IconArrowRight, IconArrowDownRight, IconArrowDown, IconArrowDownLeft, IconArrowLeft, IconArrowUpLeft } from "@tabler/icons-react";
 import type { Hourly } from "../types/Hourly";
 import type { Daily } from "../types/Daily";
 import { weatherCodeMap, isNightTime } from "../types/WeatherCodeMap";
+import { weatherCodeToTranslationKey } from "../utils/weatherTranslations";
 
 interface HourlyGraphModalProps {
   open: boolean;
@@ -24,6 +26,7 @@ export default function HourlyGraphModal({
   hourlyData,
   dailyData,
 }: HourlyGraphModalProps) {
+  const tWeather = useTranslations('weather');
   const [dataType, setDataType] = React.useState<DataType>("temperature");
   const [containerWidth, setContainerWidth] = React.useState(800);
   const [scrollPosition, setScrollPosition] = React.useState(0);
@@ -409,7 +412,9 @@ export default function HourlyGraphModal({
                             transform: 'translateX(-50%)',
                             top: '0'
                           }}
-                          title={weatherCodeMap[h.weatherCode]?.label || h.weatherCode}
+                          title={weatherCodeToTranslationKey[h.weatherCode] 
+                            ? tWeather(weatherCodeToTranslationKey[h.weatherCode])
+                            : (weatherCodeMap[h.weatherCode]?.label || h.weatherCode)}
                         >
                           {getWeatherIcon(h, iconSize)}
                         </div>

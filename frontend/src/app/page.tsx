@@ -13,6 +13,7 @@ import type { Weather } from "../types/Weather";
 import type { Location } from "../types/Location";
 import { weatherCodeMap, isNightTime } from "../types/WeatherCodeMap";
 import { fetchWithRetry } from "../utils/retry";
+import { weatherCodeToTranslationKey, dayNumberToTranslationKey } from "../utils/weatherTranslations";
 
 const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
 const AUTH_API_BASE = isDev
@@ -25,9 +26,6 @@ const WEATHER_API_BASE = isDev
 function getWeatherIcon(code: string, size = 32, currentTime?: string, sunRise?: string, sunSet?: string) {
   const isNight = currentTime && sunRise && sunSet ? isNightTime(currentTime, sunRise, sunSet) : false;
   return weatherCodeMap[code]?.icon(size, isNight) || <Sun size={size} />;
-}
-function getWeatherLabel(code: string) {
-  return weatherCodeMap[code]?.label || code;
 }
 function getWindDirectionIcon(direction: string, size = 22) {
   const iconMap: { [key: string]: any } = {
@@ -52,6 +50,8 @@ export default function Home() {
   const t = useTranslations('dashboard');
   const tCommon = useTranslations('common');
   const tTitle = useTranslations('pageTitle');
+  const tWeather = useTranslations('weather');
+  const tDays = useTranslations('days');
   const [showWeather, setShowWeather] = React.useState(false);
   const [weatherError, setWeatherError] = React.useState<string | null>(null);
   const [weather, setWeather] = React.useState<Weather | null>(null);
@@ -338,7 +338,11 @@ export default function Home() {
                             {selectedLocationId === null && <Crosshair size={24} className="text-white" />}
                           </div>
                           <div className="text-5xl sm:text-6xl font-extrabold my-3 sm:my-4">{Math.round(displayWeather.current.temperature)}°C</div>
-                          <div className="text-lg sm:text-xl font-medium opacity-90 mb-2 sm:mb-3">{getWeatherLabel(displayWeather.current.weatherCode)}</div>
+                          <div className="text-lg sm:text-xl font-medium opacity-90 mb-2 sm:mb-3">
+                            {weatherCodeToTranslationKey[displayWeather.current.weatherCode] 
+                              ? tWeather(weatherCodeToTranslationKey[displayWeather.current.weatherCode])
+                              : weatherCodeMap[displayWeather.current.weatherCode]?.label || displayWeather.current.weatherCode}
+                          </div>
                           <div className="flex items-center gap-3 sm:gap-4 text-sm opacity-90">
                             <div className="flex items-center gap-1.5 sm:gap-2">
                               <Wind size={18} />
@@ -405,10 +409,12 @@ export default function Home() {
                           // For daily forecast, use noon (12:00) to determine day/night
                           const noonTime = new Date(d.time);
                           noonTime.setHours(12, 0, 0, 0);
+                          const dayOfWeek = new Date(d.time).getDay();
+                          const dayKey = dayNumberToTranslationKey[dayOfWeek];
                           return (
                           <div key={i} className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                             <div className="flex-1 min-w-0 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
-                              {i === 0 ? t('today') : new Date(d.time).toLocaleDateString("en-GB", { weekday: "short" })}
+                              {i === 0 ? t('today') : tDays(dayKey)}
                             </div>
                             <div className="flex items-center justify-center w-8 sm:w-10 flex-shrink-0">
                               {getWeatherIcon(d.weatherCode, 28, noonTime.toISOString(), d.sunRise, d.sunSet)}
