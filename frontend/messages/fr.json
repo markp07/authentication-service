@@ -34,6 +34,7 @@
     "email": "Email",
     "password": "Mot de passe",
     "loginButton": "Se connecter",
+    "loginWithEmail": "Se connecter avec Email",
     "forgotPassword": "Mot de passe oublié ?",
     "noAccount": "Pas encore de compte ?",
     "register": "S'inscrire",

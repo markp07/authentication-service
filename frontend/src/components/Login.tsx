@@ -263,7 +263,7 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
             className="bg-blue-600 text-white rounded px-4 py-3 font-semibold hover:bg-blue-700 shadow"
             onClick={() => setStep('email')}
           >
-            Login with Email
+            {t('loginWithEmail')}
           </button>
 
           <div className="text-center mt-4">

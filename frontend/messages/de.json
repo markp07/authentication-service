@@ -34,6 +34,7 @@
     "email": "E-Mail",
     "password": "Passwort",
     "loginButton": "Anmelden",
+    "loginWithEmail": "Mit E-Mail anmelden",
     "forgotPassword": "Passwort vergessen?",
     "noAccount": "Noch kein Konto?",
     "register": "Registrieren",

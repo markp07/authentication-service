@@ -34,6 +34,7 @@
     "email": "E-mail",
     "password": "Wachtwoord",
     "loginButton": "Inloggen",
+    "loginWithEmail": "Inloggen met E-mail",
     "forgotPassword": "Wachtwoord vergeten?",
     "noAccount": "Nog geen account?",
     "register": "Registreren",
