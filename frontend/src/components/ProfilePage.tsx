@@ -152,7 +152,7 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
           <IconUser size={20} />
-          Profile
+          {t('profileInfo')}
         </h3>
         {editing ? (
           <div className="space-y-4">
@@ -203,7 +203,7 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
             <div className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-2">
                 <IconUser size={18} className="text-gray-500 dark:text-gray-400" />
-                <span className="text-gray-600 dark:text-gray-400">Username</span>
+                <span className="text-gray-600 dark:text-gray-400">{t('username')}</span>
               </div>
               <div className="flex items-center gap-3">
                 <span className="text-gray-900 dark:text-white font-medium">{user?.userName}</span>
@@ -212,21 +212,21 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
                   className="flex items-center gap-1 px-3 py-1 text-sm bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg font-medium transition-colors"
                 >
                   <IconEdit size={16} />
-                  Edit
+                  {t('edit')}
                 </button>
               </div>
             </div>
             <div className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-center gap-2">
                 <IconMail size={18} className="text-gray-500 dark:text-gray-400" />
-                <span className="text-gray-600 dark:text-gray-400">Email</span>
+                <span className="text-gray-600 dark:text-gray-400">{t('email')}</span>
               </div>
               <span className="text-gray-900 dark:text-white font-medium">{user?.email}</span>
             </div>
             <div className="flex items-center justify-between py-3">
               <div className="flex items-center gap-2">
                 <IconCalendar size={18} className="text-gray-500 dark:text-gray-400" />
-                <span className="text-gray-600 dark:text-gray-400">Created</span>
+                <span className="text-gray-600 dark:text-gray-400">{t('created')}</span>
               </div>
               <span className="text-gray-900 dark:text-white font-medium">{formatDate(user?.createdAt)}</span>
             </div>
@@ -236,17 +236,17 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
 
       {/* Account Status Card */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Account Status</h3>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('accountStatus')}</h3>
         <div className="space-y-3">
           <div className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-            <span className="text-gray-600 dark:text-gray-400">Email</span>
+            <span className="text-gray-600 dark:text-gray-400">{t('email')}</span>
             <div className="flex items-center gap-2">
               <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                 user?.emailVerified
                   ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
                   : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400"
               }`}>
-                {user?.emailVerified ? "Verified" : "Unverified"}
+                {user?.emailVerified ? t('verified') : t('unverified')}
               </span>
               {!user?.emailVerified && (
                 <button
@@ -255,7 +255,7 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
                   className="flex items-center gap-1 px-3 py-1 text-sm bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg font-medium transition-colors disabled:opacity-50"
                 >
                   <IconSend size={14} />
-                  {resendingVerification ? "Sending..." : "Resend"}
+                  {resendingVerification ? t('sending') : t('resendVerification')}
                 </button>
               )}
             </div>
@@ -273,28 +273,28 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
                 className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
               >
                 <IconLink size={14} />
-                Enter verification token manually
+                {t('enterVerificationManually')}
               </a>
             </div>
           )}
           <div className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-            <span className="text-gray-600 dark:text-gray-400">Two-Factor Authentication</span>
+            <span className="text-gray-600 dark:text-gray-400">{t('twoFactorAuth')}</span>
             <span className={`px-3 py-1 rounded-full text-sm font-medium ${
               user?.twoFactorEnabled
                 ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
                 : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
             }`}>
-              {user?.twoFactorEnabled ? "Enabled" : "Disabled"}
+              {user?.twoFactorEnabled ? t('enabled') : t('disabled')}
             </span>
           </div>
           <div className="flex items-center justify-between py-2">
-            <span className="text-gray-600 dark:text-gray-400">Passkey</span>
+            <span className="text-gray-600 dark:text-gray-400">{t('passkey')}</span>
             <span className={`px-3 py-1 rounded-full text-sm font-medium ${
               user?.passkeyEnabled
                 ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
                 : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
             }`}>
-              {user?.passkeyEnabled ? "Enabled" : "Disabled"}
+              {user?.passkeyEnabled ? t('enabled') : t('disabled')}
             </span>
           </div>
         </div>
@@ -302,16 +302,16 @@ export default function ProfilePage({ onSecurity, onDeleteAccount }: ProfilePage
 
       {/* Delete Account Section */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-        <h3 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">Danger Zone</h3>
+        <h3 className="text-lg font-semibold text-red-600 dark:text-red-400 mb-2">{t('dangerZone')}</h3>
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-          Once you delete your account, there is no going back. Please be certain.
+          {t('deleteAccountDescription')}
         </p>
         <button
           onClick={onDeleteAccount}
           className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors"
         >
           <IconTrash size={18} />
-          Delete Account
+          {t('deleteAccount')}
         </button>
       </div>
     </div>
