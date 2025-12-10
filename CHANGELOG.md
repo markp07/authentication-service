@@ -5,12 +5,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.6.8] - 2025-12-08
-
-### Changed
-- chore(npm)(deps): bump the npm-dependencies group (#84)
-
-## [1.6.7] - 2025-12-07
 ## [1.6.10] - 2025-12-09
 
 ### Changed
@@ -21,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - chore: update GitHub Actions configuration and add weekly schedule fo… (#86)
 
+## [1.6.8] - 2025-12-08
+
+### Changed
+- chore(npm)(deps): bump the npm-dependencies group (#84)
+
+## [1.6.7] - 2025-12-07
 
 ### Changed
 - Refactor location bar UI: uniform widths, text truncation, centralized edit modal, and unlimited locations (#82)
