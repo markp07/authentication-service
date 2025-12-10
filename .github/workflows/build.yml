@@ -27,15 +27,6 @@ jobs:
       - name: Build backend JARs
         run: mvn -B -T 1C clean package --fail-at-end --show-version -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn
 
-      - name: List produced backend artifacts
-        run: |
-          echo "Listing possible artifact locations"
-          ls -la target || true
-          ls -la authentication-service/target || true
-          ls -la common/target || true
-          ls -la weather-service/target || true
-          ls -la */target || true
-
       - name: Upload backend artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -70,17 +61,9 @@ jobs:
 
       - name: Upload frontend build
         uses: actions/upload-artifact@v4
-        # Make the upload relative to the frontend folder so artifact paths are simple
-        working-directory: frontend
         with:
           name: frontend-artifacts
-          # Next.js produces a .next folder (and optionally `out` for static export).
-          # Upload .next (and out if present) so downstream jobs can access the build output.
-          path: |
-            .next
-            .next/**
-            out
-          if-no-files-found: warn
+          path: frontend/build
 
   build-images:
     name: Build all images with docker compose
