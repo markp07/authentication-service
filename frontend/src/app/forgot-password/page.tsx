@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from 'next-intl';
 import ForgotPassword from "../../components/ForgotPassword";
 import PublicLanguageSelector from "../../components/PublicLanguageSelector";
+import { isValidCallback, getSafeCallback } from "../../utils/callbackValidation";
 
 const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
 const AUTH_API_BASE = isDev
@@ -29,8 +30,8 @@ function ForgotPasswordPageContent() {
         const res = await fetch(`${AUTH_API_BASE}/api/auth/v1/user`, { credentials: "include" });
         if (res.ok) {
           // Already logged in, redirect to callback or home
-          const callback = searchParams.get("callback") || "/";
-          router.push(callback);
+          const callback = searchParams.get("callback");
+          router.push(getSafeCallback(callback));
           return;
         }
       } catch {
@@ -43,12 +44,20 @@ function ForgotPasswordPageContent() {
 
   const handleBack = () => {
     const callback = searchParams.get("callback");
-    router.push(callback ? `/login?callback=${encodeURIComponent(callback)}` : "/login");
+    if (isValidCallback(callback)) {
+      router.push(`/login?callback=${encodeURIComponent(callback!)}`);
+    } else {
+      router.push("/login");
+    }
   };
 
   const handleReset = () => {
     const callback = searchParams.get("callback");
-    router.push(callback ? `/reset-password?callback=${encodeURIComponent(callback)}` : "/reset-password");
+    if (isValidCallback(callback)) {
+      router.push(`/reset-password?callback=${encodeURIComponent(callback!)}`);
+    } else {
+      router.push("/reset-password");
+    }
   };
 
   if (checkingAuth) {
