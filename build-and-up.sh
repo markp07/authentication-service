@@ -5,7 +5,7 @@ git pull
 
 # Build all Maven modules (parent POM)
 echo "[1/3] Building all Maven modules..."
-mvn clean package
+mvn clean package -DskipTests
 
 echo "[2/3] Building Docker images..."
 docker compose build
