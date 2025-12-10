@@ -14,10 +14,18 @@ public class CookieUtil {
     cookieSecure = secure;
   }
 
+  private static String cookieDomain;
+
+  @Value("${cookie.domain:markpost.dev}")
+  public void setDomain(String domain) {
+    cookieDomain = domain;
+  }
+
   public static Cookie buildCookie(String name, String value, int maxAge) {
     Cookie cookie = new Cookie(name, value);
     cookie.setHttpOnly(true);
     cookie.setSecure(cookieSecure);
+    cookie.setDomain(cookieDomain);
     cookie.setPath("/");
     cookie.setMaxAge(maxAge);
     return cookie;

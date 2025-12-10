@@ -78,6 +78,7 @@ email:
 
 cookie:
   secure: true
+  domain: "markpost.dev"
 
 webauthn:
   rp:
@@ -117,6 +118,7 @@ authentication:
 
 cookie:
   secure: false
+  domain: "localhost"
 
 webauthn:
   rp:
