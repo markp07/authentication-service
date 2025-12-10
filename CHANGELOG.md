@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - chore(github-actions)(deps): bump the github-actions group with 3 updates (#87)
 
 ## [1.6.9] - 2025-12-08
+## [1.7.0] - 2025-12-10
+
+### Changed
+- Adding multi language support - EN NL DE FR (#90)
+
 ## [1.6.11] - 2025-12-10
 
 ### Changed
