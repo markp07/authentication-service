@@ -58,6 +58,9 @@ jobs:
           # build first so `.next` is present even if tests later fail or are skipped
           npm run build
           npm run test
+          ls -la .next
+          pwd
+          ls -la ..
 
       - name: Upload frontend build
         uses: actions/upload-artifact@v4
