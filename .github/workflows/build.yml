@@ -31,9 +31,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: backend-artifacts
+          # Upload any jars/wars produced by submodules as well (glob)
           path: |
-            target/*.jar
-            target/*.war
+            **/target/*.jar
+            **/target/*.war
 
   build-frontend:
     name: Build frontend
@@ -60,7 +61,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: frontend-artifacts
-          path: frontend/build
+          # Next.js produces a .next folder (and optionally `out` for static export).
+          # Upload .next (and out if present) so downstream jobs can access the build output.
+          path: |
+            frontend/.next
+            frontend/.next/**
+            frontend/out
 
   build-images:
     name: Build all images with docker compose
