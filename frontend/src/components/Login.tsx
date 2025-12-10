@@ -1,4 +1,7 @@
+'use client';
+
 import React, { useState } from "react";
+import { useTranslations } from 'next-intl';
 
 interface LoginProps {
   onSuccess: () => void;
@@ -12,6 +15,8 @@ const AUTH_API_BASE = isDev
   : "https://demo.markpost.dev";
 
 export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
+  const t = useTranslations('login');
+  const tCommon = useTranslations('common');
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -50,10 +55,10 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
       } else if (res.status === 202 && data.code === "2FA_REQUIRED") {
         setStep('2fa');
       } else {
-        setError("Login failed. Check your credentials.");
+        setError(t('loginError'));
       }
     } catch {
-      setError("Network error.");
+      setError(t('networkError'));
     }
     setLoading(false);
   }
@@ -72,10 +77,10 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
       if (res.status === 200 && data.code === "LOGIN_SUCCESS") {
         onSuccess();
       } else {
-        setError("Invalid TOTP code. Try again.");
+        setError(t('loginError'));
       }
     } catch {
-      setError("Network error.");
+      setError(t('networkError'));
     }
     setLoading(false);
   }
@@ -224,14 +229,14 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-xl font-bold mb-2">Login</h2>
+      <h2 className="text-xl font-bold mb-2">{t('title')}</h2>
       {error && <div className="text-red-600 text-sm bg-red-100 rounded px-2 py-1">{error}</div>}
       {passkeyError && <div className="text-red-600 text-sm bg-red-100 rounded px-2 py-1">{passkeyError}</div>}
 
       {/* Start Screen - Choose login method */}
       {step === 'start' && (
         <div className="flex flex-col gap-4">
-          <p className="text-gray-600 dark:text-gray-300 text-center">Choose your login method</p>
+          <p className="text-gray-600 dark:text-gray-300 text-center">{t('chooseMethod')}</p>
 
           <button
             type="button"
@@ -239,17 +244,17 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
             onClick={handleUsernamelessPasskeyLogin}
             disabled={passkeyLoading}
           >
-            {passkeyLoading ? "Authenticating..." : (
+            {passkeyLoading ? tCommon('loading') : (
               <>
                 <span>🔑</span>
-                <span>Login with Passkey</span>
+                <span>{t('usePasskey')}</span>
               </>
             )}
           </button>
 
           <div className="flex items-center gap-4">
             <div className="flex-1 border-t border-gray-300"></div>
-            <span className="text-gray-500 text-sm">or</span>
+            <span className="text-gray-500 text-sm">{t('or')}</span>
             <div className="flex-1 border-t border-gray-300"></div>
           </div>
 
@@ -258,17 +263,17 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
             className="bg-blue-600 text-white rounded px-4 py-3 font-semibold hover:bg-blue-700 shadow"
             onClick={() => setStep('email')}
           >
-            Login with Email
+            {t('loginWithEmail')}
           </button>
 
           <div className="text-center mt-4">
-            <span className="text-gray-600 dark:text-gray-300">Don't have an account? </span>
+            <span className="text-gray-600 dark:text-gray-300">{t('noAccount')} </span>
             <button
               type="button"
               className="text-blue-600 hover:underline"
               onClick={onRegister}
             >
-              Register
+              {t('register')}
             </button>
           </div>
         </div>
@@ -283,13 +288,13 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
               className="text-blue-600 hover:underline text-sm"
               onClick={resetToStart}
             >
-              ← Back
+              ← {tCommon('back')}
             </button>
           </div>
 
           <input
             type="email"
-            placeholder="Enter your email address"
+            placeholder={t('email')}
             className="border rounded px-3 py-2 bg-blue-50 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
             value={email}
             onChange={e => setEmail(e.target.value)}
@@ -304,7 +309,7 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
               onClick={handleEmailPasskeyLogin}
               disabled={!email || passkeyLoading}
             >
-              {passkeyLoading ? "Authenticating..." : "Login with Passkey"}
+              {passkeyLoading ? tCommon('loading') : t('usePasskey')}
             </button>
 
             <button
@@ -323,7 +328,7 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
               className="text-blue-600 hover:underline text-sm"
               onClick={onForgot}
             >
-              Forgot Password?
+              {t('forgotPassword')}
             </button>
           </div>
         </form>
@@ -338,14 +343,14 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
               className="text-blue-600 hover:underline text-sm"
               onClick={() => setStep('email')}
             >
-              ← Back
+              ← {tCommon('back')}
             </button>
             <span className="text-gray-600 dark:text-gray-300 text-sm">{email}</span>
           </div>
 
           <input
             type="password"
-            placeholder="Enter your password"
+            placeholder={t('password')}
             className="border rounded px-3 py-2 bg-blue-50 dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
             value={password}
             onChange={e => setPassword(e.target.value)}
@@ -358,7 +363,7 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
             className="bg-blue-600 text-white rounded px-4 py-2 font-semibold hover:bg-blue-700 shadow disabled:opacity-50"
             disabled={loading || !password}
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? tCommon('loading') : t('loginButton')}
           </button>
 
           <div className="text-center">
@@ -367,7 +372,7 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
               className="text-blue-600 hover:underline text-sm"
               onClick={onForgot}
             >
-              Forgot Password?
+              {t('forgotPassword')}
             </button>
           </div>
         </form>
@@ -382,12 +387,12 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
               className="text-blue-600 hover:underline text-sm"
               onClick={() => setStep('password')}
             >
-              ← Back
+              ← {tCommon('back')}
             </button>
             <span className="text-gray-600 dark:text-gray-300 text-sm">{email}</span>
           </div>
 
-          <label htmlFor="totp-0" className="font-semibold">Enter your 2FA code:</label>
+          <label htmlFor="totp-0" className="font-semibold">{t('twoFactorPrompt')}</label>
           <div className="flex gap-2 justify-center">
             {Array.from({ length: 6 }, (_, index) => (
               <input
@@ -412,7 +417,7 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
             className="bg-blue-600 text-white rounded px-4 py-2 font-semibold hover:bg-blue-700 shadow disabled:opacity-50"
             disabled={loading || totpCode.some(digit => digit === '')}
           >
-            {loading ? "Verifying..." : "Verify"}
+            {loading ? tCommon('loading') : t('verify')}
           </button>
 
           <div className="text-center">

@@ -1,5 +1,9 @@
+'use client';
+
 import React from "react";
 import { IconHome, IconUser, IconShield, IconLogout, IconMenu2, IconX } from "@tabler/icons-react";
+import { useTranslations } from 'next-intl';
+import LanguageSelector from './LanguageSelector';
 
 interface SidebarProps {
   username: string | null;
@@ -9,12 +13,13 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ username, activePage, onNavigate, onLogout }: SidebarProps) {
+  const t = useTranslations('sidebar');
   const [isOpen, setIsOpen] = React.useState(false);
 
   const menuItems = [
-    { id: "dashboard" as const, label: "Dashboard", icon: IconHome },
-    { id: "profile" as const, label: "Profile", icon: IconUser },
-    { id: "security" as const, label: "Security", icon: IconShield },
+    { id: "dashboard" as const, label: t('dashboard'), icon: IconHome },
+    { id: "profile" as const, label: t('profile'), icon: IconUser },
+    { id: "security" as const, label: t('security'), icon: IconShield },
   ];
 
   return (
@@ -46,7 +51,7 @@ export default function Sidebar({ username, activePage, onNavigate, onLogout }: 
           {/* Header */}
           <div className="p-6 border-b border-gray-200 dark:border-gray-700">
             <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400">Weather</h1>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Welcome, {username || "User"}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{t('welcome', { username: username || 'User' })}</p>
             <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
               v{process.env.NEXT_PUBLIC_APP_VERSION || '0.0.0'} • {new Date(process.env.NEXT_PUBLIC_BUILD_TIME || Date.now()).toLocaleString()}
             </p>
@@ -78,13 +83,14 @@ export default function Sidebar({ username, activePage, onNavigate, onLogout }: 
           </nav>
 
           {/* Footer */}
-          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
+            <LanguageSelector />
             <button
               onClick={onLogout}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all duration-200"
             >
               <IconLogout size={20} />
-              <span className="font-medium">Log out</span>
+              <span className="font-medium">{t('logout')}</span>
             </button>
           </div>
         </div>

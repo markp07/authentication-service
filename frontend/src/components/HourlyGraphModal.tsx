@@ -1,8 +1,10 @@
 import React from "react";
+import { useTranslations } from 'next-intl';
 import { IconTemperature, IconDroplet, IconWind, IconArrowUp, IconArrowUpRight, IconArrowRight, IconArrowDownRight, IconArrowDown, IconArrowDownLeft, IconArrowLeft, IconArrowUpLeft } from "@tabler/icons-react";
 import type { Hourly } from "../types/Hourly";
 import type { Daily } from "../types/Daily";
 import { weatherCodeMap, isNightTime } from "../types/WeatherCodeMap";
+import { weatherCodeToTranslationKey } from "../utils/weatherTranslations";
 
 interface HourlyGraphModalProps {
   open: boolean;
@@ -24,6 +26,8 @@ export default function HourlyGraphModal({
   hourlyData,
   dailyData,
 }: HourlyGraphModalProps) {
+  const tWeather = useTranslations('weather');
+  const t = useTranslations('hourlyGraphModal');
   const [dataType, setDataType] = React.useState<DataType>("temperature");
   const [containerWidth, setContainerWidth] = React.useState(800);
   const [scrollPosition, setScrollPosition] = React.useState(0);
@@ -127,11 +131,11 @@ export default function HourlyGraphModal({
   const getLabel = () => {
     switch (dataType) {
       case "temperature":
-        return "Temperature (°C)";
+        return t('temperatureUnit');
       case "precipitation":
-        return "Precipitation (mm)";
+        return t('precipitationUnit');
       case "wind":
-        return "Wind Speed (km/h)";
+        return t('windSpeedUnit');
     }
   };
 
@@ -201,10 +205,10 @@ export default function HourlyGraphModal({
                   ? "bg-blue-600 text-white shadow-lg scale-105"
                   : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
               }`}
-              title="Temperature"
+              title={t('temperature')}
             >
               <IconTemperature size={24} className="sm:w-6 sm:h-6" />
-              <span className="hidden sm:inline">Temperature</span>
+              <span className="hidden sm:inline">{t('temperature')}</span>
             </button>
             <button
               onClick={() => setDataType("precipitation")}
@@ -213,10 +217,10 @@ export default function HourlyGraphModal({
                   ? "bg-blue-600 text-white shadow-lg scale-105"
                   : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
               }`}
-              title="Precipitation"
+              title={t('precipitation')}
             >
               <IconDroplet size={24} className="sm:w-6 sm:h-6" />
-              <span className="hidden sm:inline">Precipitation</span>
+              <span className="hidden sm:inline">{t('precipitation')}</span>
             </button>
             <button
               onClick={() => setDataType("wind")}
@@ -225,10 +229,10 @@ export default function HourlyGraphModal({
                   ? "bg-blue-600 text-white shadow-lg scale-105"
                   : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
               }`}
-              title="Wind Speed"
+              title={t('windSpeed')}
             >
               <IconWind size={24} className="sm:w-6 sm:h-6" />
-              <span className="hidden sm:inline">Wind Speed</span>
+              <span className="hidden sm:inline">{t('windSpeed')}</span>
             </button>
           </div>
 
@@ -409,7 +413,9 @@ export default function HourlyGraphModal({
                             transform: 'translateX(-50%)',
                             top: '0'
                           }}
-                          title={weatherCodeMap[h.weatherCode]?.label || h.weatherCode}
+                          title={weatherCodeToTranslationKey[h.weatherCode] 
+                            ? tWeather(weatherCodeToTranslationKey[h.weatherCode])
+                            : (weatherCodeMap[h.weatherCode]?.label || h.weatherCode)}
                         >
                           {getWeatherIcon(h, iconSize)}
                         </div>

@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from 'next-intl';
 import Sidebar from "../components/Sidebar";
 import HourlyGraphModal from "../components/HourlyGraphModal";
 import LocationBar from "../components/LocationBar";
@@ -12,6 +13,7 @@ import type { Weather } from "../types/Weather";
 import type { Location } from "../types/Location";
 import { weatherCodeMap, isNightTime } from "../types/WeatherCodeMap";
 import { fetchWithRetry } from "../utils/retry";
+import { weatherCodeToTranslationKey, dayNumberToTranslationKey } from "../utils/weatherTranslations";
 
 const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
 const AUTH_API_BASE = isDev
@@ -24,9 +26,6 @@ const WEATHER_API_BASE = isDev
 function getWeatherIcon(code: string, size = 32, currentTime?: string, sunRise?: string, sunSet?: string) {
   const isNight = currentTime && sunRise && sunSet ? isNightTime(currentTime, sunRise, sunSet) : false;
   return weatherCodeMap[code]?.icon(size, isNight) || <Sun size={size} />;
-}
-function getWeatherLabel(code: string) {
-  return weatherCodeMap[code]?.label || code;
 }
 function getWindDirectionIcon(direction: string, size = 22) {
   const iconMap: { [key: string]: any } = {
@@ -48,6 +47,11 @@ function getWindDirectionIcon(direction: string, size = 22) {
 
 export default function Home() {
   const router = useRouter();
+  const t = useTranslations('dashboard');
+  const tCommon = useTranslations('common');
+  const tTitle = useTranslations('pageTitle');
+  const tWeather = useTranslations('weather');
+  const tDays = useTranslations('days');
   const [showWeather, setShowWeather] = React.useState(false);
   const [weatherError, setWeatherError] = React.useState<string | null>(null);
   const [weather, setWeather] = React.useState<Weather | null>(null);
@@ -67,6 +71,10 @@ export default function Home() {
   const [selectedLocationId, setSelectedLocationId] = React.useState<number | null>(null); // null = current location
   const [displayWeather, setDisplayWeather] = React.useState<Weather | null>(null);
 
+  // Update document title based on selected language
+  React.useEffect(() => {
+    document.title = tTitle('dashboard');
+  }, [tTitle]);
 
   React.useEffect(() => {
     async function checkLogin() {
@@ -296,7 +304,7 @@ export default function Home() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen w-full">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mb-4"></div>
-        <div className="text-lg font-semibold text-blue-700">Loading...</div>
+        <div className="text-lg font-semibold text-blue-700">{tCommon('loading')}</div>
       </div>
     );
   }
@@ -330,7 +338,11 @@ export default function Home() {
                             {selectedLocationId === null && <Crosshair size={24} className="text-white" />}
                           </div>
                           <div className="text-5xl sm:text-6xl font-extrabold my-3 sm:my-4">{Math.round(displayWeather.current.temperature)}°C</div>
-                          <div className="text-lg sm:text-xl font-medium opacity-90 mb-2 sm:mb-3">{getWeatherLabel(displayWeather.current.weatherCode)}</div>
+                          <div className="text-lg sm:text-xl font-medium opacity-90 mb-2 sm:mb-3">
+                            {weatherCodeToTranslationKey[displayWeather.current.weatherCode] 
+                              ? tWeather(weatherCodeToTranslationKey[displayWeather.current.weatherCode])
+                              : weatherCodeMap[displayWeather.current.weatherCode]?.label || displayWeather.current.weatherCode}
+                          </div>
                           <div className="flex items-center gap-3 sm:gap-4 text-sm opacity-90">
                             <div className="flex items-center gap-1.5 sm:gap-2">
                               <Wind size={18} />
@@ -358,7 +370,7 @@ export default function Home() {
                     {/* Hourly Forecast Card */}
                     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-2 sm:p-5 lg:p-6">
                       <div className="flex justify-between items-center mb-2 sm:mb-4">
-                        <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">Hourly Forecast</h3>
+                        <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">{t('hourlyForecast')}</h3>
                         <button
                           onClick={() => setShowHourlyGraph(true)}
                           className="px-4 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors text-sm"
@@ -374,7 +386,7 @@ export default function Home() {
                           return (
                           <div key={i} className="flex flex-col items-center min-w-[65px] sm:min-w-[80px] p-2 sm:p-3 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
                             <div className="text-[10px] sm:text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 sm:mb-2">
-                              {i === 0 ? "Now" : new Date(h.time).toLocaleTimeString([], { hour: "2-digit", hour12: false })}
+                              {i === 0 ? t('now') : new Date(h.time).toLocaleTimeString([], { hour: "2-digit", hour12: false })}
                             </div>
                             <div className="mb-1 sm:mb-2">{getWeatherIcon(h.weatherCode, 32, h.time, dailyData?.sunRise, dailyData?.sunSet)}</div>
                             <div className="font-bold text-base sm:text-lg text-gray-900 dark:text-white">{Math.round(h.temperature)}°</div>
@@ -391,16 +403,18 @@ export default function Home() {
 
                     {/* 14-Day Forecast Card */}
                     <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-2 sm:p-5 lg:p-6">
-                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">14-Day Forecast</h3>
+                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">{t('dailyForecast')}</h3>
                       <div className="space-y-1 sm:space-y-2">
                         {displayWeather.daily.slice(0, 14).map((d, i) => {
                           // For daily forecast, use noon (12:00) to determine day/night
                           const noonTime = new Date(d.time);
                           noonTime.setHours(12, 0, 0, 0);
+                          const dayOfWeek = new Date(d.time).getDay();
+                          const dayKey = dayNumberToTranslationKey[dayOfWeek];
                           return (
                           <div key={i} className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                             <div className="flex-1 min-w-0 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
-                              {i === 0 ? "Today" : new Date(d.time).toLocaleDateString("en-GB", { weekday: "short" })}
+                              {i === 0 ? t('today') : tDays(dayKey)}
                             </div>
                             <div className="flex items-center justify-center w-8 sm:w-10 flex-shrink-0">
                               {getWeatherIcon(d.weatherCode, 28, noonTime.toISOString(), d.sunRise, d.sunSet)}
@@ -438,7 +452,7 @@ export default function Home() {
                   <div className="flex items-center justify-center h-full">
                     <div className="text-center">
                       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                      <p className="text-gray-600 dark:text-gray-400">Loading weather data...</p>
+                      <p className="text-gray-600 dark:text-gray-400">{t('loadingWeather')}</p>
                     </div>
                   </div>
                 )}
