@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import Login from "../../components/Login";
 import PublicLanguageSelector from "../../components/PublicLanguageSelector";
 import { validateAuthToken } from "../../utils/retry";
+import { isValidCallback, getSafeCallback } from "../../utils/callbackValidation";
 
 const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
 const AUTH_API_BASE = isDev
@@ -30,8 +31,8 @@ function LoginPageContent() {
       
       // If there's a callback URL, validate token with retry mechanism
       if (callback) {
-        // Validate callback URL is a relative path to prevent open redirect attacks
-        if (!callback.startsWith("/") || callback.startsWith("//")) {
+        // Validate callback URL to prevent open redirect attacks
+        if (!isValidCallback(callback)) {
           setCheckingAuth(false);
           return;
         }
@@ -65,19 +66,15 @@ function LoginPageContent() {
 
   const handleSuccess = () => {
     const callback = searchParams.get("callback");
-    // Validate callback URL is a relative path to prevent open redirect attacks
-    if (callback && callback.startsWith("/") && !callback.startsWith("//")) {
-      router.push(callback);
-    } else {
-      router.push("/");
-    }
+    // Validate callback URL to prevent open redirect attacks
+    router.push(getSafeCallback(callback));
   };
 
   const handleRegister = () => {
     const callback = searchParams.get("callback");
-    // Only pass callback if it's a valid relative path
-    if (callback && callback.startsWith("/") && !callback.startsWith("//")) {
-      router.push(`/register?callback=${encodeURIComponent(callback)}`);
+    // Only pass callback if it's valid
+    if (isValidCallback(callback)) {
+      router.push(`/register?callback=${encodeURIComponent(callback!)}`);
     } else {
       router.push("/register");
     }
@@ -85,9 +82,9 @@ function LoginPageContent() {
 
   const handleForgot = () => {
     const callback = searchParams.get("callback");
-    // Only pass callback if it's a valid relative path
-    if (callback && callback.startsWith("/") && !callback.startsWith("//")) {
-      router.push(`/forgot-password?callback=${encodeURIComponent(callback)}`);
+    // Only pass callback if it's valid
+    if (isValidCallback(callback)) {
+      router.push(`/forgot-password?callback=${encodeURIComponent(callback!)}`);
     } else {
       router.push("/forgot-password");
     }

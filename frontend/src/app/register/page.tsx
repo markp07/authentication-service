@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from 'next-intl';
 import Register from "../../components/Register";
 import PublicLanguageSelector from "../../components/PublicLanguageSelector";
+import { isValidCallback, getSafeCallback } from "../../utils/callbackValidation";
 
 const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
 const AUTH_API_BASE = isDev
@@ -29,8 +30,8 @@ function RegisterPageContent() {
         const res = await fetch(`${AUTH_API_BASE}/api/auth/v1/user`, { credentials: "include" });
         if (res.ok) {
           // Already logged in, redirect to callback or home
-          const callback = searchParams.get("callback") || "/";
-          router.push(callback);
+          const callback = searchParams.get("callback");
+          router.push(getSafeCallback(callback));
           return;
         }
       } catch {
@@ -44,12 +45,20 @@ function RegisterPageContent() {
   const handleSuccess = () => {
     // After successful registration, redirect to login page with callback
     const callback = searchParams.get("callback");
-    router.push(callback ? `/login?callback=${encodeURIComponent(callback)}` : "/login");
+    if (isValidCallback(callback)) {
+      router.push(`/login?callback=${encodeURIComponent(callback!)}`);
+    } else {
+      router.push("/login");
+    }
   };
 
   const handleLogin = () => {
     const callback = searchParams.get("callback");
-    router.push(callback ? `/login?callback=${encodeURIComponent(callback)}` : "/login");
+    if (isValidCallback(callback)) {
+      router.push(`/login?callback=${encodeURIComponent(callback!)}`);
+    } else {
+      router.push("/login");
+    }
   };
 
   if (checkingAuth) {
