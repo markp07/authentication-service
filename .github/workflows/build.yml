@@ -64,19 +64,22 @@ jobs:
         working-directory: frontend
         run: |
           npm ci
-          npm run test
+          # build first so `.next` is present even if tests later fail or are skipped
           npm run build
+          npm run test
 
       - name: Upload frontend build
         uses: actions/upload-artifact@v4
+        # Make the upload relative to the frontend folder so artifact paths are simple
+        working-directory: frontend
         with:
           name: frontend-artifacts
           # Next.js produces a .next folder (and optionally `out` for static export).
           # Upload .next (and out if present) so downstream jobs can access the build output.
           path: |
-            frontend/.next
-            frontend/.next/**
-            frontend/out
+            .next
+            .next/**
+            out
           if-no-files-found: warn
 
   build-images:
@@ -100,7 +103,9 @@ jobs:
         with:
           name: frontend-artifacts
           # place Next.js build under the frontend folder so docker build can access it
-          path: frontend/.next
+          # when we uploaded from the `frontend` working dir with path `.next`, downloading into
+          # `frontend` will restore `frontend/.next`
+          path: frontend
 
       - name: Inspect downloaded artifacts
         run: |
