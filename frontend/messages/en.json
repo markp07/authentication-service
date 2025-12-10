@@ -9,7 +9,8 @@
     "edit": "Edit",
     "close": "Close",
     "confirm": "Confirm",
-    "back": "Back"
+    "back": "Back",
+    "registering": "Registering..."
   },
   "pageTitle": {
     "login": "Login - Weather",

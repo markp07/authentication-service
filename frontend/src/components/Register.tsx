@@ -100,14 +100,14 @@ export default function Register({ onSuccess, onLogin }: RegisterProps) {
         className="bg-green-600 text-white rounded px-4 py-2 font-semibold hover:bg-green-700 shadow"
         disabled={loading}
       >
-        {loading ? tCommon('loading') : t('registerButton')}
+        {loading ? tCommon('registering') : t('registerButton')}
       </button>
       <button
         type="button"
         className="text-blue-600 hover:underline text-sm mt-2"
         onClick={onLogin}
       >
-        ← {t('login')}
+        {tCommon('back')} to {t('login')}
       </button>
     </form>
   );
