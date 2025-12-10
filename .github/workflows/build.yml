@@ -61,16 +61,15 @@ jobs:
 
       - name: Upload frontend build
         uses: actions/upload-artifact@v4
-        # Make the upload relative to the frontend folder so artifact paths are simple
-        working-directory: frontend
+        # Upload paths explicitly from the `frontend` folder (step-level `working-directory` is only supported for `run`).
         with:
           name: frontend-artifacts
           # Next.js produces a .next folder (and optionally `out` for static export).
-          # Upload .next (and out if present) so downstream jobs can access the build output.
+          # Upload frontend/.next (and frontend/out if present) so downstream jobs can access the build output.
           path: |
-            .next
-            .next/**
-            out
+            frontend/.next
+            frontend/.next/**
+            frontend/out
           if-no-files-found: warn
 
   build-images:
