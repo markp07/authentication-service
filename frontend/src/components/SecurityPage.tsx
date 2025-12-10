@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslations } from 'next-intl';
 import { AUTH_API_BASE, fetchWithAuthRetry } from "../utils/api";
 import { User } from "../types/User";
 import BackupCodesModal from "./BackupCodesModal";
@@ -11,6 +12,7 @@ interface SecurityPageProps {
 }
 
 export default function SecurityPage({ onChangePassword, onToggle2FA }: SecurityPageProps) {
+  const t = useTranslations('security');
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,10 +28,10 @@ export default function SecurityPage({ onChangePassword, onToggle2FA }: Security
         if (res.ok) {
           setUser(await res.json());
         } else {
-          setError("Failed to load user profile.");
+          setError(t('failedToLoad'));
         }
       } catch {
-        setError("Network error.");
+        setError(t('networkError'));
       }
       setLoading(false);
     }
@@ -57,8 +59,8 @@ export default function SecurityPage({ onChangePassword, onToggle2FA }: Security
   return (
     <div className="p-6 space-y-6 max-w-4xl">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Security Settings</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">Manage your account security and authentication methods</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t('title')}</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-2">{t('subtitle')}</p>
       </div>
 
       {/* Password Section */}
@@ -68,15 +70,15 @@ export default function SecurityPage({ onChangePassword, onToggle2FA }: Security
             <IconLock size={24} className="text-blue-600 dark:text-blue-400" />
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Password</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t('password')}</h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              Change your password to keep your account secure
+              {t('passwordDescription')}
             </p>
             <button
               onClick={onChangePassword}
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
             >
-              Change Password
+              {t('changePassword')}
             </button>
           </div>
         </div>
@@ -98,19 +100,19 @@ export default function SecurityPage({ onChangePassword, onToggle2FA }: Security
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Two-Factor Authentication</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('twoFactor')}</h3>
               <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                 user?.twoFactorEnabled
                   ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
                   : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
               }`}>
-                {user?.twoFactorEnabled ? "Enabled" : "Disabled"}
+                {user?.twoFactorEnabled ? t('enabled') : t('disabled')}
               </span>
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
               {user?.twoFactorEnabled
-                ? "Add an extra layer of security to your account with TOTP authentication"
-                : "Protect your account with time-based one-time passwords (TOTP)"}
+                ? t('twoFactorEnabledDescription')
+                : t('twoFactorDisabledDescription')}
             </p>
             <div className="flex flex-wrap gap-2">
               <button
@@ -121,14 +123,14 @@ export default function SecurityPage({ onChangePassword, onToggle2FA }: Security
                     : "bg-blue-600 hover:bg-blue-700 text-white"
                 }`}
               >
-                {user?.twoFactorEnabled ? "Disable 2FA" : "Enable 2FA"}
+                {user?.twoFactorEnabled ? t('disable2FA') : t('enable2FA')}
               </button>
               {user?.twoFactorEnabled && (
                 <button
                   onClick={() => setShowBackupCodes(true)}
                   className="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium transition-colors"
                 >
-                  Generate Backup Codes
+                  {t('generateBackupCodes')}
                 </button>
               )}
             </div>
@@ -143,15 +145,15 @@ export default function SecurityPage({ onChangePassword, onToggle2FA }: Security
             <IconFingerprint size={24} className="text-purple-600 dark:text-purple-400" />
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Passkeys</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{t('passkeys')}</h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              Use biometric authentication or security keys for passwordless login
+              {t('passkeysDescription')}
             </p>
             <button
               onClick={() => setShowPasskeyModal(true)}
               className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors"
             >
-              Manage Passkeys
+              {t('managePasskeys')}
             </button>
           </div>
         </div>
@@ -162,23 +164,23 @@ export default function SecurityPage({ onChangePassword, onToggle2FA }: Security
         <div className="flex items-start gap-4">
           <IconAlertTriangle size={24} className="text-amber-600 dark:text-amber-400 flex-shrink-0 mt-1" />
           <div>
-            <h3 className="text-lg font-semibold text-amber-900 dark:text-amber-200 mb-2">Security Tips</h3>
+            <h3 className="text-lg font-semibold text-amber-900 dark:text-amber-200 mb-2">{t('securityTips')}</h3>
             <ul className="space-y-2 text-sm text-amber-800 dark:text-amber-300">
               <li className="flex items-start gap-2">
                 <span className="text-amber-600 dark:text-amber-400 mt-0.5">•</span>
-                <span>Enable two-factor authentication for enhanced security</span>
+                <span>{t('tip1')}</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-amber-600 dark:text-amber-400 mt-0.5">•</span>
-                <span>Use a strong, unique password for your account</span>
+                <span>{t('tip2')}</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-amber-600 dark:text-amber-400 mt-0.5">•</span>
-                <span>Keep your backup codes in a secure location</span>
+                <span>{t('tip3')}</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-amber-600 dark:text-amber-400 mt-0.5">•</span>
-                <span>Consider using passkeys for passwordless authentication</span>
+                <span>{t('tip4')}</span>
               </li>
             </ul>
           </div>

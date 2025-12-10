@@ -1,4 +1,7 @@
+'use client';
+
 import React, { useState } from "react";
+import { useTranslations } from 'next-intl';
 
 interface RegisterProps {
   onSuccess: () => void;
@@ -11,6 +14,8 @@ const AUTH_API_BASE = isDev
   : "https://demo.markpost.dev";
 
 export default function Register({ onSuccess, onLogin }: RegisterProps) {
+  const t = useTranslations('register');
+  const tCommon = useTranslations('common');
   const [email, setEmail] = useState("");
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
@@ -29,7 +34,7 @@ export default function Register({ onSuccess, onLogin }: RegisterProps) {
     setError(null);
     setSuccess(null);
     if (password !== confirm) {
-      setError("Passwords do not match.");
+      setError(t('passwordMismatch'));
       setLoading(false);
       return;
     }
@@ -40,27 +45,27 @@ export default function Register({ onSuccess, onLogin }: RegisterProps) {
         body: JSON.stringify({ email, userName, password }),
       });
       if (res.ok) {
-        setSuccess("Registration successful! You can now log in.");
+        setSuccess(t('registerSuccess'));
         setTimeout(() => {
           onSuccess();
         }, 1200);
       } else {
-        setError("Registration failed. Try again.");
+        setError(t('registerError'));
       }
     } catch {
-      setError("Network error.");
+      setError(t('networkError'));
     }
     setLoading(false);
   }
 
   return (
     <form className="flex flex-col gap-4" onSubmit={handleRegister}>
-      <h2 className="text-xl font-bold mb-2">Register</h2>
+      <h2 className="text-xl font-bold mb-2">{t('title')}</h2>
       {error && <div className="text-red-600 text-sm bg-red-100 rounded px-2 py-1">{error}</div>}
       {success && <div className="text-green-600 text-sm bg-green-100 rounded px-2 py-1">{success}</div>}
       <input
         type="email"
-        placeholder="Email"
+        placeholder={t('email')}
         className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         required
         value={email}
@@ -68,7 +73,7 @@ export default function Register({ onSuccess, onLogin }: RegisterProps) {
       />
       <input
         type="text"
-        placeholder="Username"
+        placeholder={t('username')}
         className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         required
         value={userName}
@@ -76,7 +81,7 @@ export default function Register({ onSuccess, onLogin }: RegisterProps) {
       />
       <input
         type="password"
-        placeholder="Password"
+        placeholder={t('password')}
         className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         required
         value={password}
@@ -84,7 +89,7 @@ export default function Register({ onSuccess, onLogin }: RegisterProps) {
       />
       <input
         type="password"
-        placeholder="Confirm Password"
+        placeholder={t('confirmPassword')}
         className="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         required
         value={confirm}
@@ -95,14 +100,14 @@ export default function Register({ onSuccess, onLogin }: RegisterProps) {
         className="bg-green-600 text-white rounded px-4 py-2 font-semibold hover:bg-green-700 shadow"
         disabled={loading}
       >
-        {loading ? "Registering..." : "Register"}
+        {loading ? tCommon('loading') : t('registerButton')}
       </button>
       <button
         type="button"
         className="text-blue-600 hover:underline text-sm mt-2"
         onClick={onLogin}
       >
-        ← Back to Login
+        ← {t('login')}
       </button>
     </form>
   );

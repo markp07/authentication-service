@@ -2,7 +2,9 @@
 
 import React, { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from 'next-intl';
 import Login from "../../components/Login";
+import PublicLanguageSelector from "../../components/PublicLanguageSelector";
 import { validateAuthToken } from "../../utils/retry";
 
 const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
@@ -13,7 +15,13 @@ const AUTH_API_BASE = isDev
 function LoginPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations('pageTitle');
   const [checkingAuth, setCheckingAuth] = React.useState(true);
+
+  // Update document title based on selected language
+  useEffect(() => {
+    document.title = t('login');
+  }, [t]);
 
   useEffect(() => {
     // Check if already logged in, especially when there's a callback URL
@@ -96,6 +104,7 @@ function LoginPageContent() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full bg-gray-50 dark:bg-gray-900 p-4">
+      <PublicLanguageSelector />
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-2xl p-6 min-w-[320px] w-full max-w-md">
         <Login
           onSuccess={handleSuccess}
