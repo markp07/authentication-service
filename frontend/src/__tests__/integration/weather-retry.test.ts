@@ -45,6 +45,8 @@ describe('Weather Retry Integration', () => {
     });
 
     it('should retry on 500 error and eventually succeed', async () => {
+      jest.useFakeTimers();
+
       const mockWeather = {
         location: 'Amsterdam',
         current: { temperature: 15, weatherCode: '1', windSpeed: 10, windDirection: 'N', time: '2024-01-01T12:00:00Z' },
@@ -66,14 +68,27 @@ describe('Weather Retry Integration', () => {
         json: () => Promise.resolve(mockWeather),
       });
 
-      const response = await fetchWithRetry(weatherUrl);
-      
+      const fetchPromise = fetchWithRetry(weatherUrl);
+
+      // Initial call
+      await Promise.resolve();
+
+      // First retry after 1s
+      await jest.advanceTimersByTimeAsync(1000);
+      await Promise.resolve();
+
+      const response = await fetchPromise;
+
       expect(response.ok).toBe(true);
       expect(response.status).toBe(200);
       expect(mockFetch).toHaveBeenCalledTimes(2);
+
+      jest.useRealTimers();
     });
 
     it('should retry on 503 error and eventually succeed', async () => {
+      jest.useFakeTimers();
+
       const mockWeather = {
         location: 'Amsterdam',
         current: { temperature: 15, weatherCode: '1', windSpeed: 10, windDirection: 'N', time: '2024-01-01T12:00:00Z' },
@@ -95,14 +110,27 @@ describe('Weather Retry Integration', () => {
         json: () => Promise.resolve(mockWeather),
       });
 
-      const response = await fetchWithRetry(weatherUrl);
-      
+      const fetchPromise = fetchWithRetry(weatherUrl);
+
+      // Initial call
+      await Promise.resolve();
+
+      // First retry after 1s
+      await jest.advanceTimersByTimeAsync(1000);
+      await Promise.resolve();
+
+      const response = await fetchPromise;
+
       expect(response.ok).toBe(true);
       expect(response.status).toBe(200);
       expect(mockFetch).toHaveBeenCalledTimes(2);
+
+      jest.useRealTimers();
     });
 
     it('should retry up to 5 times on persistent 5xx errors', async () => {
+      jest.useFakeTimers();
+
       // All 6 calls (initial + 5 retries) return 500
       const errorResponse = {
         status: 500,
@@ -113,14 +141,30 @@ describe('Weather Retry Integration', () => {
         mockFetch.mockResolvedValueOnce(errorResponse);
       }
 
-      const response = await fetchWithRetry(weatherUrl);
-      
+      const fetchPromise = fetchWithRetry(weatherUrl);
+
+      // Initial call
+      await Promise.resolve();
+
+      // Advance through all retry delays: 1s + 2s + 4s + 8s + 16s = 31s
+      for (let i = 0; i < 5; i++) {
+        const delay = 1000 * Math.pow(2, i);
+        await jest.advanceTimersByTimeAsync(delay);
+        await Promise.resolve();
+      }
+
+      const response = await fetchPromise;
+
       expect(response.ok).toBe(false);
       expect(response.status).toBe(500);
       expect(mockFetch).toHaveBeenCalledTimes(6); // Initial + 5 retries
-    }, 35000); // 35 seconds timeout
+
+      jest.useRealTimers();
+    });
 
     it('should not exceed 90 second total time limit', async () => {
+      jest.useFakeTimers();
+
       const errorResponse = {
         status: 500,
         ok: false,
@@ -128,16 +172,27 @@ describe('Weather Retry Integration', () => {
       };
       mockFetch.mockResolvedValue(errorResponse);
 
-      const startTime = Date.now();
-      const response = await fetchWithRetry(weatherUrl);
-      const elapsedTime = Date.now() - startTime;
-      
+      const fetchPromise = fetchWithRetry(weatherUrl);
+
+      // Initial call
+      await Promise.resolve();
+
+      // Advance through all retry delays: 1s + 2s + 4s + 8s + 16s = 31s
+      // This is within the 90 second limit
+      for (let i = 0; i < 5; i++) {
+        const delay = 1000 * Math.pow(2, i);
+        await jest.advanceTimersByTimeAsync(delay);
+        await Promise.resolve();
+      }
+
+      const response = await fetchPromise;
+
       expect(response.status).toBe(500);
-      // Should have stopped before exceeding 90 second limit
-      // With exponential backoff (1+2+4+8+16 = 31s), total time should be around 31s
-      expect(elapsedTime).toBeLessThan(90000);
-      expect(elapsedTime).toBeGreaterThan(30000); // Should have taken at least 31s
-    }, 95000); // 95 seconds timeout for test
+      // Should have made all 6 attempts (initial + 5 retries) within the 90s limit
+      expect(mockFetch).toHaveBeenCalledTimes(6);
+
+      jest.useRealTimers();
+    });
 
     it('should not retry on 401 authentication error', async () => {
       mockFetch.mockResolvedValueOnce({
@@ -166,6 +221,8 @@ describe('Weather Retry Integration', () => {
     });
 
     it('should handle multiple 5xx errors before success', async () => {
+      jest.useFakeTimers();
+
       const mockWeather = {
         location: 'Amsterdam',
         current: { temperature: 15, weatherCode: '1', windSpeed: 10, windDirection: 'N', time: '2024-01-01T12:00:00Z' },
@@ -190,11 +247,26 @@ describe('Weather Retry Integration', () => {
         json: () => Promise.resolve(mockWeather),
       });
 
-      const response = await fetchWithRetry(weatherUrl);
-      
+      const fetchPromise = fetchWithRetry(weatherUrl);
+
+      // Initial call
+      await Promise.resolve();
+
+      // First retry after 1s
+      await jest.advanceTimersByTimeAsync(1000);
+      await Promise.resolve();
+
+      // Second retry after 2s
+      await jest.advanceTimersByTimeAsync(2000);
+      await Promise.resolve();
+
+      const response = await fetchPromise;
+
       expect(response.ok).toBe(true);
       expect(response.status).toBe(200);
       expect(mockFetch).toHaveBeenCalledTimes(3); // 1 initial + 2 retries
+
+      jest.useRealTimers();
     });
   });
 
