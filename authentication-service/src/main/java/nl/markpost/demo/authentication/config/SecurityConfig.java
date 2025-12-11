@@ -33,12 +33,11 @@ public class SecurityConfig {
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
   /**
-   * Creates a CORS filter bean for local development.
+   * Creates a CORS filter bean for all profiles.
    *
-   * @return CorsFilter configured for local development
+   * @return CorsFilter configured with allowed origin patterns
    */
   @Bean
-  @Profile("local")
   public CorsFilter corsFilter(
       @Value("${authentication.cors.allowed-origin-patterns:}") String[] allowedOriginPatterns) {
     CorsConfiguration config = new CorsConfiguration();
@@ -47,6 +46,7 @@ public class SecurityConfig {
         allowedOriginPatterns != null ? List.of(allowedOriginPatterns) : List.of());
     config.setAllowedHeaders(List.of("*"));
     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    config.setExposedHeaders(List.of("*"));
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", config);
     return new CorsFilter(source);
@@ -58,7 +58,7 @@ public class SecurityConfig {
       @Value("${security.excluded-paths:}") String[] excludedPaths) throws Exception {
     http
         .csrf(AbstractHttpConfigurer::disable)
-        .cors(AbstractHttpConfigurer::disable)
+        .cors(cors -> {}) // Enable CORS with default configuration (uses CorsFilter bean)
         .addFilterBefore(traceparentFilter, UsernamePasswordAuthenticationFilter.class)
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .authorizeHttpRequests(authz -> authz
