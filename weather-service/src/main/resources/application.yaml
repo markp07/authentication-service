@@ -49,8 +49,8 @@ authentication:
 
 logging:
   level:
-    root: DEBUG
-    nl.markpost.demo: DEBUG
+    root: INFO
+    nl.markpost.demo: INFO
 
 jwt:
   public-key-url: http://authentication-service:12002/api/auth/v1/public-key
