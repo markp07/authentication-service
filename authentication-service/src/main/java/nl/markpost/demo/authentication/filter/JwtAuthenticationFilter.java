@@ -55,7 +55,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       handleAuthentication(request, response, filterChain);
     } catch (UnauthorizedException e) {
       log.info("Unauthorized access attempt: {}", e.getMessage());
-      ResponseEntity<nl.markpost.demo.common.model.Error> errorResponse = customExceptionHandler.handleGenericExceptionException(
+      ResponseEntity<nl.markpost.demo.authentication.model.Error> errorResponse = customExceptionHandler.handleGenericExceptionException(
           e);
       response.setContentType("application/json");
       response.setStatus(e.getHttpStatus().value());
