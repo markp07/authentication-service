@@ -52,8 +52,8 @@ function LoginPageContent() {
       try {
         const res = await fetch(`${AUTH_API_BASE}/api/auth/v1/user`, { credentials: "include" });
         if (res.ok) {
-          // Already logged in, redirect to home
-          router.push("/");
+          // Already logged in, redirect to profile
+          router.push("/profile");
           return;
         }
       } catch {

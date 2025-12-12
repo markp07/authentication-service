@@ -13,17 +13,15 @@
     "registering": "Registering..."
   },
   "pageTitle": {
-    "login": "Login - Weather",
-    "register": "Register - Weather",
-    "forgotPassword": "Forgot Password - Weather",
-    "resetPassword": "Reset Password - Weather",
-    "dashboard": "Weather Dashboard",
-    "profile": "Profile - Weather",
-    "security": "Security - Weather"
+    "login": "Login - Authentication Demo",
+    "register": "Register - Authentication Demo",
+    "forgotPassword": "Forgot Password - Authentication Demo",
+    "resetPassword": "Reset Password - Authentication Demo",
+    "profile": "Profile - Authentication Demo",
+    "security": "Security - Authentication Demo"
   },
   "sidebar": {
     "welcome": "Welcome, {username}",
-    "dashboard": "Dashboard",
     "profile": "Profile",
     "security": "Security",
     "logout": "Log out",
@@ -83,65 +81,6 @@
     "resetSuccess": "Password reset successful!",
     "resetError": "Password reset failed.",
     "networkError": "Network error."
-  },
-  "dashboard": {
-    "title": "Weather Dashboard",
-    "currentLocation": "Current Location",
-    "hourlyForecast": "Hourly Forecast",
-    "dailyForecast": "14-Day Forecast",
-    "now": "Now",
-    "today": "Today",
-    "loadingWeather": "Loading weather data...",
-    "locationError": "Could not get location.",
-    "weatherError": "Failed to load weather.",
-    "temperature": "Temperature",
-    "wind": "Wind",
-    "precipitation": "Precipitation",
-    "precipitationProbability": "Rain Probability"
-  },
-  "hourlyGraphModal": {
-    "temperature": "Temperature",
-    "temperatureUnit": "Temperature (°C)",
-    "precipitation": "Precipitation",
-    "precipitationUnit": "Precipitation (mm)",
-    "windSpeed": "Wind Speed",
-    "windSpeedUnit": "Wind Speed (km/h)",
-    "closeModal": "Close modal"
-  },
-  "weather": {
-    "clearSky": "Clear sky",
-    "mainlyClear": "Mainly clear",
-    "partlyCloudy": "Partly cloudy",
-    "overcast": "Overcast",
-    "fog": "Fog",
-    "depositingRimeFog": "Depositing rime fog",
-    "drizzle": "Drizzle",
-    "freezingDrizzleLight": "Freezing Drizzle: Light",
-    "freezingDrizzleDense": "Freezing Drizzle: Dense",
-    "rain": "Rain",
-    "freezingRainLight": "Freezing Rain: Light",
-    "freezingRainHeavy": "Freezing Rain: Heavy",
-    "snowSlight": "Snow fall: Slight",
-    "snowModerate": "Snow fall: Moderate",
-    "snowHeavy": "Snow fall: Heavy",
-    "snowGrains": "Snow grains",
-    "rainShowersSlight": "Rain showers: Slight",
-    "rainShowersModerate": "Rain showers: Moderate",
-    "rainShowersViolent": "Rain showers: Violent",
-    "snowShowersSlight": "Snow showers: Slight",
-    "snowShowersHeavy": "Snow showers: Heavy",
-    "thunderstormSlightModerate": "Thunderstorm: Slight or moderate",
-    "thunderstormSlightHail": "Thunderstorm with slight hail",
-    "thunderstormHeavyHail": "Thunderstorm with heavy hail"
-  },
-  "days": {
-    "mon": "Mon",
-    "tue": "Tue",
-    "wed": "Wed",
-    "thu": "Thu",
-    "fri": "Fri",
-    "sat": "Sat",
-    "sun": "Sun"
   },
   "profile": {
     "title": "Profile",
@@ -230,17 +169,6 @@
     "cancel": "Cancel",
     "delete": "Delete",
     "confirm": "Confirm"
-  },
-  "weather": {
-    "clear": "Clear",
-    "cloudy": "Cloudy",
-    "partlyCloudy": "Partly Cloudy",
-    "overcast": "Overcast",
-    "fog": "Fog",
-    "drizzle": "Drizzle",
-    "rain": "Rain",
-    "snow": "Snow",
-    "thunderstorm": "Thunderstorm"
   },
   "languages": {
     "en": "English",

@@ -20,7 +20,7 @@ describe('Sidebar Component', () => {
     render(
       <Sidebar
         username="testuser"
-        activePage="dashboard"
+        activePage="profile"
         onNavigate={mockOnNavigate}
         onLogout={mockOnLogout}
       />
@@ -34,7 +34,7 @@ describe('Sidebar Component', () => {
     render(
       <Sidebar
         username="testuser"
-        activePage="dashboard"
+        activePage="profile"
         onNavigate={mockOnNavigate}
         onLogout={mockOnLogout}
       />
@@ -47,7 +47,7 @@ describe('Sidebar Component', () => {
     render(
       <Sidebar
         username={null}
-        activePage="dashboard"
+        activePage="profile"
         onNavigate={mockOnNavigate}
         onLogout={mockOnLogout}
       />
@@ -64,7 +64,7 @@ describe('Sidebar Component', () => {
     render(
       <Sidebar
         username="testuser"
-        activePage="dashboard"
+        activePage="profile"
         onNavigate={mockOnNavigate}
         onLogout={mockOnLogout}
       />

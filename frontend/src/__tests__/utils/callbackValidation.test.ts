@@ -66,10 +66,10 @@ describe('callbackValidation', () => {
       expect(getSafeCallback('https://weather.markpost.dev')).toBe('https://weather.markpost.dev');
     });
 
-    it('should return default "/" if callback is invalid', () => {
-      expect(getSafeCallback('//evil.com')).toBe('/');
-      expect(getSafeCallback('https://evil.com')).toBe('/');
-      expect(getSafeCallback(null)).toBe('/');
+    it('should return default "/profile" if callback is invalid', () => {
+      expect(getSafeCallback('//evil.com')).toBe('/profile');
+      expect(getSafeCallback('https://evil.com')).toBe('/profile');
+      expect(getSafeCallback(null)).toBe('/profile');
     });
 
     it('should return custom default if provided', () => {
