@@ -1,4 +1,4 @@
-package nl.markpost.demo.common.model;
+package nl.markpost.demo.authentication.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.OffsetDateTime;

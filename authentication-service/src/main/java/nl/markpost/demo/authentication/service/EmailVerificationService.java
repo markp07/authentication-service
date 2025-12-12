@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.authentication.model.User;
 import nl.markpost.demo.authentication.repository.UserRepository;
-import nl.markpost.demo.common.exception.BadRequestException;
-import nl.markpost.demo.common.exception.TooManyRequestsException;
+import nl.markpost.demo.authentication.exception.BadRequestException;
+import nl.markpost.demo.authentication.exception.TooManyRequestsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

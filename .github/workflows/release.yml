@@ -127,6 +127,31 @@ jobs:
           BUMP_TYPE="${{ steps.version_bump.outputs.bump_type }}"
           DATE=$(date +%Y-%m-%d)
           
+          # Start building the changelog entry
+          echo "## [$NEW_VERSION] - $DATE" > /tmp/changelog_entry.md
+          echo "" >> /tmp/changelog_entry.md
+          
+          # Extract content from [Unreleased] section if it exists
+          if [ -f CHANGELOG.md ]; then
+            UNRELEASED_START=$(grep -n "^## \[Unreleased\]" CHANGELOG.md | cut -d: -f1 | head -1)
+            if [ -n "$UNRELEASED_START" ]; then
+              # Find the next version section (end of Unreleased)
+              NEXT_VERSION_LINE=$(tail -n +$((UNRELEASED_START + 1)) CHANGELOG.md | grep -n "^## \[" | head -1 | cut -d: -f1)
+              
+              if [ -n "$NEXT_VERSION_LINE" ]; then
+                # Extract content between [Unreleased] and next version
+                UNRELEASED_END=$((UNRELEASED_START + NEXT_VERSION_LINE - 1))
+                sed -n "$((UNRELEASED_START + 1)),$((UNRELEASED_END - 1))p" CHANGELOG.md >> /tmp/changelog_entry.md
+              else
+                # No next version found, extract till end of file
+                tail -n +$((UNRELEASED_START + 1)) CHANGELOG.md >> /tmp/changelog_entry.md
+              fi
+              
+              echo "" >> /tmp/changelog_entry.md
+            fi
+          fi
+          
+          # Add commits since last tag if not already in Unreleased section
           LATEST_TAG="${{ steps.get_latest_tag.outputs.latest_tag }}"
           if [ "$LATEST_TAG" != "v0.0.0" ]; then
             COMMITS=$(git log $LATEST_TAG..HEAD --pretty=format:"- %s" --no-merges)
@@ -134,37 +159,52 @@ jobs:
             COMMITS=$(git log --pretty=format:"- %s" --no-merges | head -20)
           fi
           
-          echo "## [$NEW_VERSION] - $DATE" > /tmp/changelog_entry.md
-          echo "" >> /tmp/changelog_entry.md
-          echo "### Changed" >> /tmp/changelog_entry.md
-          echo "$COMMITS" >> /tmp/changelog_entry.md
-          echo "" >> /tmp/changelog_entry.md
+          # Only add commits if they exist and we didn't have an Unreleased section
+          if [ -n "$COMMITS" ] && [ -z "$UNRELEASED_START" ]; then
+            echo "### Changed" >> /tmp/changelog_entry.md
+            echo "$COMMITS" >> /tmp/changelog_entry.md
+            echo "" >> /tmp/changelog_entry.md
+          fi
           
+          # Update CHANGELOG.md
           if [ -f CHANGELOG.md ]; then
-            LINE_NUM=$(grep -n "^## \[Unreleased\]" CHANGELOG.md | cut -d: -f1 | head -1)
-            if [ -z "$LINE_NUM" ]; then
-              LINE_NUM=$(grep -n "^## \[" CHANGELOG.md | cut -d: -f1 | head -1)
-            fi
+            UNRELEASED_LINE=$(grep -n "^## \[Unreleased\]" CHANGELOG.md | cut -d: -f1 | head -1)
             
-            if [ -n "$LINE_NUM" ]; then
-              UNRELEASED_END=$(tail -n +$LINE_NUM CHANGELOG.md | grep -n "^## \[" | sed -n '2p' | cut -d: -f1)
-              if [ -n "$UNRELEASED_END" ]; then
-                INSERT_LINE=$((LINE_NUM + UNRELEASED_END - 1))
+            if [ -n "$UNRELEASED_LINE" ]; then
+              # Find where Unreleased section ends
+              NEXT_VERSION_LINE=$(tail -n +$((UNRELEASED_LINE + 1)) CHANGELOG.md | grep -n "^## \[" | head -1 | cut -d: -f1)
+              
+              if [ -n "$NEXT_VERSION_LINE" ]; then
+                INSERT_LINE=$((UNRELEASED_LINE + NEXT_VERSION_LINE - 1))
               else
-                INSERT_LINE=$((LINE_NUM + 1))
+                INSERT_LINE=$((UNRELEASED_LINE + 1))
               fi
               
-              head -n $INSERT_LINE CHANGELOG.md > /tmp/changelog_top.md
-              cat /tmp/changelog_entry.md >> /tmp/changelog_top.md
-              tail -n +$((INSERT_LINE + 1)) CHANGELOG.md >> /tmp/changelog_top.md
-              mv /tmp/changelog_top.md CHANGELOG.md
+              # Keep everything before Unreleased, replace Unreleased with new version, keep rest
+              head -n $((UNRELEASED_LINE - 1)) CHANGELOG.md > /tmp/changelog_new.md
+              echo "" >> /tmp/changelog_new.md
+              cat /tmp/changelog_entry.md >> /tmp/changelog_new.md
+              tail -n +$INSERT_LINE CHANGELOG.md >> /tmp/changelog_new.md
+              mv /tmp/changelog_new.md CHANGELOG.md
             else
-              LINE_NUM=$(grep -n "^# Changelog" CHANGELOG.md | cut -d: -f1 | head -1)
-              if [ -n "$LINE_NUM" ]; then
-                head -n $((LINE_NUM + 3)) CHANGELOG.md > /tmp/changelog_top.md
-                cat /tmp/changelog_entry.md >> /tmp/changelog_top.md
-                tail -n +$((LINE_NUM + 4)) CHANGELOG.md >> /tmp/changelog_top.md
-                mv /tmp/changelog_top.md CHANGELOG.md
+              # No Unreleased section, find first version and insert before it
+              FIRST_VERSION=$(grep -n "^## \[" CHANGELOG.md | cut -d: -f1 | head -1)
+              if [ -n "$FIRST_VERSION" ]; then
+                head -n $((FIRST_VERSION - 1)) CHANGELOG.md > /tmp/changelog_new.md
+                cat /tmp/changelog_entry.md >> /tmp/changelog_new.md
+                echo "" >> /tmp/changelog_new.md
+                tail -n +$FIRST_VERSION CHANGELOG.md >> /tmp/changelog_new.md
+                mv /tmp/changelog_new.md CHANGELOG.md
+              else
+                # No version sections found, add after header
+                LINE_NUM=$(grep -n "^# Changelog" CHANGELOG.md | cut -d: -f1 | head -1)
+                if [ -n "$LINE_NUM" ]; then
+                  head -n $((LINE_NUM + 3)) CHANGELOG.md > /tmp/changelog_new.md
+                  echo "" >> /tmp/changelog_new.md
+                  cat /tmp/changelog_entry.md >> /tmp/changelog_new.md
+                  tail -n +$((LINE_NUM + 4)) CHANGELOG.md >> /tmp/changelog_new.md
+                  mv /tmp/changelog_new.md CHANGELOG.md
+                fi
               fi
             fi
           fi

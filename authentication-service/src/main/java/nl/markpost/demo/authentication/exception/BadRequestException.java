@@ -1,7 +1,7 @@
-package nl.markpost.demo.common.exception;
+package nl.markpost.demo.authentication.exception;
 
-import nl.markpost.demo.common.constant.GenericErrorCodes;
-import nl.markpost.demo.common.model.CustomError;
+import nl.markpost.demo.authentication.constant.GenericErrorCodes;
+import nl.markpost.demo.authentication.model.CustomError;
 import org.springframework.http.HttpStatus;
 
 public class BadRequestException extends GenericException {

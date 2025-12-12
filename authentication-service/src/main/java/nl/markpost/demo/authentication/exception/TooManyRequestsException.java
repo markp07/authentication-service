@@ -1,7 +1,7 @@
-package nl.markpost.demo.common.exception;
+package nl.markpost.demo.authentication.exception;
 
 import lombok.Getter;
-import nl.markpost.demo.common.constant.GenericErrorCodes;
+import nl.markpost.demo.authentication.constant.GenericErrorCodes;
 
 @Getter
 public class TooManyRequestsException extends GenericException {

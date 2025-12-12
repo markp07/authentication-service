@@ -1,11 +1,12 @@
 package nl.markpost.demo.authentication.constant;
 
 /**
- * Constants used in the authentication service.
+ * Constants used across the application.
  */
 public class Constants {
 
   private Constants() {
+
   }
 
   public static final String TRACE_PARENT = "traceparent";
@@ -18,4 +19,5 @@ public class Constants {
   public final static String PASSKEY_REGISTRATION = "webauthn_registration_options";
   public final static String PASSKEY_ASSERTION_REQUEST = "webauthn_assertion_request";
   public final static String PASSKEY_USERNAMELESS_ASSERTION_REQUEST = "webauthn_usernameless_assertion_request";
+
 }

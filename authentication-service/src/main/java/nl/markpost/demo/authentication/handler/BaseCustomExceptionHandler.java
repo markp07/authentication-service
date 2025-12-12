@@ -1,21 +1,21 @@
-package nl.markpost.demo.common.handler;
+package nl.markpost.demo.authentication.handler;
 
-import static nl.markpost.demo.common.constant.Constants.TRACE_PARENT;
+import static nl.markpost.demo.authentication.constant.Constants.TRACE_PARENT;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
 import lombok.extern.slf4j.Slf4j;
-import nl.markpost.demo.common.constant.GenericErrorCodes;
-import nl.markpost.demo.common.exception.GenericException;
-import nl.markpost.demo.common.exception.NotFoundException;
-import nl.markpost.demo.common.model.CustomError;
+import nl.markpost.demo.authentication.constant.GenericErrorCodes;
+import nl.markpost.demo.authentication.exception.GenericException;
+import nl.markpost.demo.authentication.exception.NotFoundException;
+import nl.markpost.demo.authentication.model.CustomError;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import nl.markpost.demo.common.model.Error;
+import nl.markpost.demo.authentication.model.Error;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /**

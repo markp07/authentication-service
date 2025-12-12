@@ -12,7 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import nl.markpost.demo.authentication.model.PasskeyCredential;
 import nl.markpost.demo.authentication.model.User;
 import nl.markpost.demo.authentication.repository.PasskeyCredentialRepository;
-import nl.markpost.demo.common.exception.UnauthorizedException;
+import nl.markpost.demo.authentication.exception.UnauthorizedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

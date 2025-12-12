@@ -3,7 +3,7 @@ package nl.markpost.demo.authentication.util;
 import com.yubico.webauthn.data.ByteArray;
 import java.nio.charset.StandardCharsets;
 import nl.markpost.demo.authentication.model.User;
-import nl.markpost.demo.common.exception.InternalServerErrorException;
+import nl.markpost.demo.authentication.exception.InternalServerErrorException;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**

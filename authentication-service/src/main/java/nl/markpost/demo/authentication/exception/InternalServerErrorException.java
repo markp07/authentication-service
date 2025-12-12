@@ -1,6 +1,6 @@
-package nl.markpost.demo.common.exception;
+package nl.markpost.demo.authentication.exception;
 
-import nl.markpost.demo.common.constant.GenericErrorCodes;
+import nl.markpost.demo.authentication.constant.GenericErrorCodes;
 
 public class InternalServerErrorException extends GenericException {
 

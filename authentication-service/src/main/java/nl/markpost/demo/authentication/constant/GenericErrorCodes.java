@@ -1,4 +1,4 @@
-package nl.markpost.demo.common.constant;
+package nl.markpost.demo.authentication.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

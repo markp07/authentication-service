@@ -5,9 +5,9 @@ import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import nl.markpost.demo.common.exception.BadRequestException;
-import nl.markpost.demo.common.exception.InternalServerErrorException;
-import nl.markpost.demo.common.model.CustomError;
+import nl.markpost.demo.authentication.exception.BadRequestException;
+import nl.markpost.demo.authentication.exception.InternalServerErrorException;
+import nl.markpost.demo.authentication.model.CustomError;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 

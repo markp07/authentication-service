@@ -1,4 +1,4 @@
-package nl.markpost.demo.common.model;
+package nl.markpost.demo.authentication.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
