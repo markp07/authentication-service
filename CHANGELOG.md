@@ -5,12 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.6.10] - 2025-12-09
 
-### Changed
-- chore(github-actions)(deps): bump the github-actions group with 3 updates (#87)
-
-## [1.6.9] - 2025-12-08
 ## [1.7.1] - 2025-12-10
 
 ### Changed
@@ -26,6 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - feat: configure cookie domain settings for different environments (#89)
 
+## [1.6.10] - 2025-12-09
+
+### Changed
+- chore(github-actions)(deps): bump the github-actions group with 3 updates (#87)
+
+## [1.6.9] - 2025-12-08
 
 ### Changed
 - chore: update GitHub Actions configuration and add weekly schedule fo… (#86)
