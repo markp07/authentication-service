@@ -27,18 +27,15 @@ demo-authentication/
 │   │   │   ├── model/           # Domain entities
 │   │   │   ├── security/        # Security configuration
 │   │   │   ├── filter/          # Custom filters
+│   │   │   ├── common/          # Common utilities and exceptions
 │   │   │   └── dto/             # Data transfer objects
 │   │   └── test/                # Unit and integration tests
-│   └── pom.xml
-├── weather-service/          # Demo service protected by authentication
-│   ├── src/
 │   └── pom.xml
 ├── frontend/                 # Next.js React frontend
 │   ├── src/
 │   │   ├── app/             # Next.js app router pages
 │   │   └── components/      # React components
 │   └── package.json
-├── common/                   # Shared utilities and exceptions
 └── docker-compose.yml       # Docker orchestration
 ```
 
@@ -58,11 +55,6 @@ demo-authentication/
 - **JPA/Hibernate**: Database ORM
 - **OpenAPI/Swagger**: API documentation
 
-### Backend (Weather Service)
-- **Spring Boot 3.5.6**: Microservice framework
-- **Spring Cloud OpenFeign**: REST client for external APIs
-- **Redis**: Caching layer
-- **MapStruct**: DTO mapping
 
 ### Frontend
 - **Next.js 15.4.2**: React framework
@@ -124,7 +116,6 @@ This will start:
 - **PostgreSQL** on port `12004`
 - **Redis** on port `12005`
 - **Authentication Service** on port `12002`
-- **Weather Service** on port `12001`
 - **Frontend** on port `12006`
 
 Access the application at: `http://localhost:12006`
@@ -149,12 +140,6 @@ Access the application at: `http://localhost:12006`
    ../mvnw spring-boot:run
    ```
 
-4. **Run Weather Service**
-   ```bash
-   cd weather-service
-   ../mvnw spring-boot:run
-   ```
-
 #### Frontend
 
 ```bash
@@ -176,14 +161,9 @@ This project uses OpenAPI 3.0 specifications with automated code generation for 
 - **OpenAPI Spec**: `http://localhost:12002/v3/api-docs`
 - **Spec File**: `authentication-service/src/main/resources/api/authentication-api-v1.yaml`
 
-**Weather Service:**
-- **Swagger UI**: `http://localhost:12001/swagger-ui.html`
-- **OpenAPI Spec**: `http://localhost:12001/v3/api-docs`
-- **Spec File**: `weather-service/src/main/resources/api/weather-api-v1.yaml`
-
 ### Code Generation
 
-Both services use the OpenAPI Generator Maven plugin to automatically generate:
+The authentication service uses the OpenAPI Generator Maven plugin to automatically generate:
 - Controller interfaces with proper annotations
 - Model/DTO classes with validation
 - API documentation
@@ -224,12 +204,6 @@ Generated code is created during the Maven build process and placed in `target/g
 - `PUT /v1/user/username` - Update username
 - `DELETE /v1/user` - Delete account
 
-#### Weather Service
-- `GET /v1/forecast` - Get weather forecast for coordinates (requires authentication)
-- `GET /v1/saved-locations` - Get saved locations for authenticated user
-- `POST /v1/saved-locations` - Save a new location
-- `DELETE /v1/saved-locations/{id}` - Delete a saved location
-- `PUT /v1/saved-locations/reorder` - Reorder saved locations (drag & drop)
 
 ## 🔐 Security Features
 
@@ -261,7 +235,6 @@ Coverage reports are generated in `target/site/jacoco/index.html`
 Key configuration files:
 
 - `authentication-service/src/main/resources/application.yaml` - Service configuration
-- `weather-service/src/main/resources/application.yaml` - Weather service config
 - `docker-compose.yml` - Container orchestration
 - `pom.xml` - Maven dependencies and build configuration
 

@@ -8,12 +8,10 @@
   <version>${revision}</version>
   <packaging>pom</packaging>
   <name>Demo Authentication Parent</name>
-  <description>Parent POM for authentication and weather services</description>
+  <description>Parent POM for authentication service</description>
 
   <modules>
     <module>authentication-service</module>
-    <module>weather-service</module>
-    <module>common</module>
   </modules>
 
   <properties>
