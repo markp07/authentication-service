@@ -18,14 +18,39 @@ describe('API Utils', () => {
   describe('fetchWithAuthRetry', () => {
     const mockFetch = jest.fn();
     const originalFetch = global.fetch;
+    const originalConsoleError = console.error;
 
     beforeEach(() => {
       global.fetch = mockFetch;
       mockFetch.mockReset();
+
+      // Suppress jsdom navigation errors in tests
+      console.error = jest.fn((...args) => {
+        // Check if any of the arguments contain the navigation error message
+        const hasNavigationError = args.some(arg => {
+          if (arg instanceof Error) {
+            return arg.message.includes('Not implemented: navigation');
+          }
+          if (typeof arg === 'string') {
+            return arg.includes('Not implemented: navigation');
+          }
+          if (arg && typeof arg === 'object' && 'message' in arg) {
+            return arg.message?.includes('Not implemented: navigation');
+          }
+          return false;
+        });
+
+        if (hasNavigationError) {
+          return;
+        }
+
+        originalConsoleError(...args);
+      });
     });
 
     afterEach(() => {
       global.fetch = originalFetch;
+      console.error = originalConsoleError;
     });
 
     it('should return response directly if status is not 401', async () => {
