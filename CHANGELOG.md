@@ -10,22 +10,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - **BREAKING CHANGE:** Removed weather service completely - project now focuses solely on authentication features
+- **BREAKING CHANGE:** Merged all common package classes into authentication package (nl.markpost.demo.common.* → nl.markpost.demo.authentication.*)
 - Merged common module into authentication-service for better maintainability
 - Updated home page to redirect to /profile instead of weather dashboard
 - Removed dashboard from navigation (Profile and Security only)
 - Changed default login redirect from / to /profile
 - Renamed application from "Weather" to "Auth Demo" in UI
+- Consolidated package structure: all shared utilities now in authentication.constant, authentication.exception, authentication.handler, authentication.model
 
 ### Removed
 - Weather service module and all related endpoints
 - Common module (merged into authentication-service)
+- nl.markpost.demo.common package (moved to nl.markpost.demo.authentication)
 - Weather-related frontend pages (dashboard, demo)
 - Weather-related components (HourlyGraphModal, LocationBar, LocationEditModal, etc.)
 - Weather-related types and utilities
 - Weather translations and weather-specific UI elements
 
 ### Added
-- Common utilities integrated into authentication-service package (nl.markpost.demo.common)
+- Common utilities fully integrated into authentication package structure
 - Refactoring documentation (REFACTORING_VERIFICATION_COMPLETE.md)
 
 ## [1.7.1] - 2025-12-10

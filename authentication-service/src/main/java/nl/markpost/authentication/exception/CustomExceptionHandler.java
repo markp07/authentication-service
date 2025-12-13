@@ -1,0 +1,25 @@
+package nl.markpost.authentication.exception;
+
+import com.yubico.webauthn.exception.AssertionFailedException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import nl.markpost.authentication.constant.GenericErrorCodes;
+import nl.markpost.authentication.handler.BaseCustomExceptionHandler;
+import nl.markpost.authentication.model.Error;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+@RestControllerAdvice
+@Slf4j
+@RequiredArgsConstructor
+public class CustomExceptionHandler extends BaseCustomExceptionHandler {
+
+  @ExceptionHandler(AssertionFailedException.class)
+  ResponseEntity<Error> handleMethodArgumentNotValidException(AssertionFailedException e) {
+    log.error("Invalid method argument", e);
+    return ResponseEntity.badRequest()
+        .body(createError(GenericErrorCodes.UNAUTHORIZED));
+  }
+
+}

@@ -5,15 +5,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>nl.markpost.demo</groupId>
-    <artifactId>demo-authentication-parent</artifactId>
+    <groupId>nl.markpost</groupId>
+    <artifactId>authentication-service-parent</artifactId>
     <version>${revision}</version>
   </parent>
 
-  <artifactId>authentication</artifactId>
+  <artifactId>authentication-service</artifactId>
   <version>${revision}</version>
   <name>Authentication Service</name>
-  <description>Authentication demo project</description>
+  <description>Authentication service</description>
 
   <dependencies>
     <!-- Spring Boot dependencies -->
@@ -227,8 +227,8 @@
               </inputSpec>
               <generatorName>spring</generatorName>
               <output>${project.build.directory}/generated-sources</output>
-              <apiPackage>nl.markpost.demo.authentication.api.v1.controller</apiPackage>
-              <modelPackage>nl.markpost.demo.authentication.api.v1.model</modelPackage>
+              <apiPackage>nl.markpost.authentication.api.v1.controller</apiPackage>
+              <modelPackage>nl.markpost.authentication.api.v1.model</modelPackage>
               <supportingFilesToGenerate>false</supportingFilesToGenerate>
               <configOptions>
                 <title>Authentication API</title>
