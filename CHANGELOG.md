@@ -31,6 +31,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Common utilities fully integrated into authentication package structure
 - Refactoring documentation (REFACTORING_VERIFICATION_COMPLETE.md)
 
+## [1.8.0] - 2025-12-11
+
+### Changed
+- feat: enable CORS for all subdomains of markpost.dev (#92)
+
 ## [1.7.1] - 2025-12-10
 
 ### Changed
