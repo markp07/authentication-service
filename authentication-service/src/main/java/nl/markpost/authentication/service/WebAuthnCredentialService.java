@@ -9,10 +9,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import nl.markpost.authentication.exception.UnauthorizedException;
 import nl.markpost.authentication.model.PasskeyCredential;
 import nl.markpost.authentication.model.User;
 import nl.markpost.authentication.repository.PasskeyCredentialRepository;
-import nl.markpost.authentication.exception.UnauthorizedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

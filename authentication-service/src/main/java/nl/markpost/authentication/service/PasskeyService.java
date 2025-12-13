@@ -36,8 +36,15 @@ import lombok.extern.slf4j.Slf4j;
 import nl.markpost.authentication.api.v1.model.Message;
 import nl.markpost.authentication.api.v1.model.PasskeyInfoDto;
 import nl.markpost.authentication.api.v1.model.PublicKeyCredentialCreationOptionsDto;
+import nl.markpost.authentication.api.v1.model.PublicKeyCredentialCreationOptionsDtoAuthenticatorSelection;
+import nl.markpost.authentication.api.v1.model.PublicKeyCredentialCreationOptionsDtoPubKeyCredParamsInner;
+import nl.markpost.authentication.api.v1.model.PublicKeyCredentialCreationOptionsDtoRp;
+import nl.markpost.authentication.api.v1.model.PublicKeyCredentialCreationOptionsDtoUser;
 import nl.markpost.authentication.api.v1.model.PublicKeyCredentialRequestOptionsDto;
 import nl.markpost.authentication.constant.Messages;
+import nl.markpost.authentication.exception.InternalServerErrorException;
+import nl.markpost.authentication.exception.NotFoundException;
+import nl.markpost.authentication.exception.UnauthorizedException;
 import nl.markpost.authentication.mapper.PasskeyCredentialMapper;
 import nl.markpost.authentication.mapper.PasskeyInfoDtoMapper;
 import nl.markpost.authentication.mapper.StartRegistrationOptionsMapper;
@@ -47,9 +54,6 @@ import nl.markpost.authentication.repository.PasskeyCredentialRepository;
 import nl.markpost.authentication.util.CookieUtil;
 import nl.markpost.authentication.util.RequestUtil;
 import nl.markpost.authentication.util.UserUtil;
-import nl.markpost.authentication.exception.InternalServerErrorException;
-import nl.markpost.authentication.exception.NotFoundException;
-import nl.markpost.authentication.exception.UnauthorizedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -346,16 +350,16 @@ public class PasskeyService {
     PublicKeyCredentialCreationOptionsDto dto = new PublicKeyCredentialCreationOptionsDto();
     dto.setChallenge(options.getChallenge().getBase64Url());
     dto.setRp(objectMapper.convertValue(options.getRp(),
-        nl.markpost.demo.authentication.api.v1.model.PublicKeyCredentialCreationOptionsDtoRp.class));
+        PublicKeyCredentialCreationOptionsDtoRp.class));
     dto.setUser(objectMapper.convertValue(options.getUser(),
-        nl.markpost.demo.authentication.api.v1.model.PublicKeyCredentialCreationOptionsDtoUser.class));
+        PublicKeyCredentialCreationOptionsDtoUser.class));
     dto.setPubKeyCredParams(objectMapper.convertValue(options.getPubKeyCredParams(),
         objectMapper.getTypeFactory().constructCollectionType(List.class,
-            nl.markpost.demo.authentication.api.v1.model.PublicKeyCredentialCreationOptionsDtoPubKeyCredParamsInner.class)));
+            PublicKeyCredentialCreationOptionsDtoPubKeyCredParamsInner.class)));
     dto.setTimeout(options.getTimeout().orElse(null));
     dto.setAuthenticatorSelection(options.getAuthenticatorSelection().isPresent() ?
         objectMapper.convertValue(options.getAuthenticatorSelection().get(),
-            nl.markpost.demo.authentication.api.v1.model.PublicKeyCredentialCreationOptionsDtoAuthenticatorSelection.class)
+            PublicKeyCredentialCreationOptionsDtoAuthenticatorSelection.class)
         : null);
     return dto;
   }

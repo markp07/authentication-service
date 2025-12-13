@@ -2,8 +2,8 @@ package nl.markpost.authentication.util;
 
 import com.yubico.webauthn.data.ByteArray;
 import java.nio.charset.StandardCharsets;
-import nl.markpost.authentication.model.User;
 import nl.markpost.authentication.exception.InternalServerErrorException;
+import nl.markpost.authentication.model.User;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**

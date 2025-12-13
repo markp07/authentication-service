@@ -11,7 +11,8 @@ import org.springframework.lang.Nullable;
 /**
  * Error response model for API exception handling.
  * <p>
- * Contains details about the error, such as timestamp, status, code, message, and traceparent for distributed tracing.
+ * Contains details about the error, such as timestamp, status, code, message, and traceparent for
+ * distributed tracing.
  * </p>
  */
 @AllArgsConstructor

@@ -35,8 +35,8 @@ public class EmailController implements EmailApi {
   }
 
   /**
-   * Resends the email verification email to the currently authenticated user.
-   * Rate limited to max 1 email per hour.
+   * Resends the email verification email to the currently authenticated user. Rate limited to max 1
+   * email per hour.
    *
    * @return ResponseEntity with a message indicating success
    */
@@ -45,6 +45,7 @@ public class EmailController implements EmailApi {
     User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     log.info("Resend verification email request for user: {}", user.getEmail());
     emailVerificationService.sendVerificationEmail(user);
-    return ResponseEntity.ok(MessageResponseUtil.createMessageResponse(Messages.VERIFICATION_EMAIL_SENT));
+    return ResponseEntity.ok(
+        MessageResponseUtil.createMessageResponse(Messages.VERIFICATION_EMAIL_SENT));
   }
 }

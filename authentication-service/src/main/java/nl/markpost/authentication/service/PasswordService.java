@@ -5,10 +5,10 @@ import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.markpost.authentication.api.v1.model.ChangePasswordRequest;
-import nl.markpost.authentication.model.User;
-import nl.markpost.authentication.repository.UserRepository;
 import nl.markpost.authentication.exception.BadRequestException;
 import nl.markpost.authentication.exception.NotFoundException;
+import nl.markpost.authentication.model.User;
+import nl.markpost.authentication.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,7 +65,7 @@ public class PasswordService {
    * email.
    *
    * @param email the email address of the user requesting a password reset
-   *              TODO: add time in DB for token expiration
+   *                           TODO: add time in DB for token expiration
    */
   @Transactional
   public void forgotPassword(String email) {
@@ -87,7 +87,7 @@ public class PasswordService {
    *
    * @param resetToken  the token sent to the user's email for password reset
    * @param newPassword the new password to set for the user
-   *                                                                             TODO: check time in DB for token expiration
+   *                                                                                                TODO: check time in DB for token expiration
    */
   @Transactional
   public void resetPassword(String resetToken, String newPassword) {

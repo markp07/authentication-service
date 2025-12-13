@@ -50,7 +50,9 @@ public class DummyEmailServiceImpl implements EmailService {
   }
 
   private void logEmail(String to, String subject, String body) {
-    String fromDisplay = fromName != null && !fromName.isEmpty() ? fromName + " <" + from + ">" : from;
-    log.info("[DUMMY EMAIL] From: {}\nTo: {}\nSubject: {}\nBody: {}", fromDisplay, to, subject, body);
+    String fromDisplay =
+        fromName != null && !fromName.isEmpty() ? fromName + " <" + from + ">" : from;
+    log.info("[DUMMY EMAIL] From: {}\nTo: {}\nSubject: {}\nBody: {}", fromDisplay, to, subject,
+        body);
   }
 }

@@ -54,7 +54,7 @@ export default function Security() {
 
   function handleNavigate(page: "profile" | "security") {
     if (page === "profile") {
-      router.push("/profile");
+      router.push("/");
     } else if (page === "security") {
       router.push("/security");
     }

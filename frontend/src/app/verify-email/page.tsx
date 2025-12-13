@@ -61,7 +61,7 @@ function VerifyEmailContent() {
   }
 
   function handleGoToProfile() {
-    router.push("/profile");
+    router.push("/");
   }
 
   function handleTryAgain() {

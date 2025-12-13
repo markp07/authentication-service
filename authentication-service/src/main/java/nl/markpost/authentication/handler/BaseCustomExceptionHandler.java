@@ -9,20 +9,21 @@ import nl.markpost.authentication.constant.GenericErrorCodes;
 import nl.markpost.authentication.exception.GenericException;
 import nl.markpost.authentication.exception.NotFoundException;
 import nl.markpost.authentication.model.CustomError;
+import nl.markpost.authentication.model.Error;
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import nl.markpost.authentication.model.Error;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 /**
  * Base exception handler for custom and generic exceptions.
  * <p>
  * Handles {@link nl.markpost.demo.common.exception.GenericException} and generic {@link Exception}.
- * Returns a structured {@link nl.markpost.demo.common.model.Error} response with appropriate HTTP status and error details.
+ * Returns a structured {@link nl.markpost.demo.common.model.Error} response with appropriate HTTP
+ * status and error details.
  * </p>
  * <ul>
  *   <li>Logs all exceptions using SLF4J.</li>
@@ -34,8 +35,8 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 public class BaseCustomExceptionHandler {
 
   /**
-   * Handles {@link nl.markpost.demo.common.exception.GenericException}.
-   * Logs the exception and returns a structured error response with the exception's HTTP status and error code.
+   * Handles {@link nl.markpost.demo.common.exception.GenericException}. Logs the exception and
+   * returns a structured error response with the exception's HTTP status and error code.
    *
    * @param exception the thrown GenericException
    * @return ResponseEntity containing the error details
@@ -53,8 +54,8 @@ public class BaseCustomExceptionHandler {
   }
 
   /**
-   * Handles all other exceptions not specifically handled elsewhere.
-   * Logs the exception and returns a generic internal server error response.
+   * Handles all other exceptions not specifically handled elsewhere. Logs the exception and returns
+   * a generic internal server error response.
    *
    * @param e the thrown Exception
    * @return ResponseEntity containing the error details
@@ -71,7 +72,7 @@ public class BaseCustomExceptionHandler {
     return handleGenericExceptionException(new NotFoundException(e.getMessage()));
   }
 
-  @ExceptionHandler(MissingServletRequestParameterException .class)
+  @ExceptionHandler(MissingServletRequestParameterException.class)
   ResponseEntity<Error> handleMissingServletRequestParameterException(Exception e) {
     log.error("Missing request parameter", e);
     //TODO: handle specific missing parameter case
@@ -101,7 +102,7 @@ public class BaseCustomExceptionHandler {
    * Creates an error response using the provided error code and HTTP status.
    *
    * @param errorCode the error code
-   * @param status the HTTP status
+   * @param status    the HTTP status
    * @return Error object with details
    */
   private Error createError(GenericErrorCodes errorCode, HttpStatus status) {
@@ -119,7 +120,7 @@ public class BaseCustomExceptionHandler {
    * Creates an error response using the provided error code and HTTP status.
    *
    * @param errorCode the error code
-   * @param status the HTTP status
+   * @param status    the HTTP status
    * @return Error object with details
    */
   private Error createError(CustomError errorCode, HttpStatus status) {

@@ -32,13 +32,13 @@ import nl.markpost.authentication.api.v1.model.PasswordRequest;
 import nl.markpost.authentication.api.v1.model.TOTPCode;
 import nl.markpost.authentication.api.v1.model.TOTPSetupResponse;
 import nl.markpost.authentication.api.v1.model.TOTPVerifyRequest;
+import nl.markpost.authentication.exception.BadRequestException;
+import nl.markpost.authentication.exception.ForbiddenException;
+import nl.markpost.authentication.exception.UnauthorizedException;
 import nl.markpost.authentication.model.User;
 import nl.markpost.authentication.repository.UserRepository;
 import nl.markpost.authentication.util.CookieUtil;
 import nl.markpost.authentication.util.RequestUtil;
-import nl.markpost.authentication.exception.BadRequestException;
-import nl.markpost.authentication.exception.ForbiddenException;
-import nl.markpost.authentication.exception.UnauthorizedException;
 import org.apache.commons.codec.binary.Base32;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -105,7 +105,7 @@ public class Manage2faService {
    *
    * @param code the TOTP code to verify
    *             <p>
-   *                                                 TODO: need check what time enabling 2FA was triggered. Only allow enabling 2FA within a certain time frame (e.g., 5 minutes).
+   *                                                             TODO: need check what time enabling 2FA was triggered. Only allow enabling 2FA within a certain time frame (e.g., 5 minutes).
    */
   public void enable2fa(TOTPCode code) {
     HttpServletRequest request = getCurrentRequest();

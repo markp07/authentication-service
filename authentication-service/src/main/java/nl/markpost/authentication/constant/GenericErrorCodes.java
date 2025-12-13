@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-/** Generic error codes. */
+/**
+ * Generic error codes.
+ */
 @Getter
 @AllArgsConstructor
 public enum GenericErrorCodes {

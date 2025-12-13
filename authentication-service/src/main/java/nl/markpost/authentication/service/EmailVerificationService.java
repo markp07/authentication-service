@@ -4,10 +4,10 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import nl.markpost.authentication.model.User;
-import nl.markpost.authentication.repository.UserRepository;
 import nl.markpost.authentication.exception.BadRequestException;
 import nl.markpost.authentication.exception.TooManyRequestsException;
+import nl.markpost.authentication.model.User;
+import nl.markpost.authentication.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,8 +37,10 @@ public class EmailVerificationService {
 
     // Check if cooldown period has passed
     LocalDateTime lastSent = user.getLastVerificationEmailSentAt();
-    if (lastSent != null && lastSent.plusMinutes(RESEND_COOLDOWN_MINUTES).isAfter(LocalDateTime.now())) {
-      throw new TooManyRequestsException("Please wait before requesting another verification email");
+    if (lastSent != null && lastSent.plusMinutes(RESEND_COOLDOWN_MINUTES)
+        .isAfter(LocalDateTime.now())) {
+      throw new TooManyRequestsException(
+          "Please wait before requesting another verification email");
     }
 
     // Generate verification token
@@ -66,7 +68,8 @@ public class EmailVerificationService {
 
     // Check if token is expired
     LocalDateTime tokenCreatedAt = user.getEmailVerificationTokenCreatedAt();
-    if (tokenCreatedAt == null || tokenCreatedAt.plusHours(TOKEN_EXPIRY_HOURS).isBefore(LocalDateTime.now())) {
+    if (tokenCreatedAt == null || tokenCreatedAt.plusHours(TOKEN_EXPIRY_HOURS)
+        .isBefore(LocalDateTime.now())) {
       throw new BadRequestException("Verification token has expired");
     }
 

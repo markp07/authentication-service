@@ -13,9 +13,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.markpost.authentication.exception.CustomExceptionHandler;
-import nl.markpost.authentication.security.JwtKeyProvider;
 import nl.markpost.authentication.exception.UnauthorizedException;
 import nl.markpost.authentication.model.Error;
+import nl.markpost.authentication.security.JwtKeyProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,7 +55,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       handleAuthentication(request, response, filterChain);
     } catch (UnauthorizedException e) {
       log.info("Unauthorized access attempt: {}", e.getMessage());
-      ResponseEntity<nl.markpost.demo.authentication.model.Error> errorResponse = customExceptionHandler.handleGenericExceptionException(
+      ResponseEntity<Error> errorResponse = customExceptionHandler.handleGenericExceptionException(
           e);
       response.setContentType("application/json");
       response.setStatus(e.getHttpStatus().value());

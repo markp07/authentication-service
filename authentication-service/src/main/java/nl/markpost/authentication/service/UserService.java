@@ -3,10 +3,10 @@ package nl.markpost.authentication.service;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import nl.markpost.authentication.api.v1.model.UserDetails;
-import nl.markpost.authentication.model.User;
-import nl.markpost.authentication.repository.UserRepository;
 import nl.markpost.authentication.exception.BadRequestException;
 import nl.markpost.authentication.exception.UnauthorizedException;
+import nl.markpost.authentication.model.User;
+import nl.markpost.authentication.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,14 +33,16 @@ public class UserService {
     // Reload the user within the transaction to access lazy-loaded collections
     User managedUser = userRepository.findById(user.getId())
         .orElseThrow(() -> new BadRequestException("User not found"));
-    boolean passkeyEnabled = managedUser.getPasskeyCredentials() != null && !managedUser.getPasskeyCredentials().isEmpty();
+    boolean passkeyEnabled =
+        managedUser.getPasskeyCredentials() != null && !managedUser.getPasskeyCredentials()
+            .isEmpty();
     return UserDetails.builder()
         .userName(managedUser.getUsername())
         .email(managedUser.getEmail())
         .twoFactorEnabled(managedUser.is2faEnabled())
         .passkeyEnabled(passkeyEnabled)
         .emailVerified(managedUser.isEmailVerified())
-        .createdAt(managedUser.getCreatedAt() != null 
+        .createdAt(managedUser.getCreatedAt() != null
             ? managedUser.getCreatedAt().atZone(java.time.ZoneId.systemDefault()).toOffsetDateTime()
             : null)
         .build();
@@ -76,9 +78,9 @@ public class UserService {
    */
   public void checkIfUserExists(String userName, boolean exceptionWhenExists) {
     User user = userRepository.findByUserName(userName).orElse(null);
-    if(user != null && exceptionWhenExists) {
+    if (user != null && exceptionWhenExists) {
       throw new BadRequestException("User already exists");
-    } else if(user == null && !exceptionWhenExists) {
+    } else if (user == null && !exceptionWhenExists) {
       throw new BadRequestException("User already exists");
     }
   }
@@ -91,7 +93,7 @@ public class UserService {
    */
   public void checkIfEmailExists(String email) {
     User user = userRepository.findByEmail(email).orElse(null);
-    if(user != null) {
+    if (user != null) {
       throw new BadRequestException("Email already exists");
     }
   }

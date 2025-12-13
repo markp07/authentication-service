@@ -67,7 +67,8 @@ public class EmailServiceImpl implements EmailService {
     }
   }
 
-  private void setFromAddress(MimeMessageHelper helper) throws MessagingException, UnsupportedEncodingException {
+  private void setFromAddress(MimeMessageHelper helper)
+      throws MessagingException, UnsupportedEncodingException {
     if (fromName != null && !fromName.isEmpty()) {
       helper.setFrom(new InternetAddress(from, fromName));
     } else {

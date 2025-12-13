@@ -52,10 +52,10 @@ export function isValidCallback(callback: string | null): boolean {
  * Gets a safe callback URL, or returns the default if invalid
  *
  * @param callback The callback URL to validate
- * @param defaultUrl The default URL to return if callback is invalid (default: "/profile")
+ * @param defaultUrl The default URL to return if callback is invalid (default: "/")
  * @returns The callback if valid, otherwise the default URL
  */
-export function getSafeCallback(callback: string | null, defaultUrl: string = "/profile"): string {
+export function getSafeCallback(callback: string | null, defaultUrl: string = "/"): string {
   return isValidCallback(callback) ? callback! : defaultUrl;
 }
 
