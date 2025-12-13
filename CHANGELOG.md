@@ -5,12 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.6.10] - 2025-12-09
+
+## [Unreleased] - 2025-12-12
 
 ### Changed
-- chore(github-actions)(deps): bump the github-actions group with 3 updates (#87)
+- **BREAKING CHANGE:** Removed weather service completely - project now focuses solely on authentication features
+- **BREAKING CHANGE:** Merged all common package classes into authentication package (nl.markpost.demo.common.* → nl.markpost.demo.authentication.*)
+- Merged common module into authentication-service for better maintainability
+- Updated home page to redirect to /profile instead of weather dashboard
+- Removed dashboard from navigation (Profile and Security only)
+- Changed default login redirect from / to /profile
+- Renamed application from "Weather" to "Auth Demo" in UI
+- Consolidated package structure: all shared utilities now in authentication.constant, authentication.exception, authentication.handler, authentication.model
 
-## [1.6.9] - 2025-12-08
+### Removed
+- Weather service module and all related endpoints
+- Common module (merged into authentication-service)
+- nl.markpost.demo.common package (moved to nl.markpost.demo.authentication)
+- Weather-related frontend pages (dashboard, demo)
+- Weather-related components (HourlyGraphModal, LocationBar, LocationEditModal, etc.)
+- Weather-related types and utilities
+- Weather translations and weather-specific UI elements
+
+### Added
+- Common utilities fully integrated into authentication package structure
+- Refactoring documentation (REFACTORING_VERIFICATION_COMPLETE.md)
+
 ## [1.8.0] - 2025-12-11
 
 ### Changed
@@ -31,6 +51,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - feat: configure cookie domain settings for different environments (#89)
 
+## [1.6.10] - 2025-12-09
+
+### Changed
+- chore(github-actions)(deps): bump the github-actions group with 3 updates (#87)
+
+## [1.6.9] - 2025-12-08
 
 ### Changed
 - chore: update GitHub Actions configuration and add weekly schedule fo… (#86)

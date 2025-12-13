@@ -1,14 +1,14 @@
 'use client';
 
 import React from "react";
-import { IconHome, IconUser, IconShield, IconLogout, IconMenu2, IconX } from "@tabler/icons-react";
+import { IconUser, IconShield, IconLogout, IconMenu2, IconX } from "@tabler/icons-react";
 import { useTranslations } from 'next-intl';
 import LanguageSelector from './LanguageSelector';
 
 interface SidebarProps {
   username: string | null;
-  activePage: "dashboard" | "profile" | "security";
-  onNavigate: (page: "dashboard" | "profile" | "security") => void;
+  activePage: "profile" | "security";
+  onNavigate: (page: "profile" | "security") => void;
   onLogout: () => void;
 }
 
@@ -17,7 +17,6 @@ export default function Sidebar({ username, activePage, onNavigate, onLogout }: 
   const [isOpen, setIsOpen] = React.useState(false);
 
   const menuItems = [
-    { id: "dashboard" as const, label: t('dashboard'), icon: IconHome },
     { id: "profile" as const, label: t('profile'), icon: IconUser },
     { id: "security" as const, label: t('security'), icon: IconShield },
   ];
@@ -50,7 +49,7 @@ export default function Sidebar({ username, activePage, onNavigate, onLogout }: 
         <div className="flex flex-col h-full lg:h-screen">
           {/* Header */}
           <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-            <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400">Weather</h1>
+            <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400">Auth Demo</h1>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{t('welcome', { username: username || 'User' })}</p>
             <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
               v{process.env.NEXT_PUBLIC_APP_VERSION || '0.0.0'} • {new Date(process.env.NEXT_PUBLIC_BUILD_TIME || Date.now()).toLocaleString()}

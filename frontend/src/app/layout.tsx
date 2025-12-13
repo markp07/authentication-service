@@ -5,8 +5,8 @@ import { cookies, headers } from 'next/headers';
 import { locales, defaultLocale, type Locale } from '../i18n/config';
 
 export const metadata: Metadata = {
-  title: "Weather",
-  description: "A modern weather app with authentication and user profile.",
+  title: "Authentication Demo",
+  description: "A demonstration of modern authentication features including 2FA, passkeys, and secure user management.",
 };
 
 function getBrowserLocaleFromHeaders(headersList: Headers): Locale {

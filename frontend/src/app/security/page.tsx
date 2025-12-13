@@ -52,11 +52,9 @@ export default function Security() {
     router.push("/login");
   }
 
-  function handleNavigate(page: "dashboard" | "profile" | "security") {
-    if (page === "dashboard") {
+  function handleNavigate(page: "profile" | "security") {
+    if (page === "profile") {
       router.push("/");
-    } else if (page === "profile") {
-      router.push("/profile");
     } else if (page === "security") {
       router.push("/security");
     }
