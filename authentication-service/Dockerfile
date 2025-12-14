@@ -4,6 +4,9 @@ FROM eclipse-temurin:25-jdk-alpine
 # Set the maintainer label
 LABEL maintainer="mark@markpost.nl"
 
+# Install curl for health checks
+RUN apk add --no-cache curl
+
 # Define a volume for temporary files
 VOLUME /tmp
 

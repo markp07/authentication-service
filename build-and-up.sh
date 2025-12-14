@@ -13,4 +13,8 @@ docker compose build --no-cache
 echo "[3/3] Starting all services with docker-compose..."
 docker compose up -d
 
-echo "All services are up and running!"
+echo ""
+echo "✅ All services are up and running!"
+echo ""
+echo "📊 Service Status:"
+docker compose ps

@@ -23,10 +23,10 @@ spring:
     type: redis
   data:
     redis:
-      host: redis
+      host: authentication-redis
       port: 12005
   datasource:
-    url: jdbc:postgresql://postgres:5432/authentication_service?useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:postgresql://authentication-postgres:5432/authentication_service?useUnicode=true&characterEncoding=UTF-8
     username: authentication_service
     password: ${POSTGRES_PASSWORD}
   jpa:
