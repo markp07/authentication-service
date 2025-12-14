@@ -44,7 +44,7 @@ services:
       SMTP_USERNAME: ${SMTP_USERNAME:-}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       EMAIL_FROM: ${EMAIL_FROM:-no-reply@example.com}
-      EMAIL_BASE_URL: ${EMAIL_BASE_URL:-https://demo.markpost.dev}
+      EMAIL_BASE_URL: ${EMAIL_BASE_URL:-https://auth.markpost.dev}
     volumes:
       - authentication_service_data:/data
     networks:
@@ -58,11 +58,18 @@ services:
     ports:
       - "12006:3000"
     depends_on:
-      - authentication-service
+      authentication-service:
+        condition: service_healthy
     environment:
       NEXT_PUBLIC_API_URL: http://localhost:12002
     networks:
       - default-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
 volumes:
   cache:
