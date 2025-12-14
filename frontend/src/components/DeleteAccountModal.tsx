@@ -38,7 +38,7 @@ const DeleteAccountModal: React.FC<DeleteAccountModalProps> = ({ onSuccess, onCa
   return (
     <div className="flex flex-col gap-4 items-center p-6">
       <h2 className="text-xl font-bold mb-2 text-red-700">{t('deleteAccount')}</h2>
-      <p className="text-center">{t('deleteAccountConfirm')} {t('deleteAccountWarning')}</p>
+      <p className="text-center">{t('deleteAccountConfirmFull')}</p>
       <input
         type="password"
         className="border rounded px-3 py-2 w-full max-w-xs"

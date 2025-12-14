@@ -152,6 +152,7 @@
     "deleteAccount": "Konto löschen",
     "deleteAccountConfirm": "Sind Sie sicher, dass Sie Ihr Konto löschen möchten?",
     "deleteAccountWarning": "Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleteAccountConfirmFull": "Sind Sie sicher, dass Sie Ihr Konto löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
     "accountDeleted": "Konto erfolgreich gelöscht.",
     "updateSuccess": "Profil erfolgreich aktualisiert.",
     "updateError": "Profil-Aktualisierung fehlgeschlagen.",
