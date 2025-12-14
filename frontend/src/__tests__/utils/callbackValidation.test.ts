@@ -18,7 +18,7 @@ describe('callbackValidation', () => {
     it('should accept https URLs from trusted domains', () => {
       expect(isValidCallback('https://markpost.dev')).toBe(true);
       expect(isValidCallback('https://markpost.dev/')).toBe(true);
-      expect(isValidCallback('https://demo.markpost.dev')).toBe(true);
+      expect(isValidCallback('https://auth.markpost.dev')).toBe(true);
       expect(isValidCallback('https://weather.markpost.dev')).toBe(true);
       expect(isValidCallback('https://weather.markpost.dev/')).toBe(true);
       expect(isValidCallback('https://weather.markpost.dev/path')).toBe(true);
@@ -44,7 +44,7 @@ describe('callbackValidation', () => {
 
     it('should accept subdomains of trusted domains', () => {
       expect(isValidCallback('https://api.weather.markpost.dev')).toBe(true);
-      expect(isValidCallback('https://sub.demo.markpost.dev')).toBe(true);
+      expect(isValidCallback('https://sub.auth.markpost.dev')).toBe(true);
     });
 
     it('should reject invalid URLs', () => {

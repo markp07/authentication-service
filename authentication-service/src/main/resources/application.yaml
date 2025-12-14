@@ -23,10 +23,10 @@ spring:
     type: redis
   data:
     redis:
-      host: redis
-      port: 12005
+      host: authentication-redis
+      port: 6379
   datasource:
-    url: jdbc:postgresql://postgres:5432/authentication_service?useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:postgresql://authentication-postgres:5432/authentication_service?useUnicode=true&characterEncoding=UTF-8
     username: authentication_service
     password: ${POSTGRES_PASSWORD}
   jpa:
@@ -68,12 +68,12 @@ email:
     enabled: ${EMAIL_SERVICE_ENABLED:false}
   from: ${EMAIL_FROM:no-reply@example.com}
   from-name: ${EMAIL_FROM_NAME:Authentication Demo}
-  base-url: ${EMAIL_BASE_URL:https://demo.markpost.dev}
+  base-url: ${EMAIL_BASE_URL:https://auth.markpost.dev}
   subject:
     reset-password: "Password Reset Request"
     email-verification: "Verify Your Email Address"
   body:
-    reset-password: "Hi {userName},\nTo reset your password, use the following link: https://demo.markpost.dev/?token={resetToken}\nRegards,\nAuthentication Demo Service"
+    reset-password: "Hi {userName},\nTo reset your password, use the following link: https://auth.markpost.dev/?token={resetToken}\nRegards,\nAuthentication Demo Service"
     email-verification: "Hi {userName},\n\nPlease verify your email address by clicking the following link:\n{verificationLink}\n\nIf the link doesn't work, you can manually enter your verification token at:\n{manualVerificationLink}\n\nYour verification token is: {verificationToken}\n\nThis link will expire in 24 hours.\n\nRegards,\nAuthentication Demo Service"
 
 cookie:
@@ -83,8 +83,8 @@ cookie:
 webauthn:
   rp:
     name: "Authentication Demo Service"
-    id: "demo.markpost.dev"
-  origin: "https://demo.markpost.dev"
+    id: "auth.markpost.dev"
+  origin: "https://auth.markpost.dev"
 
 ---
 # Local environment profile

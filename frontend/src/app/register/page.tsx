@@ -8,9 +8,7 @@ import PublicLanguageSelector from "../../components/PublicLanguageSelector";
 import { isValidCallback, getSafeCallback } from "../../utils/callbackValidation";
 
 const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
-const AUTH_API_BASE = isDev
-  ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:12002")
-  : "https://demo.markpost.dev";
+const AUTH_API_BASE = isDev ? "http://localhost:12002" : (process.env.NEXT_PUBLIC_API_URL || "https://auth.markpost.dev");
 
 function RegisterPageContent() {
   const router = useRouter();

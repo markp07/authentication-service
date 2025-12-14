@@ -1,19 +1,29 @@
 services:
-  redis:
+  authentication-redis:
     image: redis:latest
-    restart: always
+    container_name: authentication-redis
+    restart: unless-stopped
     ports:
       - '12005:6379'
     command: [ "redis-server", "--bind", "0.0.0.0" ]
-    hostname: cache
+    hostname: authentication-redis
     volumes:
       - cache:/data
     networks:
-      - default-network
+      default-network:
+        aliases:
+          - authentication-redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
-  postgres:
+  authentication-postgres:
     image: postgres:latest
-    restart: always
+    container_name: authentication-postgres
+    restart: unless-stopped
     environment:
       POSTGRES_DB: authentication_service
       POSTGRES_USER: authentication_service
@@ -23,17 +33,28 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql
     networks:
-      - default-network
+      default-network:
+        aliases:
+          - authentication-postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U authentication_service -d authentication_service"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   authentication-service:
     image: authentication-service:latest
-    restart: always
+    container_name: authentication-service
+    restart: unless-stopped
     build:
       context: ./authentication-service
       dockerfile: Dockerfile
     depends_on:
-      - redis
-      - postgres
+      authentication-redis:
+        condition: service_healthy
+      authentication-postgres:
+        condition: service_healthy
     ports:
       - '12002:12002'
     environment:
@@ -44,25 +65,43 @@ services:
       SMTP_USERNAME: ${SMTP_USERNAME:-}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       EMAIL_FROM: ${EMAIL_FROM:-no-reply@example.com}
-      EMAIL_BASE_URL: ${EMAIL_BASE_URL:-https://demo.markpost.dev}
+      EMAIL_BASE_URL: ${EMAIL_BASE_URL:-https://auth.markpost.dev}
     volumes:
       - authentication_service_data:/data
     networks:
-      - default-network
+      default-network:
+        aliases:
+          - authentication-service
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:12002/api/auth/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
 
-  frontend:
+  authentication-frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    restart: always
+    container_name: authentication-frontend
+    restart: unless-stopped
     ports:
       - "12006:3000"
     depends_on:
-      - authentication-service
+      authentication-service:
+        condition: service_healthy
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:12002
+      NEXT_PUBLIC_API_URL: https://auth.markpost.dev
     networks:
-      - default-network
+      default-network:
+        aliases:
+          - authentication-frontend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
 volumes:
   cache:

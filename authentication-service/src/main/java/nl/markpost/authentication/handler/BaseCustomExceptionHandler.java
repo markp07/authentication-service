@@ -21,8 +21,8 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 /**
  * Base exception handler for custom and generic exceptions.
  * <p>
- * Handles {@link nl.markpost.demo.common.exception.GenericException} and generic {@link Exception}.
- * Returns a structured {@link nl.markpost.demo.common.model.Error} response with appropriate HTTP
+ * Handles {@link nl.markpost.authentication.exception.GenericException} and generic {@link Exception}.
+ * Returns a structured {@link nl.markpost.authentication.model.Error} response with appropriate HTTP
  * status and error details.
  * </p>
  * <ul>
@@ -35,7 +35,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 public class BaseCustomExceptionHandler {
 
   /**
-   * Handles {@link nl.markpost.demo.common.exception.GenericException}. Logs the exception and
+   * Handles {@link nl.markpost.authentication.exception.GenericException}. Logs the exception and
    * returns a structured error response with the exception's HTTP status and error code.
    *
    * @param exception the thrown GenericException

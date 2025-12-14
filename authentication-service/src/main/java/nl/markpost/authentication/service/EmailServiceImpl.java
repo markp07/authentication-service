@@ -26,7 +26,7 @@ public class EmailServiceImpl implements EmailService {
   private String emailVerificationSubject;
   @Value("${email.body.email-verification:Please verify your email}")
   private String emailVerificationBody;
-  @Value("${email.base-url:https://demo.markpost.dev}")
+  @Value("${email.base-url:https://auth.markpost.dev}")
   private String baseUrl;
 
   private final JavaMailSender mailSender;
