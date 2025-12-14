@@ -421,7 +421,10 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
             <button
               type="button"
               className="text-blue-600 hover:underline text-sm"
-              onClick={() => window.open(`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@yourdomain.tld'}?subject=Lost 2FA`, '_blank')}
+              onClick={() => {
+                const supportEmail = window.__ENV__?.NEXT_PUBLIC_SUPPORT_EMAIL || process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@yourdomain.tld';
+                window.open(`mailto:${supportEmail}?subject=Lost 2FA`, '_blank');
+              }}
             >
               Lost 2FA?
             </button>

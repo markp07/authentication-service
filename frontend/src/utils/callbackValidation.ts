@@ -2,10 +2,20 @@
  * List of trusted domains for callback URLs
  * The base domain is read from environment variable, defaults to 'yourdomain.tld'
  */
-const TRUSTED_DOMAINS = [
-  process.env.NEXT_PUBLIC_BASE_DOMAIN || 'yourdomain.tld',
-  'localhost'
-];
+function getTrustedDomains(): string[] {
+  let baseDomain = 'yourdomain.tld';
+
+  if (typeof window !== "undefined") {
+    // Client-side: check window.__ENV__ first (injected at runtime)
+    const runtimeBaseDomain = window.__ENV__?.NEXT_PUBLIC_BASE_DOMAIN;
+    if (runtimeBaseDomain) baseDomain = runtimeBaseDomain;
+  } else {
+    // Server-side: use process.env
+    baseDomain = process.env.NEXT_PUBLIC_BASE_DOMAIN || 'yourdomain.tld';
+  }
+
+  return [baseDomain, 'localhost'];
+}
 
 /**
  * Validates if a callback URL is safe to redirect to.
@@ -35,7 +45,8 @@ export function isValidCallback(callback: string | null): boolean {
 
     // Check if the hostname or its parent domain is in the trusted list
     const hostname = url.hostname;
-    return TRUSTED_DOMAINS.some(domain => {
+    const trustedDomains = getTrustedDomains();
+    return trustedDomains.some(domain => {
       // Exact match
       if (hostname === domain) return true;
       // Subdomain match (e.g., api.weather.yourdomain.tld matches yourdomain.tld)
