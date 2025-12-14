@@ -27,6 +27,7 @@ services:
 
   authentication-service:
     image: authentication-service:latest
+    container_name: authentication-service
     restart: always
     build:
       context: ./authentication-service
@@ -54,6 +55,7 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+    container_name: authentication-frontend
     restart: always
     ports:
       - "12006:3000"
@@ -61,7 +63,7 @@ services:
       authentication-service:
         condition: service_healthy
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:12002
+      NEXT_PUBLIC_API_URL: https://auth.markpost.dev
     networks:
       - default-network
     healthcheck:
