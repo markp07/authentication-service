@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { AUTH_API_BASE, fetchWithAuthRetry } from "../utils/api";
 import { IconFingerprint, IconTrash, IconPlus, IconAlertCircle, IconCheck } from "@tabler/icons-react";
+import { useTranslations } from 'next-intl';
 
 interface Passkey {
   credentialId: string;
@@ -14,6 +15,8 @@ interface PasskeyModalProps {
 }
 
 export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
+  const t = useTranslations('passkey');
+  const tCommon = useTranslations('common');
   const [passkeys, setPasskeys] = useState<Passkey[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -47,10 +50,10 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
       if (res.ok) {
         setPasskeys(await res.json());
       } else {
-        setError("Failed to load passkeys.");
+        setError(t('loadError'));
       }
     } catch {
-      setError("Network error.");
+      setError(t('networkError'));
     }
     setLoading(false);
   }
@@ -64,13 +67,13 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
       });
       if (res.ok) {
         setPasskeys(passkeys.filter(pk => pk.credentialId !== credentialId));
-        setSuccess("Passkey deleted successfully.");
+        setSuccess(t('deleteSuccess'));
         setTimeout(() => setSuccess(null), 3000);
       } else {
-        setError("Failed to delete passkey.");
+        setError(t('deleteError'));
       }
     } catch {
-      setError("Network error.");
+      setError(t('networkError'));
     }
   }
 
@@ -129,15 +132,15 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
       });
       if (finishRes.ok) {
         setRegisterName("");
-        setSuccess("Passkey registered successfully!");
+        setSuccess(t('registerSuccess'));
         fetchPasskeys();
         setTimeout(() => setSuccess(null), 3000);
       } else {
-        setError("Failed to register passkey.");
+        setError(t('registerError'));
       }
     } catch (err) {
       console.error(err);
-      setError("Passkey registration failed.");
+      setError(t('registrationFailed'));
     }
     setRegistering(false);
   }
@@ -148,7 +151,7 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
     setSuccess(null);
     try {
       if (!user?.email) {
-        setLoginError("User email not loaded.");
+        setLoginError(t('emailNotLoaded'));
         setLoginLoading(false);
         return;
       }
@@ -159,7 +162,7 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
         body: JSON.stringify({ email: user.email })
       });
       if (!res.ok) {
-        setLoginError("Failed to start passkey login.");
+        setLoginError(t('loginStartError'));
         setLoginLoading(false);
         return;
       }
@@ -195,17 +198,17 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
         body: JSON.stringify({ email: user.email, credential: assertion }),
       });
       if (finishRes.ok) {
-        setSuccess("Passkey login successful!");
+        setSuccess(t('loginSuccess'));
         setTimeout(() => {
           setSuccess(null);
           onClose();
         }, 2000);
       } else {
-        setLoginError("Passkey login failed.");
+        setLoginError(t('loginError'));
       }
     } catch (err) {
       console.error("Email passkey login error:", err);
-      setLoginError("Passkey login failed.");
+      setLoginError(t('loginError'));
     }
     setLoginLoading(false);
   }
@@ -221,7 +224,7 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
         headers: { "Content-Type": "application/json" }
       });
       if (!res.ok) {
-        setLoginError("Failed to start usernameless passkey login.");
+        setLoginError(t('usernamelessStartError'));
         setLoginLoading(false);
         return;
       }
@@ -238,7 +241,7 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
       // 2. Call WebAuthn API
       const assertion = await navigator.credentials.get({ publicKey: options });
       if (!assertion) {
-        setLoginError("No passkey selected.");
+        setLoginError(t('noPasskeySelected'));
         setLoginLoading(false);
         return;
       }
@@ -249,17 +252,17 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
         body: JSON.stringify(assertion)
       });
       if (finishRes.ok) {
-        setSuccess("Usernameless passkey login successful!");
+        setSuccess(t('usernamelessLoginSuccess'));
         setTimeout(() => {
           setSuccess(null);
           onClose();
         }, 2000);
       } else {
-        setLoginError("Usernameless passkey login failed.");
+        setLoginError(t('usernamelessLoginError'));
       }
     } catch (err) {
       console.error("Usernameless passkey login error:", err);
-      setLoginError("Usernameless passkey login failed.");
+      setLoginError(t('usernamelessLoginError'));
     }
     setLoginLoading(false);
   }
@@ -283,8 +286,8 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
               <IconFingerprint size={24} className="text-purple-600 dark:text-purple-400" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Manage Passkeys</h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Biometric & security key authentication</p>
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t('title')}</h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400">{t('subtitle')}</p>
             </div>
           </div>
 
@@ -310,12 +313,12 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
             <>
               {/* Existing Passkeys */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Your Passkeys</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">{t('yourPasskeys')}</h3>
                 {passkeys.length === 0 ? (
                   <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 text-center">
                     <IconFingerprint size={48} className="mx-auto mb-3 text-gray-400" />
-                    <p className="text-gray-600 dark:text-gray-400">No passkeys configured yet.</p>
-                    <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">Add your first passkey below.</p>
+                    <p className="text-gray-600 dark:text-gray-400">{t('noPasskeys')}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-500 mt-1">{t('addFirstPasskey')}</p>
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -327,7 +330,7 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
                           </div>
                           <div>
                             <div className="font-medium text-gray-900 dark:text-white">{pk.name}</div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400">Added {new Date(pk.createdAt).toLocaleDateString()}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-400">{t('added')} {new Date(pk.createdAt).toLocaleDateString()}</div>
                           </div>
                         </div>
                         <button 
@@ -335,7 +338,7 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
                           onClick={() => handleDelete(pk.credentialId)}
                         >
                           <IconTrash size={16} />
-                          Delete
+                          {t('delete')}
                         </button>
                       </div>
                     ))}
@@ -345,15 +348,15 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
 
               {/* Register New Passkey */}
               <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Add New Passkey</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">{t('addNewPasskey')}</h3>
                 <form className="flex flex-col gap-4" onSubmit={handleRegister}>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                      Device Name
+                      {t('deviceName')}
                     </label>
                     <input 
                       type="text" 
-                      placeholder="e.g., iPhone, YubiKey, TouchID" 
+                      placeholder={t('deviceNamePlaceholder')} 
                       className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white" 
                       value={registerName} 
                       onChange={e => setRegisterName(e.target.value)} 
@@ -367,28 +370,28 @@ export default function PasskeyModal({ open, onClose }: PasskeyModalProps) {
                     disabled={registering || !registerName}
                   >
                     <IconPlus size={18} />
-                    {registering ? "Registering..." : "Register Passkey"}
+                    {registering ? t('registering') : t('registerPasskey')}
                   </button>
                 </form>
               </div>
 
               {/* Test Login (Optional) */}
               <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Test Passkey Login</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">{t('testLogin')}</h3>
                 <div className="flex flex-col gap-3">
                   <button
                     className="w-full px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={handleEmailPasskeyLogin}
                     disabled={loginLoading || passkeys.length === 0}
                   >
-                    {loginLoading ? "Authenticating..." : "Login with Passkey (Email)"}
+                    {loginLoading ? t('authenticating') : t('loginWithEmail')}
                   </button>
                   <button
                     className="w-full px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     onClick={handleUsernamelessPasskeyLogin}
                     disabled={loginLoading || passkeys.length === 0}
                   >
-                    {loginLoading ? "Authenticating..." : "Login with Passkey (Usernameless)"}
+                    {loginLoading ? t('authenticating') : t('loginUsernameless')}
                   </button>
                 </div>
                 {loginError && (
