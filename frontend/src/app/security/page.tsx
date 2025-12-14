@@ -9,9 +9,7 @@ import Setup2FA from "../../components/Setup2FA";
 import ChangePassword from "../../components/ChangePassword";
 
 const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
-const AUTH_API_BASE = isDev
-  ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:12002")
-  : "https://auth.markpost.dev";
+const AUTH_API_BASE = isDev ? "http://localhost:12002" : (process.env.NEXT_PUBLIC_API_URL || "https://auth.markpost.dev");
 
 export default function Security() {
   const router = useRouter();
