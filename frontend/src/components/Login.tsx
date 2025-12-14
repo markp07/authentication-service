@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useTranslations } from 'next-intl';
+import { AUTH_API_BASE } from '@/utils/api';
 
 interface LoginProps {
   onSuccess: () => void;
@@ -9,8 +10,6 @@ interface LoginProps {
   onForgot: () => void;
 }
 
-const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
-const AUTH_API_BASE = isDev ? "http://localhost:12002" : (process.env.NEXT_PUBLIC_API_URL || "https://auth.markpost.dev");
 
 export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
   const t = useTranslations('login');

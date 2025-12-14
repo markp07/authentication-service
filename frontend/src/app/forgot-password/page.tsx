@@ -6,9 +6,7 @@ import { useTranslations } from 'next-intl';
 import ForgotPassword from "../../components/ForgotPassword";
 import PublicLanguageSelector from "../../components/PublicLanguageSelector";
 import { isValidCallback, getSafeCallback } from "../../utils/callbackValidation";
-
-const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
-const AUTH_API_BASE = isDev ? "http://localhost:12002" : (process.env.NEXT_PUBLIC_API_URL || "https://auth.markpost.dev");
+import { AUTH_API_BASE } from "../../utils/api";
 
 function ForgotPasswordPageContent() {
   const router = useRouter();
