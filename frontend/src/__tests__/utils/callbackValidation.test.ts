@@ -16,12 +16,12 @@ describe('callbackValidation', () => {
     });
 
     it('should accept https URLs from trusted domains', () => {
-      expect(isValidCallback('https://markpost.dev')).toBe(true);
-      expect(isValidCallback('https://markpost.dev/')).toBe(true);
-      expect(isValidCallback('https://auth.markpost.dev')).toBe(true);
-      expect(isValidCallback('https://weather.markpost.dev')).toBe(true);
-      expect(isValidCallback('https://weather.markpost.dev/')).toBe(true);
-      expect(isValidCallback('https://weather.markpost.dev/path')).toBe(true);
+      expect(isValidCallback('https://yourdomain.tld')).toBe(true);
+      expect(isValidCallback('https://yourdomain.tld/')).toBe(true);
+      expect(isValidCallback('https://auth.yourdomain.tld')).toBe(true);
+      expect(isValidCallback('https://weather.yourdomain.tld')).toBe(true);
+      expect(isValidCallback('https://weather.yourdomain.tld/')).toBe(true);
+      expect(isValidCallback('https://weather.yourdomain.tld/path')).toBe(true);
     });
 
     it('should accept http URLs only for localhost', () => {
@@ -31,20 +31,20 @@ describe('callbackValidation', () => {
     });
 
     it('should reject http URLs for non-localhost domains', () => {
-      expect(isValidCallback('http://markpost.dev')).toBe(false);
-      expect(isValidCallback('http://weather.markpost.dev')).toBe(false);
+      expect(isValidCallback('http://yourdomain.tld')).toBe(false);
+      expect(isValidCallback('http://weather.yourdomain.tld')).toBe(false);
       expect(isValidCallback('http://example.com')).toBe(false);
     });
 
     it('should reject URLs from untrusted domains', () => {
       expect(isValidCallback('https://evil.com')).toBe(false);
       expect(isValidCallback('https://example.com')).toBe(false);
-      expect(isValidCallback('https://fakemarkpost.dev')).toBe(false);
+      expect(isValidCallback('https://fakeyourdomain.tld')).toBe(false);
     });
 
     it('should accept subdomains of trusted domains', () => {
-      expect(isValidCallback('https://api.weather.markpost.dev')).toBe(true);
-      expect(isValidCallback('https://sub.auth.markpost.dev')).toBe(true);
+      expect(isValidCallback('https://api.weather.yourdomain.tld')).toBe(true);
+      expect(isValidCallback('https://sub.auth.yourdomain.tld')).toBe(true);
     });
 
     it('should reject invalid URLs', () => {
@@ -63,7 +63,7 @@ describe('callbackValidation', () => {
   describe('getSafeCallback', () => {
     it('should return callback if valid', () => {
       expect(getSafeCallback('/home')).toBe('/home');
-      expect(getSafeCallback('https://weather.markpost.dev')).toBe('https://weather.markpost.dev');
+      expect(getSafeCallback('https://weather.yourdomain.tld')).toBe('https://weather.yourdomain.tld');
     });
 
     it('should return default "/" if callback is invalid', () => {

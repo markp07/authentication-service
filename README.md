@@ -84,8 +84,8 @@ demo-authentication/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/markp07/demo-authentication.git
-   cd demo-authentication
+   git clone https://github.com/your-username/authentication-service.git
+   cd authentication-service
    ```
 
 2. **Generate RSA keys for JWT signing**
@@ -93,11 +93,36 @@ demo-authentication/
    ./generate-keys.sh
    ```
 
-3. **Set environment variables**
-   Create a `.env` file in the project root:
+3. **Configure environment variables**
+   Copy the example environment file and customize it:
    ```bash
-   POSTGRES_PASSWORD=your_secure_password
+   cp .env.example .env
    ```
+   
+   Edit the `.env` file with your configuration:
+   ```bash
+   # Required: Database password
+   POSTGRES_PASSWORD=your_secure_password
+   
+   # Required: Your domain configuration
+   BASE_DOMAIN=yourdomain.tld
+   NEXT_PUBLIC_API_URL=https://auth.yourdomain.tld
+   EMAIL_BASE_URL=https://auth.yourdomain.tld
+   WEBAUTHN_RP_ID=auth.yourdomain.tld
+   WEBAUTHN_ORIGIN=https://auth.yourdomain.tld
+   
+   # Optional: Email service configuration
+   EMAIL_SERVICE_ENABLED=false
+   # If EMAIL_SERVICE_ENABLED=true, configure SMTP settings
+   SMTP_HOST=smtp.example.com
+   SMTP_PORT=587
+   SMTP_USERNAME=your_smtp_username
+   SMTP_PASSWORD=your_smtp_password
+   EMAIL_FROM=no-reply@example.com
+   EMAIL_FROM_NAME=Authentication Service
+   ```
+   
+   **Important**: Replace `yourdomain.tld` with your actual domain. For local development, the defaults will work out of the box.
 
 ### Running with Docker Compose
 
@@ -232,11 +257,53 @@ Coverage reports are generated in `target/site/jacoco/index.html`
 
 ## 📝 Configuration
 
-Key configuration files:
+### Configuration Files
 
 - `authentication-service/src/main/resources/application.yaml` - Service configuration
 - `docker-compose.yml` - Container orchestration
 - `pom.xml` - Maven dependencies and build configuration
+- `.env` - Environment-specific variables (create from `.env.example`)
+
+### Environment Variables
+
+All configuration can be customized via environment variables in the `.env` file:
+
+#### Database Configuration
+- `POSTGRES_PASSWORD` *(required)*: PostgreSQL database password
+
+#### Domain Configuration
+- `BASE_DOMAIN` *(default: yourdomain.tld)*: Your base domain for CORS and cookie settings
+- `NEXT_PUBLIC_API_URL` *(default: https://auth.yourdomain.tld)*: Frontend API URL
+- `EMAIL_BASE_URL` *(default: https://auth.yourdomain.tld)*: Base URL for email links
+
+#### WebAuthn/Passkey Configuration
+- `WEBAUTHN_RP_ID` *(default: auth.yourdomain.tld)*: WebAuthn Relying Party ID (usually your auth domain)
+- `WEBAUTHN_ORIGIN` *(default: https://auth.yourdomain.tld)*: WebAuthn origin URL
+
+#### Email Service Configuration
+- `EMAIL_SERVICE_ENABLED` *(default: false)*: Set to `true` to use real SMTP, `false` for dummy (logs only)
+- `SMTP_HOST` *(default: smtp.example.com)*: SMTP server hostname
+- `SMTP_PORT` *(default: 587)*: SMTP server port
+- `SMTP_USERNAME`: SMTP authentication username
+- `SMTP_PASSWORD`: SMTP authentication password
+- `EMAIL_FROM` *(default: no-reply@example.com)*: Sender email address
+- `EMAIL_FROM_NAME` *(default: Authentication Service)*: Sender display name
+
+#### Development vs Production
+
+**For local development**, you can use the defaults or leave most variables empty. The application will:
+- Use `localhost` for local profile
+- Disable secure cookies
+- Allow CORS from `localhost:3000`
+
+**For production**, set all domain variables to match your deployment:
+```bash
+BASE_DOMAIN=example.com
+NEXT_PUBLIC_API_URL=https://auth.example.com
+EMAIL_BASE_URL=https://auth.example.com
+WEBAUTHN_RP_ID=auth.example.com
+WEBAUTHN_ORIGIN=https://auth.example.com
+```
 
 ## 📦 Versioning
 

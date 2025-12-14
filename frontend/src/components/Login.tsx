@@ -421,7 +421,7 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
             <button
               type="button"
               className="text-blue-600 hover:underline text-sm"
-              onClick={() => window.open('mailto:support@markpost.dev?subject=Lost 2FA', '_blank')}
+              onClick={() => window.open(`mailto:${process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@yourdomain.tld'}?subject=Lost 2FA`, '_blank')}
             >
               Lost 2FA?
             </button>

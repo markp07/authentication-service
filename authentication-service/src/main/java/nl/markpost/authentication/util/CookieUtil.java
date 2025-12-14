@@ -16,7 +16,7 @@ public class CookieUtil {
 
   private static String cookieDomain;
 
-  @Value("${cookie.domain:markpost.dev}")
+  @Value("${cookie.domain:yourdomain.tld}")
   public void setDomain(String domain) {
     cookieDomain = domain;
   }

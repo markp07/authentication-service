@@ -1,9 +1,6 @@
 # Use OpenJDK 21 with a slim base image
 FROM eclipse-temurin:25-jdk-alpine
 
-# Set the maintainer label
-LABEL maintainer="mark@markpost.nl"
-
 # Install curl for health checks
 RUN apk add --no-cache curl
 

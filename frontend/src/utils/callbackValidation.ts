@@ -1,9 +1,9 @@
 /**
  * List of trusted domains for callback URLs
+ * The base domain is read from environment variable, defaults to 'yourdomain.tld'
  */
 const TRUSTED_DOMAINS = [
-  'markpost.dev',
-  'markpost.nl',
+  process.env.NEXT_PUBLIC_BASE_DOMAIN || 'yourdomain.tld',
   'localhost'
 ];
 
@@ -38,7 +38,7 @@ export function isValidCallback(callback: string | null): boolean {
     return TRUSTED_DOMAINS.some(domain => {
       // Exact match
       if (hostname === domain) return true;
-      // Subdomain match (e.g., api.weather.markpost.dev matches markpost.dev)
+      // Subdomain match (e.g., api.weather.yourdomain.tld matches yourdomain.tld)
       if (hostname.endsWith('.' + domain)) return true;
       return false;
     });
