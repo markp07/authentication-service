@@ -184,7 +184,11 @@
     "notAvailable": "N.v.t.",
     "goToSecurity": "Naar beveiligingsinstellingen",
     "dangerZone": "Gevarenzone",
-    "deleteAccountDescription": "Als u uw account verwijdert, is er geen weg terug. Wees zeker van uw beslissing."
+    "deleteAccountDescription": "Als u uw account verwijdert, is er geen weg terug. Wees zeker van uw beslissing.",
+    "enterPassword": "Voer uw wachtwoord in",
+    "deleting": "Verwijderen...",
+    "deleteAccountError": "Account verwijderen mislukt.",
+    "deleteAccountNetworkError": "Netwerkfout. Probeer het opnieuw."
   },
   "security": {
     "title": "Beveiligingsinstellingen",

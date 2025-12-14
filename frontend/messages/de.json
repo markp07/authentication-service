@@ -184,7 +184,11 @@
     "notAvailable": "N/V",
     "goToSecurity": "Zu Sicherheitseinstellungen",
     "dangerZone": "Gefahrenzone",
-    "deleteAccountDescription": "Wenn Sie Ihr Konto löschen, gibt es kein Zurück mehr. Bitte seien Sie sich sicher."
+    "deleteAccountDescription": "Wenn Sie Ihr Konto löschen, gibt es kein Zurück mehr. Bitte seien Sie sich sicher.",
+    "enterPassword": "Geben Sie Ihr Passwort ein",
+    "deleting": "Löschen...",
+    "deleteAccountError": "Konto konnte nicht gelöscht werden.",
+    "deleteAccountNetworkError": "Netzwerkfehler. Bitte versuchen Sie es erneut."
   },
   "security": {
     "title": "Sicherheitseinstellungen",

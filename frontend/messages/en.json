@@ -124,7 +124,11 @@
     "notAvailable": "N/A",
     "goToSecurity": "Go to Security Settings",
     "dangerZone": "Danger Zone",
-    "deleteAccountDescription": "Once you delete your account, there is no going back. Please be certain."
+    "deleteAccountDescription": "Once you delete your account, there is no going back. Please be certain.",
+    "enterPassword": "Enter your password",
+    "deleting": "Deleting...",
+    "deleteAccountError": "Failed to delete account.",
+    "deleteAccountNetworkError": "Network error. Please try again."
   },
   "security": {
     "title": "Security Settings",

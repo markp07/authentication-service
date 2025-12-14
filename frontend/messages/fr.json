@@ -184,7 +184,11 @@
     "notAvailable": "N/D",
     "goToSecurity": "Aller aux paramètres de sécurité",
     "dangerZone": "Zone dangereuse",
-    "deleteAccountDescription": "Une fois votre compte supprimé, il n'y a pas de retour en arrière possible. Soyez certain de votre décision."
+    "deleteAccountDescription": "Une fois votre compte supprimé, il n'y a pas de retour en arrière possible. Soyez certain de votre décision.",
+    "enterPassword": "Entrez votre mot de passe",
+    "deleting": "Suppression...",
+    "deleteAccountError": "Échec de la suppression du compte.",
+    "deleteAccountNetworkError": "Erreur réseau. Veuillez réessayer."
   },
   "security": {
     "title": "Paramètres de sécurité",
