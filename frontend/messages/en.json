@@ -92,7 +92,6 @@
     "deleteAccount": "Delete Account",
     "deleteAccountConfirm": "Are you sure you want to delete your account?",
     "deleteAccountWarning": "This action cannot be undone.",
-    "deleteAccountConfirmFull": "Are you sure you want to delete your account? This action cannot be undone.",
     "accountDeleted": "Account deleted successfully.",
     "updateSuccess": "Profile updated successfully.",
     "updateError": "Failed to update profile.",

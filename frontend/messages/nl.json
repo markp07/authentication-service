@@ -152,7 +152,6 @@
     "deleteAccount": "Account verwijderen",
     "deleteAccountConfirm": "Weet u zeker dat u uw account wilt verwijderen?",
     "deleteAccountWarning": "Deze actie kan niet ongedaan worden gemaakt.",
-    "deleteAccountConfirmFull": "Weet u zeker dat u uw account wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
     "accountDeleted": "Account succesvol verwijderd.",
     "updateSuccess": "Profiel succesvol bijgewerkt.",
     "updateError": "Profiel bijwerken mislukt.",

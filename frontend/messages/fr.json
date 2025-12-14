@@ -152,7 +152,6 @@
     "deleteAccount": "Supprimer le compte",
     "deleteAccountConfirm": "Êtes-vous sûr de vouloir supprimer votre compte ?",
     "deleteAccountWarning": "Cette action ne peut pas être annulée.",
-    "deleteAccountConfirmFull": "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action ne peut pas être annulée.",
     "accountDeleted": "Compte supprimé avec succès.",
     "updateSuccess": "Profil mis à jour avec succès.",
     "updateError": "Échec de la mise à jour du profil.",
