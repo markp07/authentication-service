@@ -24,7 +24,7 @@ spring:
   data:
     redis:
       host: authentication-redis
-      port: 12005
+      port: 6379
   datasource:
     url: jdbc:postgresql://authentication-postgres:5432/authentication_service?useUnicode=true&characterEncoding=UTF-8
     username: authentication_service
