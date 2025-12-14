@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { AUTH_API_BASE, fetchWithAuthRetry } from "../utils/api";
 import Modal from "./Modal";
 import { IconKey, IconCopy, IconCheck, IconAlertCircle } from "@tabler/icons-react";
+import { useTranslations } from 'next-intl';
 
 interface BackupCodesModalProps {
   open: boolean;
@@ -9,6 +10,8 @@ interface BackupCodesModalProps {
 }
 
 export default function BackupCodesModal({ open, onClose }: BackupCodesModalProps) {
+  const t = useTranslations('backupCodes');
+  const tCommon = useTranslations('common');
   const [codes, setCodes] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,10 +26,10 @@ export default function BackupCodesModal({ open, onClose }: BackupCodesModalProp
         const data = await res.json();
         setCodes(data.backupCode || []);
       } else {
-        setError("Failed to generate backup codes.");
+        setError(t('generateError'));
       }
     } catch {
-      setError("Network error.");
+      setError(t('networkError'));
     }
     setLoading(false);
   }
@@ -58,8 +61,8 @@ export default function BackupCodesModal({ open, onClose }: BackupCodesModalProp
             <IconKey size={24} className="text-blue-600 dark:text-blue-400" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Backup Codes</h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Emergency access codes</p>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t('title')}</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{t('subtitle')}</p>
           </div>
         </div>
 
@@ -78,9 +81,9 @@ export default function BackupCodesModal({ open, onClose }: BackupCodesModalProp
               <div className="flex items-start gap-3">
                 <IconAlertCircle size={20} className="text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
                 <div>
-                  <div className="font-semibold text-amber-900 dark:text-amber-200 mb-1">Important</div>
+                  <div className="font-semibold text-amber-900 dark:text-amber-200 mb-1">{t('important')}</div>
                   <p className="text-sm text-amber-800 dark:text-amber-300">
-                    Store these codes safely. Each code can be used once if you lose access to your authenticator app.
+                    {t('description')}
                   </p>
                 </div>
               </div>
@@ -103,12 +106,12 @@ export default function BackupCodesModal({ open, onClose }: BackupCodesModalProp
               {copied ? (
                 <>
                   <IconCheck size={18} />
-                  Copied to Clipboard!
+                  {t('copied')}
                 </>
               ) : (
                 <>
                   <IconCopy size={18} />
-                  Copy All Codes
+                  {t('copyAll')}
                 </>
               )}
             </button>
@@ -119,7 +122,7 @@ export default function BackupCodesModal({ open, onClose }: BackupCodesModalProp
           className="w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors" 
           onClick={onClose}
         >
-          Close
+          {t('close')}
         </button>
       </div>
     </Modal>

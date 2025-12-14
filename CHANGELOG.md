@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [1.9.5] - 2025-12-15
+
+### Changed
+- Upgrade maven dependencies (#99)
+
+
+## [1.9.4] - 2025-12-15
+
+### Changed
+- chore(npm)(deps): bump the npm-dependencies group in /frontend with 9 updates (#97)
+
+
+## [1.9.3] - 2025-12-15
+
+### Changed
+- Fix npm ci failure in build pipeline due to package.json/package-lock.json version mismatch (#98)
+
+
+## [1.9.2] - 2025-12-15
+
+### Changed
+- Add missing i18n translations for authentication modals and pages (#95)
+
+
 ## [1.9.1] - 2025-12-14
 
 ### Changed

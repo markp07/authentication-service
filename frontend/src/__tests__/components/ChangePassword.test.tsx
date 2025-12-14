@@ -126,7 +126,7 @@ describe('ChangePassword Component', () => {
     await user.click(screen.getByRole('button', { name: 'Change Password' }));
     
     await waitFor(() => {
-      expect(screen.getByText('Password change failed.')).toBeInTheDocument();
+      expect(screen.getByText('Failed to change password.')).toBeInTheDocument();
     });
   });
 
