@@ -11,7 +11,7 @@ import ChangePassword from "../../components/ChangePassword";
 const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
 const AUTH_API_BASE = isDev
   ? (process.env.NEXT_PUBLIC_API_URL || "http://localhost:12002")
-  : "https://demo.markpost.dev";
+  : "https://auth.markpost.dev";
 
 export default function Security() {
   const router = useRouter();
