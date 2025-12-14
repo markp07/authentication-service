@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { AUTH_API_BASE, fetchWithAuthRetry } from "../utils/api";
 import { IconLock, IconCheck, IconAlertCircle } from "@tabler/icons-react";
+import { useTranslations } from 'next-intl';
 
 interface ChangePasswordProps {
   onClose: () => void;
 }
 
 export default function ChangePassword({ onClose }: ChangePasswordProps) {
+  const t = useTranslations('security');
+  const tCommon = useTranslations('common');
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -20,7 +23,7 @@ export default function ChangePassword({ onClose }: ChangePasswordProps) {
     setError(null);
     setSuccess(null);
     if (newPassword !== confirm) {
-      setError("Passwords do not match.");
+      setError(t('passwordMismatch'));
       setLoading(false);
       return;
     }
@@ -31,13 +34,13 @@ export default function ChangePassword({ onClose }: ChangePasswordProps) {
         body: JSON.stringify({ oldPassword, newPassword }),
       });
       if (res.ok) {
-        setSuccess("Password changed successfully.");
+        setSuccess(t('passwordChanged'));
         setTimeout(() => onClose(), 2000);
       } else {
-        setError("Password change failed.");
+        setError(t('passwordError'));
       }
     } catch {
-      setError("Network error.");
+      setError(t('networkError'));
     }
     setLoading(false);
   }
@@ -50,8 +53,8 @@ export default function ChangePassword({ onClose }: ChangePasswordProps) {
           <IconLock size={24} className="text-blue-600 dark:text-blue-400" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Change Password</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Update your account password</p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t('changePassword')}</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400">{t('updatePasswordSubtitle')}</p>
         </div>
       </div>
 
@@ -73,11 +76,11 @@ export default function ChangePassword({ onClose }: ChangePasswordProps) {
       <form className="flex flex-col gap-4" onSubmit={handleChange}>
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Current Password
+            {t('currentPassword')}
           </label>
           <input
             type="password"
-            placeholder="Enter current password"
+            placeholder={t('enterCurrentPassword')}
             className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             required
             value={oldPassword}
@@ -87,11 +90,11 @@ export default function ChangePassword({ onClose }: ChangePasswordProps) {
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            New Password
+            {t('newPassword')}
           </label>
           <input
             type="password"
-            placeholder="Enter new password"
+            placeholder={t('enterNewPassword')}
             className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             required
             value={newPassword}
@@ -101,11 +104,11 @@ export default function ChangePassword({ onClose }: ChangePasswordProps) {
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Confirm New Password
+            {t('confirmNewPassword')}
           </label>
           <input
             type="password"
-            placeholder="Re-enter new password"
+            placeholder={t('reenterNewPassword')}
             className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
             required
             value={confirm}
@@ -121,7 +124,7 @@ export default function ChangePassword({ onClose }: ChangePasswordProps) {
             className="flex-1 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={loading || !!success}
           >
-            {loading ? "Changing..." : "Change Password"}
+            {loading ? t('changing') : t('changePassword')}
           </button>
           <button 
             className="px-4 py-2.5 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium transition-colors" 
@@ -129,7 +132,7 @@ export default function ChangePassword({ onClose }: ChangePasswordProps) {
             type="button"
             disabled={loading}
           >
-            Cancel
+            {tCommon('cancel')}
           </button>
         </div>
       </form>
