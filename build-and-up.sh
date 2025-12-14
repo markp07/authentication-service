@@ -42,7 +42,19 @@ fi
 
 # Load .env file (only export valid variable assignments, skip comments and empty lines)
 set -a
-source <(grep -v '^#' .env | grep -v '^$' | grep '=')
+while IFS='=' read -r key value; do
+    # Skip empty lines and comments
+    [[ -z "$key" || "$key" =~ ^[[:space:]]*# ]] && continue
+    # Only process lines that look like variable assignments
+    if [[ "$key" =~ ^[A-Z_][A-Z0-9_]*$ ]]; then
+        # Remove quotes if present and export
+        value="${value#\"}"
+        value="${value%\"}"
+        value="${value#\'}"
+        value="${value%\'}"
+        eval export "$key=\"$value\""
+    fi
+done < .env
 set +a
 
 # Check if all required variables are present in .env
