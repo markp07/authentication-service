@@ -65,7 +65,11 @@ services:
       SMTP_USERNAME: ${SMTP_USERNAME:-}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       EMAIL_FROM: ${EMAIL_FROM:-no-reply@example.com}
-      EMAIL_BASE_URL: ${EMAIL_BASE_URL:-https://auth.markpost.dev}
+      EMAIL_FROM_NAME: ${EMAIL_FROM_NAME:-Authentication Service}
+      EMAIL_BASE_URL: ${EMAIL_BASE_URL:-https://auth.yourdomain.tld}
+      BASE_DOMAIN: ${BASE_DOMAIN:-yourdomain.tld}
+      WEBAUTHN_RP_ID: ${WEBAUTHN_RP_ID:-auth.yourdomain.tld}
+      WEBAUTHN_ORIGIN: ${WEBAUTHN_ORIGIN:-https://auth.yourdomain.tld}
     volumes:
       - authentication_service_data:/data
     networks:
@@ -83,6 +87,10 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://auth.yourdomain.tld}
+        NEXT_PUBLIC_BASE_DOMAIN: ${BASE_DOMAIN:-yourdomain.tld}
+        NEXT_PUBLIC_SUPPORT_EMAIL: ${NEXT_PUBLIC_SUPPORT_EMAIL:-support@yourdomain.tld}
     container_name: authentication-frontend
     restart: unless-stopped
     ports:
@@ -91,7 +99,9 @@ services:
       authentication-service:
         condition: service_healthy
     environment:
-      NEXT_PUBLIC_API_URL: https://auth.markpost.dev
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://auth.yourdomain.tld}
+      NEXT_PUBLIC_BASE_DOMAIN: ${BASE_DOMAIN:-yourdomain.tld}
+      NEXT_PUBLIC_SUPPORT_EMAIL: ${NEXT_PUBLIC_SUPPORT_EMAIL:-support@yourdomain.tld}
     networks:
       default-network:
         aliases:

@@ -2,6 +2,7 @@ package nl.markpost.authentication.config;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import nl.markpost.authentication.filter.JwtAuthenticationFilter;
 import nl.markpost.authentication.filter.TraceparentFilter;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +27,7 @@ import org.springframework.web.filter.CorsFilter;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityConfig {
 
   private final TraceparentFilter traceparentFilter;

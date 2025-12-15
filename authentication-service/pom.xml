@@ -289,11 +289,11 @@
                   <element>CLASS</element>
                   <excludes>
                     <exclude>*Test</exclude>
-                    <exclude>nl.markpost.demo.authentication.config.*</exclude>
-                    <exclude>nl.markpost.demo.authentication.constant.*</exclude>
-                    <exclude>nl.markpost.demo.authentication.dto.*</exclude>
-                    <exclude>nl.markpost.demo.authentication.model.*</exclude>
-                    <exclude>nl.markpost.demo.authentication.AuthenticationApplication</exclude>
+                    <exclude>nl.markpost.authentication.config.*</exclude>
+                    <exclude>nl.markpost.authentication.constant.*</exclude>
+                    <exclude>nl.markpost.authentication.dto.*</exclude>
+                    <exclude>nl.markpost.authentication.model.*</exclude>
+                    <exclude>nl.markpost.authentication.AuthenticationApplication</exclude>
                   </excludes>
                   <limits>
                     <limit>

@@ -1,7 +1,19 @@
 // Centralized API base URL and fetchWithAuthRetry utility
 
 export const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
-export const AUTH_API_BASE = isDev ? "http://localhost:12002" : (process.env.NEXT_PUBLIC_API_URL || "https://auth.markpost.dev");
+
+// Get API URL from runtime config if available, otherwise from build-time env, or default
+function getApiUrl(): string {
+  if (typeof window !== "undefined") {
+    // Client-side: check window.__ENV__ first (injected at runtime)
+    const runtimeApiUrl = window.__ENV__?.NEXT_PUBLIC_API_URL;
+    if (runtimeApiUrl) return runtimeApiUrl;
+  }
+  // Fallback to build-time env or default
+  return process.env.NEXT_PUBLIC_API_URL || "https://auth.yourdomain.tld";
+}
+
+export const AUTH_API_BASE = isDev ? "http://localhost:12002" : getApiUrl();
 
 /**
  * Generic fetch utility that retries on 401 by refreshing the token, then retries the original request.

@@ -61,30 +61,30 @@ security:
 
 authentication:
   cors:
-    allowed-origin-patterns: http://localhost:12006,https://*.markpost.dev
+    allowed-origin-patterns: http://localhost:12006,https://*.${BASE_DOMAIN:yourdomain.tld}
 
 email:
   service:
     enabled: ${EMAIL_SERVICE_ENABLED:false}
   from: ${EMAIL_FROM:no-reply@example.com}
-  from-name: ${EMAIL_FROM_NAME:Authentication Demo}
-  base-url: ${EMAIL_BASE_URL:https://auth.markpost.dev}
+  from-name: ${EMAIL_FROM_NAME:Authentication Service}
+  base-url: ${EMAIL_BASE_URL:https://auth.yourdomain.tld}
   subject:
     reset-password: "Password Reset Request"
     email-verification: "Verify Your Email Address"
   body:
-    reset-password: "Hi {userName},\nTo reset your password, use the following link: https://auth.markpost.dev/?token={resetToken}\nRegards,\nAuthentication Demo Service"
-    email-verification: "Hi {userName},\n\nPlease verify your email address by clicking the following link:\n{verificationLink}\n\nIf the link doesn't work, you can manually enter your verification token at:\n{manualVerificationLink}\n\nYour verification token is: {verificationToken}\n\nThis link will expire in 24 hours.\n\nRegards,\nAuthentication Demo Service"
+    reset-password: "Hi {userName},\nTo reset your password, use the following link: ${EMAIL_BASE_URL:https://auth.yourdomain.tld}/?token={resetToken}\nRegards,\nAuthentication Service"
+    email-verification: "Hi {userName},\n\nPlease verify your email address by clicking the following link:\n{verificationLink}\n\nIf the link doesn't work, you can manually enter your verification token at:\n{manualVerificationLink}\n\nYour verification token is: {verificationToken}\n\nThis link will expire in 24 hours.\n\nRegards,\nAuthentication Service"
 
 cookie:
   secure: true
-  domain: "markpost.dev"
+  domain: "${BASE_DOMAIN:yourdomain.tld}"
 
 webauthn:
   rp:
-    name: "Authentication Demo Service"
-    id: "auth.markpost.dev"
-  origin: "https://auth.markpost.dev"
+    name: "Authentication Service"
+    id: "${WEBAUTHN_RP_ID:auth.yourdomain.tld}"
+  origin: "${WEBAUTHN_ORIGIN:https://auth.yourdomain.tld}"
 
 ---
 # Local environment profile
@@ -122,7 +122,7 @@ cookie:
 
 webauthn:
   rp:
-    name: "Authentication Demo Service"
+    name: "Authentication Service"
     id: "localhost"
   origin: "http://localhost:3000"
 

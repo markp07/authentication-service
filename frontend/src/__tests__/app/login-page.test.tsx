@@ -30,7 +30,7 @@ describe('Login Page URL Validation', () => {
     });
 
     it('should accept absolute URLs from trusted domains', () => {
-      const callback = 'https://weather.markpost.dev/';
+      const callback = 'https://weather.yourdomain.tld/';
 
       expect(isValidCallback(callback)).toBe(true);
     });

@@ -13,12 +13,12 @@
     "registering": "Registering..."
   },
   "pageTitle": {
-    "login": "Login - Authentication Demo",
-    "register": "Register - Authentication Demo",
-    "forgotPassword": "Forgot Password - Authentication Demo",
-    "resetPassword": "Reset Password - Authentication Demo",
-    "profile": "Profile - Authentication Demo",
-    "security": "Security - Authentication Demo"
+    "login": "Login - Authentication Service",
+    "register": "Register - Authentication Service",
+    "forgotPassword": "Forgot Password - Authentication Service",
+    "resetPassword": "Reset Password - Authentication Service",
+    "profile": "Profile - Authentication Service",
+    "security": "Security - Authentication Service"
   },
   "sidebar": {
     "welcome": "Welcome, {username}",

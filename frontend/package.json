@@ -1,5 +1,5 @@
 {
-  "name": "demo-authentication",
+  "name": "authentication-service",
   "version": "1.9.5",
   "private": true,
   "scripts": {

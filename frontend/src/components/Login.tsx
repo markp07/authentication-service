@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useTranslations } from 'next-intl';
+import { AUTH_API_BASE } from '@/utils/api';
 
 interface LoginProps {
   onSuccess: () => void;
@@ -9,8 +10,6 @@ interface LoginProps {
   onForgot: () => void;
 }
 
-const isDev = typeof window !== "undefined" && window.location.hostname === "localhost";
-const AUTH_API_BASE = isDev ? "http://localhost:12002" : (process.env.NEXT_PUBLIC_API_URL || "https://auth.markpost.dev");
 
 export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
   const t = useTranslations('login');
@@ -422,7 +421,10 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
             <button
               type="button"
               className="text-blue-600 hover:underline text-sm"
-              onClick={() => window.open('mailto:support@markpost.dev?subject=Lost 2FA', '_blank')}
+              onClick={() => {
+                const supportEmail = window.__ENV__?.NEXT_PUBLIC_SUPPORT_EMAIL || process.env.NEXT_PUBLIC_SUPPORT_EMAIL || 'support@yourdomain.tld';
+                window.open(`mailto:${supportEmail}?subject=Lost 2FA`, '_blank');
+              }}
             >
               Lost 2FA?
             </button>

@@ -28,7 +28,7 @@ public class DummyEmailServiceImpl implements EmailService {
   @Value("${email.body.email-verification:Please verify your email}")
   private String emailVerificationBody;
 
-  @Value("${email.base-url:https://auth.markpost.dev}")
+  @Value("${email.base-url:https://auth.yourdomain.tld}")
   private String baseUrl;
 
   @Override

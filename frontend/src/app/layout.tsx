@@ -68,8 +68,22 @@ export default async function RootLayout({
     messages = (await import(`../../messages/en.json`)).default;
   }
 
+  // Get runtime environment variables
+  const runtimeConfig = {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_BASE_DOMAIN: process.env.NEXT_PUBLIC_BASE_DOMAIN,
+    NEXT_PUBLIC_SUPPORT_EMAIL: process.env.NEXT_PUBLIC_SUPPORT_EMAIL,
+  };
+
   return (
     <html lang={locale} className="bg-gradient-to-br from-blue-100 via-white to-blue-300 dark:from-gray-900 dark:via-gray-800 dark:to-gray-700 min-h-screen">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.__ENV__ = ${JSON.stringify(runtimeConfig)};`,
+          }}
+        />
+      </head>
       <body
         className="antialiased min-h-screen flex flex-col items-center justify-center text-gray-900 dark:text-gray-100 font-sans"
       >
