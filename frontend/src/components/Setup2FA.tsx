@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { AUTH_API_BASE, fetchWithAuthRetry } from "../utils/api";
 import { IconShield, IconCheck, IconAlertCircle, IconKey, IconQrcode } from "@tabler/icons-react";
+import { useTranslations } from 'next-intl';
 
 export default function Setup2FA() {
+  const t = useTranslations('setup2FA');
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [secret, setSecret] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -24,12 +26,12 @@ export default function Setup2FA() {
         setSecret(data.secret || null);
         setOtpUri(data.otpUri || null);
       } else {
-        setError("Failed to get 2FA setup info.");
+        setError(t('setupError'));
       }
     } catch {
-      setError("Network error.");
+      setError(t('networkError'));
     }
-  }, []);
+  }, [t]);
 
   async function fetchBackupCode() {
     try {
@@ -61,13 +63,13 @@ export default function Setup2FA() {
           await fetchBackupCode();
           setStep("done");
         } else {
-          setError("Invalid code. Try again.");
+          setError(t('invalidCode'));
         }
       } else {
-        setError("Invalid code. Try again.");
+        setError(t('invalidCode'));
       }
     } catch {
-      setError("Network error.");
+      setError(t('networkError'));
     }
   }
 
@@ -83,8 +85,8 @@ export default function Setup2FA() {
           <IconShield size={24} className="text-green-600 dark:text-green-400" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Setup Two-Factor Authentication</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Secure your account with TOTP</p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t('title')}</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400">{t('subtitle')}</p>
         </div>
       </div>
 
@@ -108,14 +110,14 @@ export default function Setup2FA() {
           <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 flex flex-col items-center gap-4">
             <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
               <IconQrcode size={20} />
-              <span className="font-medium">Scan QR Code</span>
+              <span className="font-medium">{t('scanQRCode')}</span>
             </div>
             <div className="bg-white p-4 rounded-lg shadow-sm">
-              <Image src={qrCodeUrl} alt="Scan this QR code with your authenticator app" width={200} height={200} className="w-48 h-48" />
+              <Image src={qrCodeUrl} alt={t('scanQRCodeAlt')} width={200} height={200} className="w-48 h-48" />
             </div>
             {otpUri && (
               <a href={otpUri} target="_blank" rel="noopener noreferrer" className="text-blue-600 dark:text-blue-400 hover:underline text-sm">
-                Open in Authenticator App
+                {t('openInApp')}
               </a>
             )}
           </div>
@@ -124,8 +126,8 @@ export default function Setup2FA() {
               <div className="flex items-start gap-3">
                 <IconKey size={20} className="text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
                 <div>
-                  <div className="font-semibold text-amber-900 dark:text-amber-200 mb-1">Manual Entry</div>
-                  <div className="text-sm text-amber-800 dark:text-amber-300 mb-2">If you can't scan the QR code, enter this secret manually:</div>
+                  <div className="font-semibold text-amber-900 dark:text-amber-200 mb-1">{t('manualEntry')}</div>
+                  <div className="text-sm text-amber-800 dark:text-amber-300 mb-2">{t('manualEntryDescription')}</div>
                   <div className="bg-white dark:bg-gray-800 rounded px-3 py-2 font-mono text-sm break-all">
                     {secret}
                   </div>
@@ -137,7 +139,7 @@ export default function Setup2FA() {
             className="w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors" 
             onClick={() => setStep("confirm")}
           >
-            Next: Verify Code
+            {t('nextVerifyCode')}
           </button>
         </div>
       )}
@@ -147,12 +149,12 @@ export default function Setup2FA() {
         <form className="flex flex-col gap-4" onSubmit={confirm2fa}>
           <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
             <p className="text-sm text-blue-800 dark:text-blue-200">
-              Enter the 6-digit code from your authenticator app to verify the setup.
+              {t('enterCodeDescription')}
             </p>
           </div>
           <div>
             <label htmlFor="totp-code" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Verification Code
+              {t('verificationCode')}
             </label>
             <input
               id="totp-code"
@@ -171,7 +173,7 @@ export default function Setup2FA() {
             type="submit" 
             className="w-full px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
           >
-            Verify & Enable 2FA
+            {t('verifyAndEnable')}
           </button>
         </form>
       )}
@@ -185,17 +187,17 @@ export default function Setup2FA() {
             </div>
           </div>
           <div className="text-center">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">2FA Enabled Successfully!</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Your account is now protected with two-factor authentication.</p>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">{t('successTitle')}</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{t('successDescription')}</p>
           </div>
           {backupCode && (
             <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
               <div className="flex items-start gap-3">
                 <IconAlertCircle size={20} className="text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
                 <div className="flex-1">
-                  <div className="font-semibold text-amber-900 dark:text-amber-200 mb-1">Important: Save Your Backup Code</div>
+                  <div className="font-semibold text-amber-900 dark:text-amber-200 mb-1">{t('backupCodeTitle')}</div>
                   <p className="text-sm text-amber-800 dark:text-amber-300 mb-3">
-                    Store this backup code in a safe place. You'll need it if you lose access to your authenticator app.
+                    {t('backupCodeDescription')}
                   </p>
                   <div className="bg-white dark:bg-gray-800 rounded-lg px-4 py-3">
                     <div className="font-mono text-lg text-center text-gray-900 dark:text-white tracking-wider">
