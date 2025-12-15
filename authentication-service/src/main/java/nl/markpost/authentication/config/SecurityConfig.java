@@ -42,8 +42,6 @@ public class SecurityConfig {
   @Bean
   public CorsFilter corsFilter(
       @Value("${authentication.cors.allowed-origin-patterns:}") String[] allowedOriginPatterns) {
-    log.info("Configuring CORS with allowed origin patterns: {}",
-        (allowedOriginPatterns != null ? String.join(", ", allowedOriginPatterns) : "none"));
     CorsConfiguration config = new CorsConfiguration();
     config.setAllowCredentials(true);
     config.setAllowedOriginPatterns(
