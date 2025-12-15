@@ -42,17 +42,13 @@ fi
 
 # Load .env file (only export valid variable assignments, skip comments and empty lines)
 set -a
-while IFS='=' read -r key value; do
+while IFS= read -r line; do
     # Skip empty lines and comments
-    [[ -z "$key" || "$key" =~ ^[[:space:]]*# ]] && continue
+    [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
     # Only process lines that look like variable assignments
-    if [[ "$key" =~ ^[A-Z_][A-Z0-9_]*$ ]]; then
-        # Remove quotes if present and export
-        value="${value#\"}"
-        value="${value%\"}"
-        value="${value#\'}"
-        value="${value%\'}"
-        eval export "$key=\"$value\""
+    if [[ "$line" =~ ^[A-Z_][A-Z0-9_]*= ]]; then
+        # Export the entire line as-is using eval
+        eval "export $line"
     fi
 done < .env
 set +a
