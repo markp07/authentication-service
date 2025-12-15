@@ -351,8 +351,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Mark Post**
 - GitHub: [@markp07](https://github.com/markp07)
 
-## 🙏 Acknowledgments
-
-- Spring Boot team for excellent documentation
-- Yubico for WebAuthn server library
-- Open-Meteo for weather API (used in demo service)
