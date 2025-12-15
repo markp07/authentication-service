@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [1.9.2] - 2025-12-15
+
+### Changed
+- Add missing i18n translations for authentication modals and pages (#95)
+
+
 ## [1.9.1] - 2025-12-14
 
 ### Changed
