@@ -83,6 +83,10 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://auth.yourdomain.tld}
+        NEXT_PUBLIC_BASE_DOMAIN: ${BASE_DOMAIN:-yourdomain.tld}
+        NEXT_PUBLIC_SUPPORT_EMAIL: ${NEXT_PUBLIC_SUPPORT_EMAIL:-support@yourdomain.tld}
     container_name: authentication-frontend
     restart: unless-stopped
     ports:
