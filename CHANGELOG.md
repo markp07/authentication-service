@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [1.9.3] - 2025-12-15
+
+### Changed
+- Fix npm ci failure in build pipeline due to package.json/package-lock.json version mismatch (#98)
+
+
 ## [1.9.2] - 2025-12-15
 
 ### Changed
