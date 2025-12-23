@@ -38,7 +38,6 @@ jobs:
       - name: Build frontend
         working-directory: frontend
         run: |
-          npm cache clean --force
           npm install
           npm run test
           npm run build
