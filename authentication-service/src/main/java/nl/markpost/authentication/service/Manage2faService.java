@@ -52,7 +52,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class Manage2faService {
 
-  private static final String ISSUER = "Authentication Service | MarkPost.dev";
+  private static final String ISSUER = "Authentication Service";
 
   private static final int SECRET_LENGTH = 20;
 
