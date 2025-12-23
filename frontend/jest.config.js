@@ -11,6 +11,8 @@ const customJestConfig = {
     '^@/(.*)$': '<rootDir>/src/$1',
     // Map next-intl (and any subpath) to a manual mock so ESM release doesn't break Jest.
     '^next-intl(/.*)?$': '<rootDir>/test/__mocks__/next-intl.js',
+    // Mock @parcel/watcher to avoid native dependency issues in CI
+    '^@parcel/watcher$': '<rootDir>/test/__mocks__/@parcel/watcher.js',
   },
   testPathIgnorePatterns: ['<rootDir>/.next/'],
   // Transform ESM packages in node_modules that export native ESM (like next-intl)

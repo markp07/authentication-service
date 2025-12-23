@@ -37,11 +37,15 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: frontend
-        run: npm ci --include=optional
+        run: npm ci
 
       - name: Run frontend tests
         working-directory: frontend
-        run: npm run test
+        env:
+          NODE_ENV: test
+          CI: true
+          NEXT_TELEMETRY_DISABLED: 1
+        run: npm run test -- --maxWorkers=2 --ci
 
       - name: Build frontend
         working-directory: frontend

@@ -40,5 +40,8 @@
     "tailwindcss": "^4",
     "ts-jest": "^29.4.5",
     "typescript": "5.9.3"
+  },
+  "optionalDependencies": {
+    "@parcel/watcher-linux-x64-glibc": "2.5.1"
   }
 }
