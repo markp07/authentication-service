@@ -83,3 +83,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 /frontend/node_modules/
+
+# Local database directory
+postgres_data/
