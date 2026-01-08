@@ -315,9 +315,21 @@ docker compose start authentication-postgres
 # Create SQL dump (while database is running)
 docker exec authentication-postgres pg_dump -U authentication_service authentication_service > backup_$(date +%Y%m%d).sql
 
+# Verify the backup was created successfully
+if [ $? -eq 0 ] && [ -s backup_$(date +%Y%m%d).sql ]; then
+    echo "Backup created successfully"
+else
+    echo "Backup failed - check Docker logs"
+fi
+
 # Or with compression
 docker exec authentication-postgres pg_dump -U authentication_service authentication_service | gzip > backup_$(date +%Y%m%d).sql.gz
+
+# Always verify backup file size is not zero
+ls -lh backup_*.sql.gz
 ```
+
+**Important**: Always verify that backup files are not empty before relying on them.
 
 ### Restore from Backup
 

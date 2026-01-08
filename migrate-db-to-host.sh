@@ -91,11 +91,15 @@ copy_volume_to_host() {
     echo -e "${YELLOW}This may take a few minutes depending on database size...${NC}"
     
     # Use a temporary container to copy data from the volume to the host
-    docker run --rm \
+    if ! docker run --rm \
         -v "${volume_name}:/source" \
         -v "${HOST_DB_DIR}:/target" \
         busybox \
-        sh -c "cp -a /source/. /target/" > /dev/null 2>&1
+        sh -c "cp -a /source/. /target/" 2>&1; then
+        echo -e "${RED}❌ Failed to copy data from Docker volume${NC}"
+        echo -e "${RED}Please check Docker permissions and disk space${NC}"
+        exit 1
+    fi
     
     echo -e "${GREEN}✓${NC} Data copied successfully"
     
@@ -118,7 +122,14 @@ verify_data() {
     
     # List main directories
     echo -e "${BLUE}Main directories:${NC}"
-    ls -la "$HOST_DB_DIR" 2>/dev/null | grep '^d' | awk '{print "  - " $9}' | grep -v '^\s*-\s*\.$' | grep -v '^\s*-\s*\.\.$'
+    find "$HOST_DB_DIR" -maxdepth 1 -type d -not -name '.' -not -name '..' -printf '  - %f\n' 2>/dev/null || {
+        # Fallback for systems without GNU find
+        for dir in "$HOST_DB_DIR"/*; do
+            if [ -d "$dir" ]; then
+                echo "  - $(basename "$dir")"
+            fi
+        done
+    }
 }
 
 # Function to set correct permissions
@@ -156,10 +167,13 @@ cleanup_old_volume() {
     
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo -e "${BLUE}Removing Docker volume...${NC}"
-        docker volume rm "$volume_name" > /dev/null 2>&1 || {
-            echo -e "${RED}❌ Failed to remove volume. It may be in use.${NC}"
+        if ! ERROR_MSG=$(docker volume rm "$volume_name" 2>&1); then
+            echo -e "${RED}❌ Failed to remove volume${NC}"
+            echo -e "${RED}Error: ${ERROR_MSG}${NC}"
+            echo -e "${YELLOW}The volume may still be in use by a container.${NC}"
+            echo -e "${YELLOW}Try: docker volume rm $volume_name${NC}"
             return 1
-        }
+        fi
         echo -e "${GREEN}✓${NC} Docker volume removed successfully"
     else
         echo -e "${BLUE}Keeping Docker volume. You can remove it later with:${NC}"
@@ -189,11 +203,12 @@ main() {
     echo -e "${YELLOW}⚠  WARNING: This script will:${NC}"
     echo -e "  1. Stop and remove the authentication-postgres container"
     echo -e "  2. Copy data from Docker volume '${VOLUME_NAME}' to host directory"
-    echo -e "  3. Configure docker-compose.yml to use the host directory"
+    echo -e "  3. Set permissions (requires sudo access)"
     echo ""
     echo -e "Make sure you have:"
     echo -e "  - Already updated docker-compose.yml to use host directory"
     echo -e "  - A backup of your data (optional but recommended)"
+    echo -e "  - Sudo privileges (needed for setting file permissions)"
     echo ""
     read -p "Do you want to continue? (y/N): " -n 1 -r
     echo ""
