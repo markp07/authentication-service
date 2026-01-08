@@ -114,6 +114,12 @@ This starts PostgreSQL (port 12004), Redis (port 12005), Authentication Service 
 
 Access the application at `http://localhost:12006`
 
+### Database Storage
+
+The PostgreSQL database is stored in the `./postgres_data/` directory on your host system for easy access and backups.
+
+**Migrating from Docker Volume**: If you're upgrading from a version that used Docker volumes, see the [Migration Guide](MIGRATION_GUIDE.md) for instructions on how to migrate your existing database.
+
 ### Running Locally
 
 Start PostgreSQL and Redis:
