@@ -35,6 +35,7 @@ demo-authentication/
 - Spring Boot 3.5.6
 - Spring Security
 - PostgreSQL (primary database)
+- Flyway (database migrations)
 - Redis (session storage and caching)
 - JWT (JJWT 0.13.0)
 - WebAuthn (Yubico 2.7.0 for FIDO2/WebAuthn)
@@ -191,6 +192,19 @@ Configuration files:
 - `.env` (environment variables)
 
 For local development, defaults work out of the box. For production, configure all domain variables to match your deployment.
+
+## Database Migrations
+
+This project uses Flyway for database schema version control. Database migrations are automatically applied on application startup.
+
+**Migration Files**: Located in `authentication-service/src/main/resources/db/migration/`
+
+**Creating New Migrations**:
+1. Create a new file: `V{next_version}__{description}.sql`
+2. Write your SQL changes (use `IF NOT EXISTS` for idempotency)
+3. Restart the application to apply
+
+See [Database Migration Guide](authentication-service/src/main/resources/db/migration/README.md) for detailed instructions and best practices.
 
 ## Testing
 

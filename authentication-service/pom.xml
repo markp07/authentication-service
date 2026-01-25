@@ -118,6 +118,14 @@
       <artifactId>postgresql</artifactId>
       <version>${postgresql.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.flywaydb</groupId>
+      <artifactId>flyway-database-postgresql</artifactId>
+    </dependency>
 
     <!-- Cache dependencies -->
     <dependency>
@@ -325,6 +333,7 @@
         <includes>
           <include>**/*.yaml</include>
           <include>**/*.pem</include>
+          <include>**/*.sql</include>
         </includes>
       </resource>
     </resources>

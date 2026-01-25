@@ -4,6 +4,8 @@
 
 This guide explains how to migrate your PostgreSQL database from a Docker volume to a directory on your host system. This change provides better visibility, easier backups, and simpler database management.
 
+**Note**: This project now uses Flyway for database schema version control. Schema changes are managed through versioned migration scripts, ensuring consistent database state across all environments.
+
 ## Why Migrate to Host Directory?
 
 ### Benefits:
