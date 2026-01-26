@@ -1,13 +1,11 @@
 package nl.markpost.authentication.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import tools.jackson.databind.ObjectMapper;
 
 public class ObjectMapperUtil {
 
   public static ObjectMapper createObjectMapper() {
     ObjectMapper objectMapper = new ObjectMapper();
-    objectMapper.registerModule(new JavaTimeModule());
     return objectMapper;
   }
 }

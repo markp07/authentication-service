@@ -2,6 +2,7 @@ package nl.markpost.authentication.service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.concurrent.ThreadLocalRandom;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.markpost.authentication.api.v1.model.ChangePasswordRequest;
@@ -146,7 +147,7 @@ public class PasswordService {
     String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     StringBuilder token = new StringBuilder(length);
     for (int i = 0; i < length; i++) {
-      int idx = (int) (Math.random() * chars.length());
+      int idx = (int) (ThreadLocalRandom.current().nextDouble() * chars.length());
       token.append(chars.charAt(idx));
     }
     return token.toString();

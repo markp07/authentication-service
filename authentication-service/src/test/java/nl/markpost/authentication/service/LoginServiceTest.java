@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
@@ -13,6 +14,7 @@ import static org.mockito.Mockito.when;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.Optional;
+import java.util.UUID;
 import nl.markpost.authentication.api.v1.model.LoginRequest;
 import nl.markpost.authentication.api.v1.model.Message;
 import nl.markpost.authentication.api.v1.model.RegisterRequest;
@@ -21,43 +23,47 @@ import nl.markpost.authentication.exception.BadRequestException;
 import nl.markpost.authentication.model.User;
 import nl.markpost.authentication.repository.UserRepository;
 import nl.markpost.authentication.util.RequestUtil;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+@ExtendWith(MockitoExtension.class)
 class LoginServiceTest {
 
   @Mock
   private UserRepository userRepository;
+
   @Mock
   private PasswordEncoder passwordEncoder;
+
   @Mock
   private JwtService jwtService;
+
   @Mock
   private PasswordService passwordService;
+
   @Mock
   private UserService userService;
+
   @InjectMocks
   private LoginService loginService;
-
-  @BeforeEach
-  void setUp() {
-    MockitoAnnotations.openMocks(this);
-  }
 
   @Test
   void login_validUser_no2fa_setsTokensAndReturnsSuccess() {
     LoginRequest req = new LoginRequest();
     req.setEmail("test@example.com");
     req.setPassword("password");
-    User user = new User();
-    user.setPassword("encoded");
-    user.set2faEnabled(false);
+    User user = User.builder()
+        .id(UUID.randomUUID())
+        .email("test@example.com")
+        .password("encoded")
+        .is2faEnabled(false)
+        .build();
     when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
     when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
     when(jwtService.generateAccessToken(any())).thenReturn("accessToken");
@@ -77,9 +83,12 @@ class LoginServiceTest {
     LoginRequest req = new LoginRequest();
     req.setEmail("test@example.com");
     req.setPassword("password");
-    User user = new User();
-    user.setPassword("encoded");
-    user.set2faEnabled(true);
+    User user = User.builder()
+        .id(UUID.randomUUID())
+        .email("test@example.com")
+        .password("encoded")
+        .is2faEnabled(true)
+        .build();
     when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
     when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
     when(jwtService.generateAccessToken(any())).thenReturn("temporaryToken");
@@ -107,7 +116,7 @@ class LoginServiceTest {
   void register_existingEmail_throwsBadRequest() {
     RegisterRequest req = new RegisterRequest();
     req.setEmail("test@example.com");
-    when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(new User()));
+    lenient().when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(new User()));
     assertThrows(BadRequestException.class, () -> loginService.register(req));
   }
 }

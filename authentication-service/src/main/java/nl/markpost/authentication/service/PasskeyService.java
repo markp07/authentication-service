@@ -9,7 +9,7 @@ import static nl.markpost.authentication.constant.Constants.PASSKEY_USERNAMELESS
 import static nl.markpost.authentication.constant.Constants.REFRESH_TOKEN;
 import static nl.markpost.authentication.util.MessageResponseUtil.createMessageResponse;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.yubico.webauthn.AssertionRequest;
 import com.yubico.webauthn.AssertionResult;
 import com.yubico.webauthn.FinishAssertionOptions;

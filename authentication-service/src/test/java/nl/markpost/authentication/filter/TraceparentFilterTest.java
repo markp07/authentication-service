@@ -10,15 +10,16 @@ import static org.mockito.Mockito.when;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.MDC;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
+@ExtendWith(MockitoExtension.class)
 class TraceparentFilterTest {
 
   @Mock
@@ -35,7 +36,7 @@ class TraceparentFilterTest {
 
   @Test
   void testDoFilter_withTraceparentHeader() throws Exception {
-    val traceparent = "00-abcdef1234567890abcdef1234567890-abcdef1234567890-01";
+    final var traceparent = "00-abcdef1234567890abcdef1234567890-abcdef1234567890-01";
     when(request.getHeader("traceparent")).thenReturn(traceparent);
 
     filter.doFilter(request, response, chain);

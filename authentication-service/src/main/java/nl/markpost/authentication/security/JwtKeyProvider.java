@@ -2,7 +2,7 @@ package nl.markpost.authentication.security;
 
 import jakarta.annotation.PostConstruct;
 import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -56,7 +56,7 @@ public class JwtKeyProvider {
     if (path.startsWith("classpath:")) {
       key = new String(new ClassPathResource(path.substring(10)).getInputStream().readAllBytes());
     } else {
-      key = new String(Files.readAllBytes(Paths.get(path)));
+      key = new String(Files.readAllBytes(Path.of(path)));
     }
     key = key.replace(beginMarker, "").replace(endMarker, "").replace("\n", "");
     return Base64.getDecoder().decode(key);
