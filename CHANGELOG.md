@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [1.10.6] - 2026-01-26
+
+### Changed
+- chore(npm)(deps): bump the npm-dependencies group (#112)
+- Migrate PostgreSQL from Docker volume to host directory and add Flyway (#107)
+
+
 ## [1.10.5] - 2026-01-25
 
 ### Changed
