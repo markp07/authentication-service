@@ -128,6 +128,8 @@ verify_data() {
     else
         # Check for version-numbered directories (PostgreSQL 10+)
         for dir in "${HOST_DB_DIR}"/*; do
+            # Skip if glob didn't match any files
+            [ -e "$dir" ] || continue
             if [ -d "$dir" ] && [[ "$(basename "$dir")" =~ ^[0-9]+$ ]]; then
                 echo -e "${GREEN}✓${NC} PostgreSQL data directory found at: $dir"
                 pg_data_found=true
@@ -148,6 +150,8 @@ verify_data() {
     find "$HOST_DB_DIR" -maxdepth 1 -type d -not -name '.' -not -name '..' -printf '  - %f\n' 2>/dev/null || {
         # Fallback for systems without GNU find
         for dir in "$HOST_DB_DIR"/*; do
+            # Skip if glob didn't match any files
+            [ -e "$dir" ] || continue
             if [ -d "$dir" ]; then
                 echo "  - $(basename "$dir")"
             fi
@@ -174,6 +178,8 @@ set_permissions() {
     else
         # Set permissions on all subdirectories (for version-numbered dirs)
         for dir in "$HOST_DB_DIR"/*; do
+            # Skip if glob didn't match any files
+            [ -e "$dir" ] || continue
             if [ -d "$dir" ]; then
                 chmod -R 700 "$dir" 2>/dev/null || true
             fi
