@@ -31,7 +31,7 @@ services:
     ports:
       - '12004:5432'
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - ./postgres_data:/var/lib/postgresql
     networks:
       default-network:
         aliases:
@@ -115,8 +115,6 @@ services:
 
 volumes:
   cache:
-    driver: local
-  postgres_data:
     driver: local
   authentication_service_data:
     driver: local
