@@ -19,22 +19,22 @@
     <java.version>21</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- Dependency versions -->
-    <spring.boot.version>3.5.8</spring.boot.version>
-    <spring.cloud.version>2025.0.0</spring.cloud.version>
+    <spring.boot.version>4.0.2</spring.boot.version>
+    <spring.cloud.version>2025.1.0</spring.cloud.version>
     <lombok.version>1.18.42</lombok.version>
     <mapstruct.version>1.6.3</mapstruct.version>
     <lombok-mapstruct-bindings.version>0.2.0</lombok-mapstruct-bindings.version>
     <feign-jackson.version>13.6</feign-jackson.version>
     <jakarta.validation-api.version>3.1.0</jakarta.validation-api.version>
     <jackson-databind-nullable.version>0.2.8</jackson-databind-nullable.version>
-    <springdoc-openapi-webmvc-core.version>2.8.14</springdoc-openapi-webmvc-core.version>
+    <springdoc-openapi-webmvc-core.version>3.0.1</springdoc-openapi-webmvc-core.version>
     <jjwt.version>0.13.0</jjwt.version>
-    <postgresql.version>42.7.8</postgresql.version>
-    <micrometer-tracing.version>1.6.1</micrometer-tracing.version>
-    <micrometer-registry-prometheus.version>1.16.1</micrometer-registry-prometheus.version>
+    <postgresql.version>42.7.9</postgresql.version>
+    <micrometer-tracing.version>1.6.2</micrometer-tracing.version>
+    <micrometer-registry-prometheus.version>1.16.2</micrometer-registry-prometheus.version>
     <zxing.version>3.5.4</zxing.version>
     <otp-java.version>2.1.0</otp-java.version>
-    <webauthn-server-core.version>2.8.0</webauthn-server-core.version>
+    <webauthn-server-core.version>2.8.1</webauthn-server-core.version>
     <!-- Plugin versions -->
     <jacoco.version>0.8.14</jacoco.version>
     <fmt-maven-plugin.version>2.27</fmt-maven-plugin.version>
@@ -43,8 +43,8 @@
     <maven-compiler.version>3.14.1</maven-compiler.version>
     <maven-resources.version>3.4.0</maven-resources.version>
     <maven-surefire.version>3.5.4</maven-surefire.version>
-    <openapi-generator-maven-plugin.version>7.17.0</openapi-generator-maven-plugin.version>
-    <versions-maven-plugin.version>2.20.1</versions-maven-plugin.version>
+    <openapi-generator-maven-plugin.version>7.19.0</openapi-generator-maven-plugin.version>
+    <versions-maven-plugin.version>2.21.0</versions-maven-plugin.version>
     <maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
     <maven.minimum.version>3.6.3</maven.minimum.version>
   </properties>
