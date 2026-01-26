@@ -23,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.concurrent.ThreadLocalRandom;
 import javax.imageio.ImageIO;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -86,8 +87,7 @@ public class Manage2faService {
     user.set2faEnabled(false);
     user.setTotpSetupCreatedAt(LocalDateTime.now());
     userRepository.save(user);
-    String otpauth = String.format(
-        "otpauth://totp/%s:%s?secret=%s&issuer=%s&algorithm=SHA1&digits=6&period=30",
+    String otpauth = "otpauth://totp/%s:%s?secret=%s&issuer=%s&algorithm=SHA1&digits=6&period=30".formatted(
         ISSUER,
         email,
         base32Secret,
@@ -250,7 +250,7 @@ public class Manage2faService {
     int length = 24;
     StringBuilder code = new StringBuilder();
     for (int i = 0; i < length; i++) {
-      int idx = (int) (Math.random() * chars.length());
+      int idx = (int) (ThreadLocalRandom.current().nextDouble() * chars.length());
       code.append(chars.charAt(idx));
     }
     return code.toString();
