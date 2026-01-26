@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [1.11.0] - 2026-01-26
+
+### Changed
+- Feature/springboot 4 migration (#114)
+
+
 ## [1.10.6] - 2026-01-26
 
 ### Changed
