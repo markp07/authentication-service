@@ -125,8 +125,7 @@
               <include>**/*Test.java</include>
             </includes>
             <testFailureIgnore>false</testFailureIgnore>
-            <argLine>-Xmx1024m -Duser.timezone=UTC</argLine>
-<!--            <argLine>@{surefireArgLine} -Xmx1024m -Duser.timezone=UTC</argLine>-->
+            <argLine>-Xmx1024m -Duser.timezone=UTC -XX:+EnableDynamicAgentLoading</argLine>
             <printSummary>false</printSummary>
             <redirectTestOutputToFile>true</redirectTestOutputToFile>
             <forkCount>3</forkCount>
