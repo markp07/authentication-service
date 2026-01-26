@@ -113,12 +113,35 @@ verify_data() {
     echo ""
     echo -e "${BLUE}[Step 4/5]${NC} Verifying copied data..."
     
-    if [ ! -d "${HOST_DB_DIR}/data" ]; then
-        echo -e "${RED}❌ PostgreSQL data directory not found!${NC}"
+    # Check if any data was copied
+    if [ ! -d "${HOST_DB_DIR}" ] || [ -z "$(ls -A "${HOST_DB_DIR}" 2>/dev/null)" ]; then
+        echo -e "${RED}❌ No data found in ${HOST_DB_DIR}!${NC}"
         return 1
     fi
     
-    echo -e "${GREEN}✓${NC} PostgreSQL data directory structure verified"
+    # Check for PostgreSQL data directory (can be 'data' or version number like '18', '17', etc.)
+    local pg_data_found=false
+    
+    if [ -d "${HOST_DB_DIR}/data" ]; then
+        echo -e "${GREEN}✓${NC} PostgreSQL data directory found at: ${HOST_DB_DIR}/data"
+        pg_data_found=true
+    else
+        # Check for version-numbered directories (PostgreSQL 10+)
+        for dir in "${HOST_DB_DIR}"/*; do
+            if [ -d "$dir" ] && [[ "$(basename "$dir")" =~ ^[0-9]+$ ]]; then
+                echo -e "${GREEN}✓${NC} PostgreSQL data directory found at: $dir"
+                pg_data_found=true
+                break
+            fi
+        done
+    fi
+    
+    if [ "$pg_data_found" = false ]; then
+        echo -e "${YELLOW}⚠${NC} Warning: Standard PostgreSQL data structure not detected"
+        echo -e "${YELLOW}⚠${NC} Continuing anyway - please verify manually"
+    fi
+    
+    echo -e "${GREEN}✓${NC} Data verification complete"
     
     # List main directories
     echo -e "${BLUE}Main directories:${NC}"
@@ -145,7 +168,17 @@ set_permissions() {
         echo -e "${YELLOW}⚠${NC} Or run this script with sudo"
     }
     
-    chmod -R 700 "$HOST_DB_DIR/data" 2>/dev/null || true
+    # Set permissions on the data directory (wherever it is)
+    if [ -d "$HOST_DB_DIR/data" ]; then
+        chmod -R 700 "$HOST_DB_DIR/data" 2>/dev/null || true
+    else
+        # Set permissions on all subdirectories (for version-numbered dirs)
+        for dir in "$HOST_DB_DIR"/*; do
+            if [ -d "$dir" ]; then
+                chmod -R 700 "$dir" 2>/dev/null || true
+            fi
+        done
+    fi
     
     echo -e "${GREEN}✓${NC} Permissions configured"
 }
