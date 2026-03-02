@@ -27,7 +27,7 @@
     <feign-jackson.version>13.6</feign-jackson.version>
     <jakarta.validation-api.version>3.1.0</jakarta.validation-api.version>
     <jackson-databind-nullable.version>0.2.9</jackson-databind-nullable.version>
-    <springdoc-openapi-webmvc-core.version>3.0.1</springdoc-openapi-webmvc-core.version>
+    <springdoc-openapi-webmvc-core.version>3.0.2</springdoc-openapi-webmvc-core.version>
     <jjwt.version>0.13.0</jjwt.version>
     <postgresql.version>42.7.10</postgresql.version>
     <micrometer-tracing.version>1.6.3</micrometer-tracing.version>
@@ -35,7 +35,7 @@
     <zxing.version>3.5.4</zxing.version>
     <otp-java.version>2.1.0</otp-java.version>
     <webauthn-server-core.version>2.8.1</webauthn-server-core.version>
-    <flyway.version>12.0.2</flyway.version>
+    <flyway.version>12.0.3</flyway.version>
     <!-- Plugin versions -->
     <jacoco.version>0.8.14</jacoco.version>
     <fmt-maven-plugin.version>2.27</fmt-maven-plugin.version>
@@ -210,7 +210,7 @@
       <plugin>
         <groupId>org.openrewrite.maven</groupId>
         <artifactId>rewrite-maven-plugin</artifactId>
-        <version>6.29.0</version>
+        <version>6.30.0</version>
         <configuration>
           <exportDatatables>true</exportDatatables>
           <activeRecipes>
@@ -221,7 +221,7 @@
           <dependency>
             <groupId>org.openrewrite.recipe</groupId>
             <artifactId>rewrite-spring</artifactId>
-            <version>6.24.1</version>
+            <version>6.25.1</version>
           </dependency>
         </dependencies>
       </plugin>
