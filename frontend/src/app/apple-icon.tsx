@@ -11,7 +11,7 @@ export const contentType = 'image/png'
 export default function AppleIcon() {
   return new ImageResponse(
     (
-      // Weather icon: sun with clouds
+      // Authentication icon: padlock
       <div
         style={{
           width: '100%',
@@ -19,66 +19,47 @@ export default function AppleIcon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(to bottom, #87CEEB, #4A90E2)',
+          background: 'linear-gradient(135deg, #4F46E5, #7C3AED)',
           borderRadius: '20%',
         }}
       >
-        {/* Sun */}
+        {/* Lock shackle (U-shaped arch) */}
         <div
           style={{
-            width: '80px',
-            height: '80px',
-            borderRadius: '50%',
-            background: '#FFD700',
             position: 'absolute',
-            top: '30px',
-            left: '40px',
-            boxShadow: '0 0 20px rgba(255, 215, 0, 0.8)',
+            width: '79px',
+            height: '51px',
+            borderRadius: '39px 39px 0 0',
+            border: '17px solid white',
+            borderBottom: 'none',
+            top: '34px',
+            left: '51px',
           }}
         />
-        {/* Cloud */}
+        {/* Lock body */}
         <div
           style={{
-            display: 'flex',
             position: 'absolute',
-            bottom: '30px',
-            right: '20px',
+            width: '113px',
+            height: '73px',
+            background: 'white',
+            borderRadius: '17px',
+            top: '73px',
+            left: '34px',
           }}
-        >
-          <div
-            style={{
-              width: '45px',
-              height: '45px',
-              borderRadius: '50%',
-              background: 'white',
-              position: 'absolute',
-              left: '0px',
-              bottom: '0px',
-            }}
-          />
-          <div
-            style={{
-              width: '55px',
-              height: '55px',
-              borderRadius: '50%',
-              background: 'white',
-              position: 'absolute',
-              left: '28px',
-              bottom: '8px',
-            }}
-          />
-          <div
-            style={{
-              width: '42px',
-              height: '42px',
-              borderRadius: '50%',
-              background: 'white',
-              position: 'absolute',
-              left: '65px',
-              bottom: '0px',
-            }}
-          />
-        </div>
+        />
+        {/* Keyhole */}
+        <div
+          style={{
+            position: 'absolute',
+            width: '28px',
+            height: '28px',
+            borderRadius: '50%',
+            background: '#5B21B6',
+            top: '101px',
+            left: '76px',
+          }}
+        />
       </div>
     ),
     {
