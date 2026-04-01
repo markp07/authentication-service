@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [1.11.6] - 2026-04-01
+
+### Changed
+- feat: account lockout / brute force protection + Java 25 (#135)
+
+
 ## [1.11.5] - 2026-04-01
 
 ### Changed
