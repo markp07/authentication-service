@@ -45,6 +45,7 @@
     "verify": "Verify",
     "loginSuccess": "Login successful!",
     "loginError": "Login failed. Please check your credentials.",
+    "lockedError": "Account temporarily locked due to too many failed attempts. Please try again later.",
     "networkError": "Network error. Please try again."
   },
   "register": {

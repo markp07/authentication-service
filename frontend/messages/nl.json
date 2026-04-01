@@ -46,6 +46,7 @@
     "verify": "Verifiëren",
     "loginSuccess": "Inloggen succesvol!",
     "loginError": "Inloggen mislukt. Controleer uw inloggegevens.",
+    "lockedError": "Account tijdelijk vergrendeld door te veel mislukte pogingen. Probeer het later opnieuw.",
     "networkError": "Netwerkfout. Probeer het opnieuw."
   },
   "register": {

@@ -11,15 +11,18 @@ import static nl.markpost.authentication.util.MessageResponseUtil.createMessageR
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.markpost.authentication.api.v1.model.LoginRequest;
 import nl.markpost.authentication.api.v1.model.Message;
 import nl.markpost.authentication.api.v1.model.RegisterRequest;
+import nl.markpost.authentication.config.AccountLockoutProperties;
 import nl.markpost.authentication.constant.Messages;
 import nl.markpost.authentication.exception.BadRequestException;
 import nl.markpost.authentication.exception.InternalServerErrorException;
+import nl.markpost.authentication.exception.TooManyRequestsException;
 import nl.markpost.authentication.exception.UnauthorizedException;
 import nl.markpost.authentication.model.User;
 import nl.markpost.authentication.repository.UserRepository;
@@ -44,6 +47,7 @@ public class LoginService {
   private final JwtService jwtService;
   private final PasswordService passwordService;
   private final UserService userService;
+  private final AccountLockoutProperties lockoutProperties;
 
   /**
    * Handles user login.
@@ -51,12 +55,23 @@ public class LoginService {
    * @param loginRequest the login request containing email and password
    * @return ResponseEntity with a message indicating success or failure
    */
+  @Transactional
   public ResponseEntity<Message> login(LoginRequest loginRequest) {
     User user = userRepository.findByEmail(loginRequest.getEmail())
         .orElseThrow(UnauthorizedException::new);
+
+    if (!user.isAccountNonLocked()) {
+      log.warn("Login attempt for locked account: {}", loginRequest.getEmail());
+      throw new TooManyRequestsException(Messages.ACCOUNT_LOCKED.getDescription());
+    }
+
     if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+      handleFailedLoginAttempt(user);
       throw new UnauthorizedException();
     }
+
+    resetFailedLoginAttempts(user);
+
     HttpServletResponse response = RequestUtil.getCurrentResponse();
 
     if (user.is2faEnabled()) {
@@ -74,6 +89,25 @@ public class LoginService {
 
       return ResponseEntity.status(HttpStatus.OK)
           .body(createMessageResponse(Messages.LOGIN_SUCCESS));
+    }
+  }
+
+  private void handleFailedLoginAttempt(User user) {
+    int attempts = user.getFailedLoginAttempts() + 1;
+    user.setFailedLoginAttempts(attempts);
+    if (attempts >= lockoutProperties.getMaxFailedAttempts()) {
+      user.setAccountLockedUntil(
+          LocalDateTime.now().plusMinutes(lockoutProperties.getLockoutDurationMinutes()));
+      log.warn("Account locked due to too many failed attempts: {}", user.getEmail());
+    }
+    userRepository.save(user);
+  }
+
+  private void resetFailedLoginAttempts(User user) {
+    if (user.getFailedLoginAttempts() > 0 || user.getAccountLockedUntil() != null) {
+      user.setFailedLoginAttempts(0);
+      user.setAccountLockedUntil(null);
+      userRepository.save(user);
     }
   }
 

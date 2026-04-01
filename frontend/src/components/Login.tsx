@@ -51,6 +51,8 @@ export default function Login({ onSuccess, onRegister, onForgot }: LoginProps) {
         onSuccess();
       } else if (res.status === 202 && data.code === "2FA_REQUIRED") {
         setStep('2fa');
+      } else if (res.status === 429) {
+        setError(t('lockedError'));
       } else {
         setError(t('loginError'));
       }
