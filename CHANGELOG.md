@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [1.11.5] - 2026-04-01
+
+### Changed
+- Fix NEXT_PUBLIC_EXTRA_MENU_ITEMS not propagated through Docker build pipeline (#134)
+- chore(maven)(deps): bump the maven-dependencies group with 8 updates (#133)
+- chore(npm)(deps): bump the npm-dependencies group (#131)
+- chore(maven)(deps): bump the maven-dependencies group across 1 directory with 11 updates (#130)
+- chore(npm)(deps): bump the npm-dependencies group across 1 directory with 8 updates (#129)
+- chore(github-actions)(deps): bump docker/setup-buildx-action (#127)
+
+
 ## [1.11.4] - 2026-02-24
 
 ### Changed
