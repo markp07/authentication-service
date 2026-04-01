@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [1.11.7] - 2026-04-01
+
+### Changed
+- Add ADMIN role-gated user management panel + promote-to-admin script (#136)
+
+
 ## [1.11.6] - 2026-04-01
 
 ### Changed
