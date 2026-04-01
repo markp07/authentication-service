@@ -86,6 +86,11 @@ cookie:
   secure: true
   domain: "${BASE_DOMAIN:yourdomain.tld}"
 
+account:
+  lockout:
+    max-failed-attempts: 5
+    lockout-duration-minutes: 15
+
 webauthn:
   rp:
     name: "Authentication Service"

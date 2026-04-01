@@ -46,6 +46,7 @@
     "verify": "Vérifier",
     "loginSuccess": "Connexion réussie !",
     "loginError": "Connexion échouée. Veuillez vérifier vos identifiants.",
+    "lockedError": "Compte temporairement verrouillé en raison de trop nombreuses tentatives échouées. Veuillez réessayer plus tard.",
     "networkError": "Erreur réseau. Veuillez réessayer."
   },
   "register": {

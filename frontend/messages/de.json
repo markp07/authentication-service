@@ -46,6 +46,7 @@
     "verify": "Überprüfen",
     "loginSuccess": "Anmeldung erfolgreich!",
     "loginError": "Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Anmeldedaten.",
+    "lockedError": "Konto vorübergehend gesperrt aufgrund zu vieler fehlgeschlagener Versuche. Bitte versuchen Sie es später erneut.",
     "networkError": "Netzwerkfehler. Bitte versuchen Sie es erneut."
   },
   "register": {
