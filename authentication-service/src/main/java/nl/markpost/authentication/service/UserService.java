@@ -45,6 +45,7 @@ public class UserService {
         .createdAt(managedUser.getCreatedAt() != null
             ? managedUser.getCreatedAt().atZone(java.time.ZoneId.systemDefault()).toOffsetDateTime()
             : null)
+        .roles(managedUser.getRoles() != null ? new java.util.ArrayList<>(managedUser.getRoles()) : null)
         .build();
   }
 

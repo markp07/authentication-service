@@ -21,6 +21,7 @@ import nl.markpost.authentication.api.v1.model.RegisterRequest;
 import nl.markpost.authentication.config.AccountLockoutProperties;
 import nl.markpost.authentication.constant.Messages;
 import nl.markpost.authentication.exception.BadRequestException;
+import nl.markpost.authentication.exception.ForbiddenException;
 import nl.markpost.authentication.exception.InternalServerErrorException;
 import nl.markpost.authentication.exception.TooManyRequestsException;
 import nl.markpost.authentication.exception.UnauthorizedException;
@@ -59,6 +60,11 @@ public class LoginService {
   public ResponseEntity<Message> login(LoginRequest loginRequest) {
     User user = userRepository.findByEmail(loginRequest.getEmail())
         .orElseThrow(UnauthorizedException::new);
+
+    if (Boolean.TRUE.equals(user.getBlocked())) {
+      log.warn("Login attempt for blocked account: {}", loginRequest.getEmail());
+      throw new ForbiddenException(Messages.ACCOUNT_BLOCKED.getDescription());
+    }
 
     if (!user.isAccountNonLocked()) {
       log.warn("Login attempt for locked account: {}", loginRequest.getEmail());

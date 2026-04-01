@@ -66,6 +66,7 @@ public class SecurityConfig {
         .authorizeHttpRequests(authz -> authz
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .requestMatchers(excludedPaths).permitAll()
+            .requestMatchers("/v1/admin/**").hasAuthority("ADMIN")
             .anyRequest().authenticated()
         );
     return http.build();
