@@ -9,6 +9,7 @@ COPY . .
 ARG NEXT_PUBLIC_API_URL=https://auth.yourdomain.tld
 ARG NEXT_PUBLIC_BASE_DOMAIN=yourdomain.tld
 ARG NEXT_PUBLIC_SUPPORT_EMAIL=support@yourdomain.tld
+ARG NEXT_PUBLIC_EXTRA_MENU_ITEMS=
 
 RUN npm run build
 
