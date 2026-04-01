@@ -1,16 +1,17 @@
 'use client';
 
 import React from "react";
-import { IconUser, IconShield, IconLogout, IconMenu2, IconX, IconExternalLink } from "@tabler/icons-react";
+import { IconUser, IconShield, IconLogout, IconMenu2, IconX, IconExternalLink, IconShieldCog } from "@tabler/icons-react";
 import * as TablerIcons from "@tabler/icons-react";
 import { useTranslations, useLocale } from 'next-intl';
 import LanguageSelector from './LanguageSelector';
 
 interface SidebarProps {
   username: string | null;
-  activePage: "profile" | "security";
-  onNavigate: (page: "profile" | "security") => void;
+  activePage: "profile" | "security" | "admin";
+  onNavigate: (page: "profile" | "security" | "admin") => void;
   onLogout: () => void;
+  isAdmin?: boolean;
 }
 
 interface ExtraMenuItem {
@@ -32,7 +33,7 @@ function parseExtraMenuItems(): ExtraMenuItem[] {
   }
 }
 
-export default function Sidebar({ username, activePage, onNavigate, onLogout }: SidebarProps) {
+export default function Sidebar({ username, activePage, onNavigate, onLogout, isAdmin }: SidebarProps) {
   const t = useTranslations('sidebar');
   const locale = useLocale();
   const [isOpen, setIsOpen] = React.useState(false);
@@ -40,6 +41,7 @@ export default function Sidebar({ username, activePage, onNavigate, onLogout }: 
   const menuItems = [
     { id: "profile" as const, label: t('profile'), icon: IconUser },
     { id: "security" as const, label: t('security'), icon: IconShield },
+    ...(isAdmin ? [{ id: "admin" as const, label: t('admin'), icon: IconShieldCog }] : []),
   ];
 
   const extraMenuItems = parseExtraMenuItems();
@@ -72,7 +74,7 @@ export default function Sidebar({ username, activePage, onNavigate, onLogout }: 
         <div className="flex flex-col h-full lg:h-screen">
           {/* Header */}
           <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-            <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400">Auth Demo</h1>
+            <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400">Authentication</h1>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{t('welcome', { username: username || 'User' })}</p>
             <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
               v{process.env.NEXT_PUBLIC_APP_VERSION || '0.0.0'} • {new Date(process.env.NEXT_PUBLIC_BUILD_TIME || Date.now()).toLocaleString()}

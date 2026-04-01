@@ -17,15 +17,14 @@
     "register": "Register - Authentication Service",
     "forgotPassword": "Forgot Password - Authentication Service",
     "resetPassword": "Reset Password - Authentication Service",
-    "profile": "Profile - Authentication Service",
-    "security": "Security - Authentication Service"
+    "admin": "Admin - Authentication Service"
   },
   "sidebar": {
     "welcome": "Welcome, {username}",
     "profile": "Profile",
     "security": "Security",
     "logout": "Log out",
-    "language": "Language"
+    "admin": "Admin"
   },
   "login": {
     "title": "Login",
@@ -258,17 +257,55 @@
     "usernamelessLoginSuccess": "Usernameless passkey login successful!",
     "usernamelessLoginError": "Usernameless passkey login failed."
   },
-  "modal": {
-    "close": "Close",
-    "save": "Save",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "confirm": "Confirm"
-  },
   "languages": {
     "en": "English",
     "nl": "Nederlands",
     "de": "Deutsch",
     "fr": "Français"
+  },
+  "admin": {
+    "title": "Admin Panel",
+    "users": "Users",
+    "id": "ID",
+    "username": "Username",
+    "email": "Email",
+    "createdAt": "Created",
+    "updatedAt": "Updated",
+    "emailVerified": "Email Verified",
+    "twoFactorEnabled": "2FA Enabled",
+    "passkeyEnabled": "Passkey Enabled",
+    "roles": "Roles",
+    "status": "Status",
+    "actions": "Actions",
+    "viewDetails": "View Details",
+    "blocked": "Blocked",
+    "active": "Active",
+    "blockAccount": "Block Account",
+    "unblockAccount": "Unblock Account",
+    "sendResetLink": "Send Reset Link",
+    "addRole": "Add Role",
+    "removeRole": "Remove",
+    "enterRole": "Enter role name",
+    "failedLoginAttempts": "Failed Login Attempts",
+    "accountLockedUntil": "Account Locked Until",
+    "userDetails": "User Details",
+    "notAvailable": "N/A",
+    "yes": "Yes",
+    "no": "No",
+    "loading": "Loading users...",
+    "networkError": "Network error. Please try again.",
+    "failedToLoad": "Failed to load users.",
+    "blockSuccess": "Account blocked successfully.",
+    "unblockSuccess": "Account unblocked successfully.",
+    "blockError": "Failed to block account.",
+    "unblockError": "Failed to unblock account.",
+    "resetLinkSent": "Password reset link sent.",
+    "resetLinkError": "Failed to send reset link.",
+    "addRoleSuccess": "Role added successfully.",
+    "removeRoleSuccess": "Role removed successfully.",
+    "addRoleError": "Failed to add role.",
+    "removeRoleError": "Failed to remove role.",
+    "accessDenied": "Access Denied",
+    "noPermission": "You do not have permission to view this page."
   }
 }

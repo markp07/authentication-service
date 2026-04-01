@@ -21,7 +21,13 @@ public enum Messages {
   TWO_FA_BACKUP_CODE_INVALID("TWO_FA_BACKUP_CODE_INVALID", "Invalid backup code"),
   EMAIL_VERIFIED("EMAIL_VERIFIED", "Email verified successfully"),
   VERIFICATION_EMAIL_SENT("VERIFICATION_EMAIL_SENT", "Verification email sent successfully"),
-  ACCOUNT_LOCKED("ACCOUNT_LOCKED", "Account is temporarily locked due to too many failed login attempts");
+  ACCOUNT_LOCKED("ACCOUNT_LOCKED", "Account is temporarily locked due to too many failed login attempts"),
+  ACCOUNT_BLOCKED("ACCOUNT_BLOCKED", "Account has been blocked by an administrator"),
+  ADMIN_BLOCK_SUCCESS("ADMIN_BLOCK_SUCCESS", "User account blocked successfully"),
+  ADMIN_UNBLOCK_SUCCESS("ADMIN_UNBLOCK_SUCCESS", "User account unblocked successfully"),
+  ADMIN_RESET_LINK_SENT("ADMIN_RESET_LINK_SENT", "Password reset link sent to user"),
+  ADMIN_ROLE_ADDED("ADMIN_ROLE_ADDED", "Role added to user successfully"),
+  ADMIN_ROLE_REMOVED("ADMIN_ROLE_REMOVED", "Role removed from user successfully");
 
   private final String code;
   private final String description;

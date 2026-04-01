@@ -19,6 +19,8 @@ tags:
     description: Endpoints for user profile management
   - name: email
     description: Endpoints for email verification
+  - name: admin
+    description: Endpoints for admin user management (ADMIN role required)
 
 servers:
   - url: https://your-backend.com
@@ -704,6 +706,251 @@ paths:
       security:
         - AccessCookie: [ ]
 
+  /admin/users:
+    get:
+      operationId: getAllUsers
+      summary: Get list of all users (ADMIN only)
+      tags:
+        - admin
+      responses:
+        '200':
+          description: List of all users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdminUserSummary'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: [ ]
+
+  /admin/users/{id}:
+    get:
+      operationId: getAdminUserDetails
+      summary: Get full details of a specific user (ADMIN only)
+      tags:
+        - admin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserDetails'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: [ ]
+
+  /admin/users/{id}/block:
+    put:
+      operationId: blockUser
+      summary: Block a user account (ADMIN only)
+      tags:
+        - admin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Account blocked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: [ ]
+
+  /admin/users/{id}/unblock:
+    put:
+      operationId: unblockUser
+      summary: Unblock a user account (ADMIN only)
+      tags:
+        - admin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Account unblocked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: [ ]
+
+  /admin/users/{id}/send-reset-link:
+    post:
+      operationId: sendAdminResetLink
+      summary: Send password reset link to a user (ADMIN only)
+      tags:
+        - admin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Reset link sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: [ ]
+
+  /admin/users/{id}/roles:
+    post:
+      operationId: addUserRole
+      summary: Add a role to a user (ADMIN only)
+      tags:
+        - admin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddRoleRequest'
+      responses:
+        '200':
+          description: Role added
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: [ ]
+
+  /admin/users/{id}/roles/{role}:
+    delete:
+      operationId: removeUserRole
+      summary: Remove a role from a user (ADMIN only)
+      tags:
+        - admin
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: role
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Role removed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      security:
+        - AccessCookie: [ ]
+
 components:
   securitySchemes:
     AccessCookie:
@@ -806,6 +1053,75 @@ components:
         createdAt:
           type: string
           format: date-time
+        roles:
+          type: array
+          items:
+            type: string
+    AdminUserSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userName:
+          type: string
+        email:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        emailVerified:
+          type: boolean
+        twoFactorEnabled:
+          type: boolean
+        passkeyEnabled:
+          type: boolean
+        blocked:
+          type: boolean
+        roles:
+          type: array
+          items:
+            type: string
+    AdminUserDetails:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        userName:
+          type: string
+        email:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        emailVerified:
+          type: boolean
+        twoFactorEnabled:
+          type: boolean
+        passkeyEnabled:
+          type: boolean
+        blocked:
+          type: boolean
+        roles:
+          type: array
+          items:
+            type: string
+        failedLoginAttempts:
+          type: integer
+        accountLockedUntil:
+          type: string
+          format: date-time
+    AddRoleRequest:
+      type: object
+      properties:
+        role:
+          type: string
+      required:
+        - role
     UpdateUserNameRequest:
       type: object
       properties:

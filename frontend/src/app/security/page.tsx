@@ -14,6 +14,7 @@ export default function Security() {
   const [modal, setModal] = React.useState<"2fa" | "changePassword" | null>(null);
   const [loggedIn, setLoggedIn] = React.useState(false);
   const [username, setUsername] = React.useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = React.useState(false);
   const [checkingLogin, setCheckingLogin] = React.useState(true);
 
   React.useEffect(() => {
@@ -30,6 +31,7 @@ export default function Security() {
         if (res.ok) {
           const data = await res.json();
           setUsername(data.userName || null);
+          setIsAdmin(Array.isArray(data.roles) && data.roles.includes("ADMIN"));
         } else {
           router.push("/login?callback=" + encodeURIComponent("/security"));
         }
@@ -48,11 +50,13 @@ export default function Security() {
     router.push("/login");
   }
 
-  function handleNavigate(page: "profile" | "security") {
+  function handleNavigate(page: "profile" | "security" | "admin") {
     if (page === "profile") {
       router.push("/");
     } else if (page === "security") {
       router.push("/security");
+    } else if (page === "admin") {
+      router.push("/admin");
     }
   }
 
@@ -76,6 +80,7 @@ export default function Security() {
         activePage="security"
         onNavigate={handleNavigate}
         onLogout={handleLogout}
+        isAdmin={isAdmin}
       />
       
       <main className="flex-1 overflow-auto lg:ml-64">

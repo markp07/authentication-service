@@ -93,6 +93,10 @@ public class User implements UserDetails {
   @Column(name = "account_locked_until")
   private LocalDateTime accountLockedUntil;
 
+  @Column(name = "is_blocked", nullable = false)
+  @Builder.Default
+  private Boolean blocked = false;
+
   @CreationTimestamp
   private LocalDateTime createdAt;
 
@@ -125,7 +129,8 @@ public class User implements UserDetails {
 
   @Override
   public boolean isAccountNonLocked() {
-    return accountLockedUntil == null || LocalDateTime.now().isAfter(accountLockedUntil);
+    return !Boolean.TRUE.equals(blocked)
+        && (accountLockedUntil == null || LocalDateTime.now().isAfter(accountLockedUntil));
   }
 
   @Override
