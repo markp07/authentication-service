@@ -5,5 +5,6 @@ export interface User {
   passkeyEnabled?: boolean;
   emailVerified?: boolean;
   createdAt?: string;
+  roles?: string[];
 }
 

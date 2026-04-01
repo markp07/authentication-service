@@ -1,6 +1,7 @@
 package nl.markpost.authentication.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
@@ -56,6 +57,7 @@ class UserServiceTest {
         .is2faEnabled(true)
         .emailVerified(true)
         .createdAt(LocalDateTime.now())
+        .roles(java.util.Set.of("USER"))
         .passkeyCredentials(java.util.Collections.emptyList())
         .build();
 
@@ -65,6 +67,8 @@ class UserServiceTest {
     assertEquals("user1", details.getUserName());
     assertEquals("user1@example.com", details.getEmail());
     assertTrue(details.getTwoFactorEnabled());
+    assertNotNull(details.getRoles());
+    assertTrue(details.getRoles().contains("USER"));
   }
 
   @Test
