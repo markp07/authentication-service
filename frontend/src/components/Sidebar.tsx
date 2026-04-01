@@ -1,8 +1,9 @@
 'use client';
 
 import React from "react";
-import { IconUser, IconShield, IconLogout, IconMenu2, IconX } from "@tabler/icons-react";
-import { useTranslations } from 'next-intl';
+import { IconUser, IconShield, IconLogout, IconMenu2, IconX, IconExternalLink } from "@tabler/icons-react";
+import * as TablerIcons from "@tabler/icons-react";
+import { useTranslations, useLocale } from 'next-intl';
 import LanguageSelector from './LanguageSelector';
 
 interface SidebarProps {
@@ -12,14 +13,36 @@ interface SidebarProps {
   onLogout: () => void;
 }
 
+interface ExtraMenuItem {
+  icon: string;
+  url: string;
+  textNl: string;
+  textEn: string;
+}
+
+function parseExtraMenuItems(): ExtraMenuItem[] {
+  try {
+    const raw = process.env.NEXT_PUBLIC_EXTRA_MENU_ITEMS;
+    if (!raw) return [];
+    const items = JSON.parse(raw);
+    if (!Array.isArray(items)) return [];
+    return items;
+  } catch {
+    return [];
+  }
+}
+
 export default function Sidebar({ username, activePage, onNavigate, onLogout }: SidebarProps) {
   const t = useTranslations('sidebar');
+  const locale = useLocale();
   const [isOpen, setIsOpen] = React.useState(false);
 
   const menuItems = [
     { id: "profile" as const, label: t('profile'), icon: IconUser },
     { id: "security" as const, label: t('security'), icon: IconShield },
   ];
+
+  const extraMenuItems = parseExtraMenuItems();
 
   return (
     <>
@@ -77,6 +100,24 @@ export default function Sidebar({ username, activePage, onNavigate, onLogout }: 
                   <Icon size={20} />
                   <span className="font-medium">{item.label}</span>
                 </button>
+              );
+            })}
+            {extraMenuItems.map((item) => {
+              const icons = TablerIcons as unknown as Record<string, React.ComponentType<{ size?: number }>>;
+              const Icon = icons[item.icon] || IconExternalLink;
+              const label = locale === 'nl' ? item.textNl : item.textEn;
+              return (
+                <a
+                  key={`${item.icon}:${item.url}`}
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setIsOpen(false)}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                >
+                  <Icon size={20} />
+                  <span className="font-medium">{label}</span>
+                </a>
               );
             })}
           </nav>
