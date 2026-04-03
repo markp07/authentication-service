@@ -13,7 +13,9 @@ import static org.mockito.Mockito.verify;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import nl.markpost.authentication.api.v1.model.CsrfTokenResponse;
+import nl.markpost.authentication.util.CookieUtil;
 import nl.markpost.authentication.util.RequestUtil;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +27,13 @@ class CsrfTokenServiceTest {
 
   @InjectMocks
   private CsrfTokenService csrfTokenService;
+
+  @BeforeEach
+  void setUp() {
+    CookieUtil cookieUtil = new CookieUtil();
+    cookieUtil.setCookieSecure(true);
+    cookieUtil.setDomain("example.com");
+  }
 
   @Test
   @DisplayName("Should generate a CSRF token and set it as a non-HttpOnly cookie")
@@ -43,6 +52,7 @@ class CsrfTokenServiceTest {
           CSRF_TOKEN.equals(cookie.getName())
               && result.getToken().equals(cookie.getValue())
               && !cookie.isHttpOnly()
+              && cookie.getSecure()
               && cookie.getMaxAge() == HOURS_1
               && "/".equals(cookie.getPath())
       ));
