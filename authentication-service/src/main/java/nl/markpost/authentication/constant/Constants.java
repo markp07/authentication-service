@@ -19,5 +19,7 @@ public class Constants {
   public final static String PASSKEY_REGISTRATION = "webauthn_registration_options";
   public final static String PASSKEY_ASSERTION_REQUEST = "webauthn_assertion_request";
   public final static String PASSKEY_USERNAMELESS_ASSERTION_REQUEST = "webauthn_usernameless_assertion_request";
+  public final static String CSRF_TOKEN = "csrf_token";
+  public final static Integer HOURS_1 = 60 * 60; // 1 hour in seconds
 
 }
