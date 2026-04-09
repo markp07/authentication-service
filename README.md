@@ -184,6 +184,9 @@ OpenAPI specification at `http://localhost:12002/v3/api-docs`
 - `PUT /v1/user/username` - Update username
 - `DELETE /v1/user` - Delete account
 
+### CSRF
+- `GET /v1/csrf` - Generate a CSRF token (Double Submit Cookie pattern) — see [CSRF Token Endpoint](docs/csrf-token-endpoint.md)
+
 ## Configuration
 
 Configuration files:

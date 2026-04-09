@@ -21,6 +21,8 @@ tags:
     description: Endpoints for email verification
   - name: admin
     description: Endpoints for admin user management (ADMIN role required)
+  - name: csrf
+    description: Endpoint for generating CSRF tokens
 
 servers:
   - url: https://your-backend.com
@@ -291,6 +293,26 @@ paths:
             text/plain:
               schema:
                 type: string
+  /csrf:
+    get:
+      operationId: getCsrfToken
+      summary: Generate and return a CSRF token
+      description: |
+        Generates a secure CSRF token and sets it as a cookie accessible to all configured
+        subdomains. The token is also returned in the response body. Both anonymous and
+        authenticated sessions may use this endpoint. Frontend applications should include
+        this token in the X-CSRF-Token header or request body when calling protected backend
+        services, alongside the cookie, to satisfy the double-submit cookie CSRF protection.
+      tags:
+        - csrf
+      responses:
+        '200':
+          description: CSRF token generated and set in cookie
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CsrfTokenResponse'
+
   /user:
     get:
       operationId: getUserDetails
@@ -1362,3 +1384,12 @@ components:
           type: object
           additionalProperties: true
           description: Client extension results
+
+    CsrfTokenResponse:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+          description: The generated CSRF token

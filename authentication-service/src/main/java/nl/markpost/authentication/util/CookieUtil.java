@@ -31,6 +31,16 @@ public class CookieUtil {
     return cookie;
   }
 
+  public static Cookie buildNonHttpOnlyCookie(String name, String value, int maxAge) {
+    Cookie cookie = new Cookie(name, value);
+    cookie.setHttpOnly(false);
+    cookie.setSecure(cookieSecure);
+    cookie.setDomain(cookieDomain);
+    cookie.setPath("/");
+    cookie.setMaxAge(maxAge);
+    return cookie;
+  }
+
   public static Cookie buildCookie(String name, String value) {
     return buildCookie(name, value, 0);
   }

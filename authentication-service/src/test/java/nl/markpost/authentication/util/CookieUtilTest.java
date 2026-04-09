@@ -60,4 +60,18 @@ class CookieUtilTest {
     assertTrue(cookie.getSecure());
     assertEquals("/", cookie.getPath());
   }
+
+  @Test
+  @DisplayName("Should build non-HttpOnly cookie with name, value and maxAge")
+  void buildNonHttpOnlyCookie_withNameValueMaxAge() {
+    cookieUtil.setCookieSecure(true);
+    Cookie cookie = CookieUtil.buildNonHttpOnlyCookie("csrfCookie", "csrfValue", 3600);
+
+    assertEquals("csrfCookie", cookie.getName());
+    assertEquals("csrfValue", cookie.getValue());
+    assertEquals(3600, cookie.getMaxAge());
+    assertFalse(cookie.isHttpOnly());
+    assertTrue(cookie.getSecure());
+    assertEquals("/", cookie.getPath());
+  }
 }
