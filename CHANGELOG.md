@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [1.11.8] - 2026-04-09
+
+### Changed
+- chore(maven)(deps): bump the maven-dependencies group with 2 updates (#138)
+- Add CSRF token endpoint for Double Submit Cookie pattern (#137)
+
+
 ## [1.11.7] - 2026-04-01
 
 ### Changed
