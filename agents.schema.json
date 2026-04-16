@@ -1,0 +1,238 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.local/authentication-service/agents.schema.json",
+  "title": "Authentication Service Agent Policy Schema",
+  "description": "Machine-readable policy contract for AGENTS.md automation rules.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "policyVersion",
+    "versioning",
+    "accessControl",
+    "branching",
+    "commitMessageFramework",
+    "responseContract"
+  ],
+  "properties": {
+    "policyVersion": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Schema consumer policy version in semver format."
+    },
+    "versioning": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scheme",
+        "pattern",
+        "example"
+      ],
+      "properties": {
+        "scheme": {
+          "type": "string",
+          "const": "semver"
+        },
+        "pattern": {
+          "type": "string",
+          "const": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "example": {
+          "type": "string",
+          "const": "1.0.0"
+        }
+      }
+    },
+    "accessControl": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "denyPathPatterns",
+        "allowPathPatterns"
+      ],
+      "properties": {
+        "denyPathPatterns": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          },
+          "contains": {
+            "type": "string",
+            "const": "^\\.env(\\..*)?$"
+          }
+        },
+        "allowPathPatterns": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          },
+          "contains": {
+            "type": "string",
+            "const": "^\\.env\\.example$"
+          }
+        }
+      }
+    },
+    "branching": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "baseBranches",
+        "allowedPrefixes",
+        "branchNamePattern",
+        "releaseIntent"
+      ],
+      "properties": {
+        "baseBranches": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["main", "master"]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "allowedPrefixes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": ["major", "feature", "fix"]
+          },
+          "minItems": 3,
+          "uniqueItems": true
+        },
+        "branchNamePattern": {
+          "type": "string",
+          "const": "^(major|feature|fix)\\/[a-z0-9][a-z0-9-]*$"
+        },
+        "releaseIntent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["major", "feature", "fix"],
+          "properties": {
+            "major": { "type": "string", "const": "major" },
+            "feature": { "type": "string", "const": "minor" },
+            "fix": { "type": "string", "const": "patch" }
+          }
+        },
+        "legacyAcceptedPrefixes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": ["bugfix"]
+        }
+      }
+    },
+    "commitMessageFramework": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "style",
+        "headerPattern",
+        "types",
+        "breakingChangeFooter",
+        "branchTypePreference"
+      ],
+      "properties": {
+        "style": {
+          "type": "string",
+          "const": "conventional-commits"
+        },
+        "headerPattern": {
+          "type": "string",
+          "const": "^(feat|fix|docs|refactor|test|chore|build|ci|perf|revert)(\\([a-z0-9-]+\\))?(!)?: [^\\s].*[^\\.]$"
+        },
+        "types": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "feat",
+              "fix",
+              "docs",
+              "refactor",
+              "test",
+              "chore",
+              "build",
+              "ci",
+              "perf",
+              "revert"
+            ]
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "recommended": { "type": "boolean", "const": true },
+            "pattern": {
+              "type": "string",
+              "const": "^[a-z0-9-]+$"
+            }
+          },
+          "required": ["recommended", "pattern"]
+        },
+        "breakingChangeFooter": {
+          "type": "string",
+          "const": "BREAKING CHANGE:"
+        },
+        "branchTypePreference": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["major", "feature", "fix"],
+          "properties": {
+            "major": {
+              "type": "array",
+              "items": { "type": "string", "enum": ["feat", "fix", "refactor", "chore"] },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "feature": {
+              "type": "array",
+              "items": { "type": "string", "enum": ["feat"] },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "fix": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["fix", "chore(maven)", "chore(npm)", "chore(docker)"]
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            }
+          }
+        }
+      }
+    },
+    "responseContract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sectionsOrdered"],
+      "properties": {
+        "sectionsOrdered": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "Plan",
+              "Changes",
+              "Validation",
+              "Risks/Assumptions",
+              "Next Steps"
+            ]
+          },
+          "minItems": 5,
+          "maxItems": 5
+        }
+      }
+    }
+  }
+}
