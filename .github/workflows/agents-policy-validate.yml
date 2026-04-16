@@ -1,0 +1,55 @@
+name: Validate Agent Policy
+
+on:
+  pull_request:
+    paths:
+      - 'AGENTS.md'
+      - 'agents.schema.json'
+      - 'agents.policy.json'
+      - '.github/workflows/agents-policy-validate.yml'
+  workflow_dispatch:
+
+jobs:
+  validate-agent-policy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install validator dependency
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install jsonschema
+
+      - name: Validate policy against schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+
+          root = Path('.')
+          schema_path = root / 'agents.schema.json'
+          policy_path = root / 'agents.policy.json'
+
+          schema = json.loads(schema_path.read_text(encoding='utf-8'))
+          policy = json.loads(policy_path.read_text(encoding='utf-8'))
+
+          validator = Draft202012Validator(schema)
+          errors = sorted(validator.iter_errors(policy), key=lambda e: list(e.path))
+
+          if errors:
+              for err in errors:
+                  path = '.'.join(str(p) for p in err.path) or '<root>'
+                  print(f'ERROR at {path}: {err.message}')
+              raise SystemExit(1)
+
+          print('agents.policy.json is valid against agents.schema.json')
+          PY
+

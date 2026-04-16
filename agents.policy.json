@@ -1,0 +1,83 @@
+{
+  "policyVersion": "1.0.0",
+  "branching": {
+    "baseBranches": [
+      "main",
+      "master"
+    ],
+    "allowedPrefixes": [
+      "major",
+      "feature",
+      "fix"
+    ],
+    "branchNamePattern": "^(major|feature|fix)\\/[a-z0-9][a-z0-9-]*$",
+    "releaseIntent": {
+      "major": "major",
+      "feature": "minor",
+      "fix": "patch"
+    },
+    "legacyAcceptedPrefixes": [
+      "bugfix"
+    ]
+  },
+  "commitMessageFramework": {
+    "style": "conventional-commits",
+    "headerPattern": "^(feat|fix|docs|refactor|test|chore|build|ci|perf|revert)(\\([a-z0-9-]+\\))?(!)?: [^\\s].*[^\\.]$",
+    "types": [
+      "feat",
+      "fix",
+      "docs",
+      "refactor",
+      "test",
+      "chore",
+      "build",
+      "ci",
+      "perf",
+      "revert"
+    ],
+    "scope": {
+      "recommended": true,
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "breakingChangeFooter": "BREAKING CHANGE:",
+    "branchTypePreference": {
+      "major": [
+        "feat",
+        "fix",
+        "refactor",
+        "chore"
+      ],
+      "feature": [
+        "feat"
+      ],
+      "fix": [
+        "fix",
+        "chore(maven)",
+        "chore(npm)",
+        "chore(docker)"
+      ]
+    }
+  },
+  "responseContract": {
+    "sectionsOrdered": [
+      "Plan",
+      "Changes",
+      "Validation",
+      "Risks/Assumptions",
+      "Next Steps"
+    ]
+  },
+  "versioning": {
+    "scheme": "semver",
+    "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+    "example": "1.0.0"
+  },
+  "accessControl": {
+    "denyPathPatterns": [
+      "^\\.env(\\..*)?$"
+    ],
+    "allowPathPatterns": [
+      "^\\.env\\.example$"
+    ]
+  }
+}
