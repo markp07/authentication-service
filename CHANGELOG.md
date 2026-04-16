@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [2.0.0] - 2026-04-16
+
+### Changed
+- feat(agents): add machine-readable policy and documentation for AI agents (#142)
+
+
 ## [1.11.10] - 2026-04-16
 
 ### Changed
