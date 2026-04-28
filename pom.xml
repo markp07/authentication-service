@@ -15,7 +15,7 @@
   </modules>
 
   <properties>
-    <revision>2.0.0</revision>
+    <revision>2.0.1</revision>
     <java.version>25</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- Dependency versions -->

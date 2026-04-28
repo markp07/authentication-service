@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [2.0.1] - 2026-04-28
+
+### Changed
+- chore(maven)(deps): bump the maven-dependencies group across 1 directory with 8 updates (#145)
+- chore(npm)(deps): bump the npm-dependencies group across 1 directory with 6 updates (#146)
+
+
 ## [2.0.0] - 2026-04-16
 
 ### Changed
