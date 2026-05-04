@@ -15,12 +15,12 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@tabler/icons-react": "^3.41.1",
     "next": "^16.2.4",
-    "next-intl": "^4.9.1",
+    "next-intl": "^4.11.0",
     "qrcode.react": "^4.2.0",
     "react": "19.2.5",
     "react-bootstrap-icons": "^1.11.6",
     "react-dom": "19.2.5",
-    "react-qr-code": "^2.0.18"
+    "react-qr-code": "^2.0.21"
   },
   "devDependencies": {
     "@csstools/css-calc": "^3.2.0",
