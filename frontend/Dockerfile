@@ -1,5 +1,5 @@
 # Use official Node.js image for building
-FROM node:25-alpine AS builder
+FROM node:26-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
@@ -14,7 +14,7 @@ ARG NEXT_PUBLIC_EXTRA_MENU_ITEMS=
 RUN npm run build
 
 # Production image
-FROM node:25-alpine
+FROM node:26-alpine
 WORKDIR /app
 
 # Install curl for health checks
