@@ -35,15 +35,15 @@
     <zxing.version>3.5.4</zxing.version>
     <otp-java.version>2.1.0</otp-java.version>
     <webauthn-server-core.version>2.9.0</webauthn-server-core.version>
-    <flyway.version>12.6.2</flyway.version>
+    <flyway.version>12.7.0</flyway.version>
     <!-- Plugin versions -->
     <jacoco.version>0.8.14</jacoco.version>
     <fmt-maven-plugin.version>2.27</fmt-maven-plugin.version>
-    <maven-failsafe.version>3.5.5</maven-failsafe.version>
+    <maven-failsafe.version>3.5.6</maven-failsafe.version>
     <flatten-maven.version>1.7.3</flatten-maven.version>
     <maven-compiler.version>3.15.0</maven-compiler.version>
     <maven-resources.version>3.5.0</maven-resources.version>
-    <maven-surefire.version>3.5.5</maven-surefire.version>
+    <maven-surefire.version>3.5.6</maven-surefire.version>
     <openapi-generator-maven-plugin.version>7.22.0</openapi-generator-maven-plugin.version>
     <versions-maven-plugin.version>2.21.0</versions-maven-plugin.version>
     <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
