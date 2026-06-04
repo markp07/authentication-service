@@ -1,4 +1,4 @@
-package nl.markpost.authentication.dto;
+package nl.markpost.authentication.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.LocalDateTime;

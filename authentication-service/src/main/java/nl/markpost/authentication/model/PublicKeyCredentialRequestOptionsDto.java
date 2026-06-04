@@ -1,4 +1,4 @@
-package nl.markpost.authentication.dto;
+package nl.markpost.authentication.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.yubico.webauthn.data.PublicKeyCredentialDescriptor;
