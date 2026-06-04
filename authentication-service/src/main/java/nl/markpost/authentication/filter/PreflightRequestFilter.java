@@ -8,9 +8,15 @@ import java.io.IOException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+/**
+ * Handles CORS preflight requests early and stops further authentication/business processing.
+ */
 @Component
 public class PreflightRequestFilter extends OncePerRequestFilter {
 
+  /**
+   * Returns HTTP 204 for valid preflight requests; otherwise continues the normal filter chain.
+   */
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
       FilterChain filterChain) throws ServletException, IOException {

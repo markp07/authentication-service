@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import jakarta.servlet.http.Cookie;
 import nl.markpost.authentication.filter.CorsErrorHeaderFilter;
 import nl.markpost.authentication.filter.JwtAuthenticationFilter;
+import nl.markpost.authentication.filter.PreflightRequestFilter;
 import nl.markpost.authentication.filter.TraceparentFilter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,7 @@ class SecurityConfigCsrfTest {
   private final SecurityConfig securityConfig = new SecurityConfig(
       Mockito.mock(TraceparentFilter.class),
       Mockito.mock(JwtAuthenticationFilter.class),
+      Mockito.mock(PreflightRequestFilter.class),
       Mockito.mock(CorsErrorHeaderFilter.class));
 
   @Test

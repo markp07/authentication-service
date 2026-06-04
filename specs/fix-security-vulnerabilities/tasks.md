@@ -77,6 +77,7 @@ description: "Task list template for feature implementation"
 
 - [X] T010 [P] [US2] Add error-response CORS stripping filter in authentication-service/src/main/java/nl/markpost/authentication/filter/CorsErrorHeaderFilter.java
 - [X] T011 [US2] Register error-path CORS stripping and allowlist handling in authentication-service/src/main/java/nl/markpost/authentication/config/SecurityConfig.java
+- [X] T021 [US2] Route CORS preflight through authentication-service/src/main/java/nl/markpost/authentication/filter/PreflightRequestFilter.java and remove duplicate preflight handling from authentication-service/src/main/java/nl/markpost/authentication/filter/JwtAuthenticationFilter.java
 
 **Checkpoint**: User Story 2 should be independently functional and testable
 

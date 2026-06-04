@@ -88,7 +88,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     if (contextPath != null && !contextPath.isEmpty() && path.startsWith(contextPath)) {
       path = path.substring(contextPath.length());
     }
-    if (isExcludedPath(path) || isPreflightRequest(request)) {
+    if (isExcludedPath(path)) {
       filterChain.doFilter(request, response);
       return;
     }
@@ -124,14 +124,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       log.info("JWT validation failed: {}", e.getMessage());
       throw new UnauthorizedException();
     }
-  }
-
-
-  /**
-   * Checks if the request is a CORS preflight (OPTIONS) request.
-   */
-  boolean isPreflightRequest(HttpServletRequest request) {
-    return "OPTIONS".equalsIgnoreCase(request.getMethod());
   }
 
   /**

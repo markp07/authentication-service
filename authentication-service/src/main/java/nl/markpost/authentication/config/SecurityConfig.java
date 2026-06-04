@@ -5,12 +5,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nl.markpost.authentication.filter.CorsErrorHeaderFilter;
 import nl.markpost.authentication.filter.JwtAuthenticationFilter;
+import nl.markpost.authentication.filter.PreflightRequestFilter;
 import nl.markpost.authentication.filter.TraceparentFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -25,7 +25,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
 /**
- * Security configuration for the weather service.
+ * Configures authentication, CSRF, CORS, and filter ordering for the authentication service.
  */
 @Configuration
 @EnableWebSecurity
@@ -36,6 +36,8 @@ public class SecurityConfig {
   private final TraceparentFilter traceparentFilter;
 
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+  private final PreflightRequestFilter preflightRequestFilter;
 
   private final CorsErrorHeaderFilter corsErrorHeaderFilter;
 
@@ -59,6 +61,9 @@ public class SecurityConfig {
     return new CorsFilter(source);
   }
 
+  /**
+   * Creates the CSRF token repository using the double-submit cookie/header strategy.
+   */
   @Bean
   public CookieCsrfTokenRepository csrfTokenRepository(
       @Value("${cookie.domain:}") String cookieDomain,
@@ -76,6 +81,9 @@ public class SecurityConfig {
     return repository;
   }
 
+  /**
+   * Builds the production security chain with preflight handling before JWT and business filters.
+   */
   @Bean
   @Profile("!ut")
   public SecurityFilterChain filterChain(HttpSecurity http,
@@ -84,11 +92,11 @@ public class SecurityConfig {
     http
         .csrf(csrf -> csrf.csrfTokenRepository(csrfTokenRepository))
         .cors(Customizer.withDefaults()) // Enable CORS with default configuration (uses CorsFilter bean)
+        .addFilterBefore(preflightRequestFilter, TraceparentFilter.class)
         .addFilterBefore(traceparentFilter, UsernamePasswordAuthenticationFilter.class)
         .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
         .addFilterAfter(corsErrorHeaderFilter, JwtAuthenticationFilter.class)
         .authorizeHttpRequests(authz -> authz
-            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .requestMatchers(excludedPaths).permitAll()
             .requestMatchers("/v1/admin/**").hasAuthority("ADMIN")
             .anyRequest().authenticated()
@@ -96,6 +104,9 @@ public class SecurityConfig {
     return http.build();
   }
 
+  /**
+   * Builds a permissive test profile chain for isolated unit testing.
+   */
   @Bean
   @Profile("ut")
   public SecurityFilterChain testSecurityFilterChain(HttpSecurity http) {
@@ -106,6 +117,9 @@ public class SecurityConfig {
     return http.build();
   }
 
+  /**
+   * Provides the password encoder used for credential hashing.
+   */
   @Bean
   public PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
