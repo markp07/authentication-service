@@ -128,8 +128,8 @@ description: "Task list template for feature implementation"
 ### Implementation for User Story 5
 
 - [X] T016 [US5] Apply backend scanner fixes in authentication-service/src/main/java/nl/markpost/authentication/config/SecurityConfig.java and authentication-service/src/main/resources/application.yaml per findings list
-- [ ] T017 [US5] Update backend dependencies per scanner findings in pom.xml
-- [ ] T018 [US5] Update frontend dependencies/config per scanner findings in frontend/package.json
+- [X] T017 [US5] Update backend dependencies per scanner findings in pom.xml
+- [X] T018 [US5] Update frontend dependencies/config per scanner findings in frontend/package.json
 
 **Checkpoint**: User Story 5 should be independently functional and testable
 
