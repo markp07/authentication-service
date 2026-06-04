@@ -25,6 +25,12 @@ Confirm `jwt.private-key` and `jwt.public-key` in `authentication-service/src/ma
 
 - Update `authentication.cors.allowed-origin-patterns` in `application.yaml` to include allowed origins for your environment.
 
+## Security Verification Checks
+
+1. **CSRF enforcement**: send a POST without `X-XSRF-TOKEN` and confirm `403`.
+2. **CORS error-path behavior**: trigger an error response and confirm `Access-Control-Allow-Origin` is absent.
+3. **JWT key enforcement**: start with missing `jwt.private-key`/`jwt.public-key` paths and confirm startup fails with a clear message.
+
 ## Run Tests
 
 ```bash

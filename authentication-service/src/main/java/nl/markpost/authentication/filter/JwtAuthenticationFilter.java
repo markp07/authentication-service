@@ -25,6 +25,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
@@ -46,6 +47,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final JwtKeyProvider keyProvider;
 
+  private final AntPathMatcher antPathMatcher = new AntPathMatcher();
+
   //TODO: cleanup and refactor -- Can we move to common package?
   @Override
   protected void doFilterInternal(HttpServletRequest request,
@@ -59,7 +62,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           e);
       response.setContentType("application/json");
       response.setStatus(e.getHttpStatus().value());
-      addCorsHeaders(request, response);
       try {
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
       } catch (IOException ioException) {
@@ -70,7 +72,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       ResponseEntity<Error> errorResponse = customExceptionHandler.handleException(e);
       response.setContentType("application/json");
       response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-      addCorsHeaders(request, response);
       try {
         response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
       } catch (IOException ioException) {
@@ -87,8 +88,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     if (contextPath != null && !contextPath.isEmpty() && path.startsWith(contextPath)) {
       path = path.substring(contextPath.length());
     }
-    if (excludedPaths != null && List.of(excludedPaths).contains(path) || isPreflightRequest(
-        request)) {
+    if (isExcludedPath(path) || isPreflightRequest(request)) {
       filterChain.doFilter(request, response);
       return;
     }
@@ -149,6 +149,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     return null;
   }
 
+  boolean isExcludedPath(String path) {
+    if (excludedPaths == null) {
+      return false;
+    }
+
+    return List.of(excludedPaths).stream()
+        .map(String::trim)
+        .filter(pattern -> !pattern.isEmpty())
+        .anyMatch(pattern -> antPathMatcher.match(pattern, path));
+  }
+
   /**
    * Sets the authentication in the security context based on the email from JWT claims.
    *
@@ -164,11 +175,4 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     SecurityContextHolder.getContext().setAuthentication(authToken);
   }
 
-  private void addCorsHeaders(HttpServletRequest request, HttpServletResponse response) {
-    String origin = request.getHeader("Origin");
-    if (origin != null) {
-      response.setHeader("Access-Control-Allow-Origin", origin);
-      response.setHeader("Access-Control-Allow-Credentials", "true");
-    }
-  }
 }

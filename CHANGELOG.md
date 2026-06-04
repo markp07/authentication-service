@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+
+## [Unreleased]
+
+### Changed
+- fix(security): enable double-submit CSRF tokens and frontend CSRF header propagation
+- fix(security): strip CORS headers on error responses and harden wildcard exclusion matching
+- fix(security): require configured JWT key files and fail startup when keys are missing/invalid
+
+
 ## [2.0.4] - 2026-05-27
 
 ### Changed

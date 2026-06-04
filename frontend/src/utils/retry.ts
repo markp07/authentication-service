@@ -42,12 +42,17 @@ export async function fetchWithRetry(
     initialDelay = 1000, // 1 second
   } = options;
 
+  const baseRequestInit: RequestInit = {
+    ...(init ?? {}),
+    headers: new Headers(init?.headers ?? {}),
+  };
+
   const startTime = Date.now();
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
-      const response = await fetch(input, { ...init, credentials: "include" });
-      
+      const response = await fetch(input, { ...baseRequestInit, credentials: "include" });
+
       // If not a 5xx error, return the response
       if (!is5xxError(response.status)) {
         return response;

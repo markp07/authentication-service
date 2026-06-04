@@ -4,8 +4,6 @@ import jakarta.annotation.PostConstruct;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -33,17 +31,17 @@ public class JwtKeyProvider {
 
   @PostConstruct
   public void init() throws Exception {
-    if (!privateKeyPath.isEmpty() && !publicKeyPath.isEmpty()) {
-      // Load keys from files
-      privateKey = loadPrivateKey(privateKeyPath);
-      publicKey = loadPublicKey(publicKeyPath);
-    } else {
-      // Generate new key pair (for dev/demo)
-      KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
-      keyGen.initialize(2048);
-      KeyPair pair = keyGen.generateKeyPair();
-      privateKey = pair.getPrivate();
-      publicKey = pair.getPublic();
+    validateConfiguredPaths();
+    privateKey = loadPrivateKey(privateKeyPath);
+    publicKey = loadPublicKey(publicKeyPath);
+  }
+
+  private void validateConfiguredPaths() {
+    if (privateKeyPath == null || privateKeyPath.isBlank()) {
+      throw new IllegalStateException("Missing required configuration: jwt.private-key");
+    }
+    if (publicKeyPath == null || publicKeyPath.isBlank()) {
+      throw new IllegalStateException("Missing required configuration: jwt.public-key");
     }
   }
 
@@ -56,22 +54,34 @@ public class JwtKeyProvider {
     if (path.startsWith("classpath:")) {
       key = new String(new ClassPathResource(path.substring(10)).getInputStream().readAllBytes());
     } else {
-      key = new String(Files.readAllBytes(Path.of(path)));
+      Path filePath = Path.of(path);
+      if (!Files.exists(filePath)) {
+        throw new IllegalStateException("JWT key file not found: " + path);
+      }
+      key = new String(Files.readAllBytes(filePath));
     }
     key = key.replace(beginMarker, "").replace(endMarker, "").replace("\n", "");
     return Base64.getDecoder().decode(key);
   }
 
   private PrivateKey loadPrivateKey(String path) throws Exception {
-    byte[] encoded = readKeyBytes(path, "-----BEGIN PRIVATE KEY-----", "-----END PRIVATE KEY-----");
-    PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(encoded);
-    return getRsaKeyFactory().generatePrivate(keySpec);
+    try {
+      byte[] encoded = readKeyBytes(path, "-----BEGIN PRIVATE KEY-----", "-----END PRIVATE KEY-----");
+      PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(encoded);
+      return getRsaKeyFactory().generatePrivate(keySpec);
+    } catch (Exception ex) {
+      throw new IllegalStateException("Unable to load private JWT key from " + path, ex);
+    }
   }
 
   private PublicKey loadPublicKey(String path) throws Exception {
-    byte[] encoded = readKeyBytes(path, "-----BEGIN PUBLIC KEY-----", "-----END PUBLIC KEY-----");
-    X509EncodedKeySpec keySpec = new X509EncodedKeySpec(encoded);
-    return getRsaKeyFactory().generatePublic(keySpec);
+    try {
+      byte[] encoded = readKeyBytes(path, "-----BEGIN PUBLIC KEY-----", "-----END PUBLIC KEY-----");
+      X509EncodedKeySpec keySpec = new X509EncodedKeySpec(encoded);
+      return getRsaKeyFactory().generatePublic(keySpec);
+    } catch (Exception ex) {
+      throw new IllegalStateException("Unable to load public JWT key from " + path, ex);
+    }
   }
 
   public String getPublicKeyAsPem() {

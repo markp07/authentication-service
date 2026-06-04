@@ -86,3 +86,12 @@ next-env.d.ts
 
 # Local database directory
 postgres_data/
+
+# Additional universal/node patterns
+node_modules/
+dist/
+.vscode/
+Thumbs.db
+*.tmp
+*.swp
+

@@ -23,7 +23,7 @@ description: "Task list template for feature implementation"
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Update plan references in .github/copilot-instructions.md for specs/fix-security-vulnerabilities/plan.md
+- [X] T001 Update plan references in .github/copilot-instructions.md for specs/fix-security-vulnerabilities/plan.md
 
 ---
 
@@ -33,8 +33,8 @@ description: "Task list template for feature implementation"
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T002 Update authentication-service/src/main/resources/application.yaml with required security remediation settings (cors allowlist, security.excluded-paths, jwt key paths, cookie domain/secure)
-- [ ] T003 [P] Add shared security test helpers in authentication-service/src/test/java/nl/markpost/authentication/security/SecurityTestUtils.java for CSRF/JWT key fixtures
+- [X] T002 Update authentication-service/src/main/resources/application.yaml with required security remediation settings (cors allowlist, security.excluded-paths, jwt key paths, cookie domain/secure)
+- [X] T003 [P] Add shared security test helpers in authentication-service/src/test/java/nl/markpost/authentication/security/SecurityTestUtils.java for CSRF/JWT key fixtures
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -50,14 +50,14 @@ description: "Task list template for feature implementation"
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T004 [P] [US1] Add CSRF issuance/validation tests in authentication-service/src/test/java/nl/markpost/authentication/config/SecurityConfigCsrfTest.java
-- [ ] T005 [P] [US1] Update CSRF header injection tests in frontend/src/__tests__/utils/api.test.ts
+- [X] T004 [P] [US1] Add CSRF issuance/validation tests in authentication-service/src/test/java/nl/markpost/authentication/config/SecurityConfigCsrfTest.java
+- [X] T005 [P] [US1] Update CSRF header injection tests in frontend/src/__tests__/utils/api.test.ts
 
 ### Implementation for User Story 1
 
-- [ ] T006 [US1] Enable CookieCsrfTokenRepository with required cookie attributes and /v1/csrf issuance in authentication-service/src/main/java/nl/markpost/authentication/config/SecurityConfig.java
-- [ ] T007 [P] [US1] Update frontend/src/utils/api.ts to read XSRF-TOKEN and attach X-XSRF-TOKEN on POST/PUT/PATCH/DELETE (include optional CSRF bootstrap call)
-- [ ] T008 [P] [US1] Update frontend/src/utils/retry.ts to preserve CSRF headers on retried requests
+- [X] T006 [US1] Enable CookieCsrfTokenRepository with required cookie attributes and /v1/csrf issuance in authentication-service/src/main/java/nl/markpost/authentication/config/SecurityConfig.java
+- [X] T007 [P] [US1] Update frontend/src/utils/api.ts to read XSRF-TOKEN and attach X-XSRF-TOKEN on POST/PUT/PATCH/DELETE (include optional CSRF bootstrap call)
+- [X] T008 [P] [US1] Update frontend/src/utils/retry.ts to preserve CSRF headers on retried requests
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
@@ -71,12 +71,12 @@ description: "Task list template for feature implementation"
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T009 [P] [US2] Add CORS error-path tests in authentication-service/src/test/java/nl/markpost/authentication/config/SecurityConfigCorsTest.java
+- [X] T009 [P] [US2] Add CORS error-path tests in authentication-service/src/test/java/nl/markpost/authentication/config/SecurityConfigCorsTest.java
 
 ### Implementation for User Story 2
 
-- [ ] T010 [P] [US2] Add error-response CORS stripping filter in authentication-service/src/main/java/nl/markpost/authentication/filter/CorsErrorHeaderFilter.java
-- [ ] T011 [US2] Register error-path CORS stripping and allowlist handling in authentication-service/src/main/java/nl/markpost/authentication/config/SecurityConfig.java
+- [X] T010 [P] [US2] Add error-response CORS stripping filter in authentication-service/src/main/java/nl/markpost/authentication/filter/CorsErrorHeaderFilter.java
+- [X] T011 [US2] Register error-path CORS stripping and allowlist handling in authentication-service/src/main/java/nl/markpost/authentication/config/SecurityConfig.java
 
 **Checkpoint**: User Story 2 should be independently functional and testable
 
@@ -90,11 +90,11 @@ description: "Task list template for feature implementation"
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T012 [P] [US3] Add missing/invalid key tests in authentication-service/src/test/java/nl/markpost/authentication/security/JwtKeyProviderTest.java
+- [X] T012 [P] [US3] Add missing/invalid key tests in authentication-service/src/test/java/nl/markpost/authentication/security/JwtKeyProviderTest.java
 
 ### Implementation for User Story 3
 
-- [ ] T013 [US3] Enforce file-based JWT keys and fail fast on missing/invalid keys in authentication-service/src/main/java/nl/markpost/authentication/security/JwtKeyProvider.java
+- [X] T013 [US3] Enforce file-based JWT keys and fail fast on missing/invalid keys in authentication-service/src/main/java/nl/markpost/authentication/security/JwtKeyProvider.java
 
 **Checkpoint**: User Story 3 should be independently functional and testable
 
@@ -108,11 +108,11 @@ description: "Task list template for feature implementation"
 
 ### Tests for User Story 4 ⚠️
 
-- [ ] T014 [P] [US4] Add Ant-style exclusion matching tests in authentication-service/src/test/java/nl/markpost/authentication/config/SecurityConfigExclusionsTest.java
+- [X] T014 [P] [US4] Add Ant-style exclusion matching tests in authentication-service/src/test/java/nl/markpost/authentication/config/SecurityConfigExclusionsTest.java
 
 ### Implementation for User Story 4
 
-- [ ] T015 [US4] Implement Ant-style allowlist matching for security.excluded-paths in authentication-service/src/main/java/nl/markpost/authentication/config/SecurityConfig.java
+- [X] T015 [US4] Implement Ant-style allowlist matching for security.excluded-paths in authentication-service/src/main/java/nl/markpost/authentication/config/SecurityConfig.java
 
 **Checkpoint**: User Story 4 should be independently functional and testable
 
@@ -126,7 +126,7 @@ description: "Task list template for feature implementation"
 
 ### Implementation for User Story 5
 
-- [ ] T016 [US5] Apply backend scanner fixes in authentication-service/src/main/java/nl/markpost/authentication/config/SecurityConfig.java and authentication-service/src/main/resources/application.yaml per findings list
+- [X] T016 [US5] Apply backend scanner fixes in authentication-service/src/main/java/nl/markpost/authentication/config/SecurityConfig.java and authentication-service/src/main/resources/application.yaml per findings list
 - [ ] T017 [US5] Update backend dependencies per scanner findings in pom.xml
 - [ ] T018 [US5] Update frontend dependencies/config per scanner findings in frontend/package.json
 
@@ -138,8 +138,8 @@ description: "Task list template for feature implementation"
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T019 [P] Update specs/fix-security-vulnerabilities/quickstart.md with any final remediation steps
-- [ ] T020 [P] Add remediation summary to CHANGELOG.md
+- [X] T019 [P] Update specs/fix-security-vulnerabilities/quickstart.md with any final remediation steps
+- [X] T020 [P] Add remediation summary to CHANGELOG.md
 
 ---
 

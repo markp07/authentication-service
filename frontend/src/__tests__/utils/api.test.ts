@@ -23,6 +23,7 @@ describe('API Utils', () => {
     beforeEach(() => {
       global.fetch = mockFetch;
       mockFetch.mockReset();
+      document.cookie = 'XSRF-TOKEN=test-csrf-token';
 
       // Suppress jsdom navigation errors in tests
       console.error = jest.fn((...args) => {
@@ -78,6 +79,29 @@ describe('API Utils', () => {
       expect(mockFetch).toHaveBeenCalledTimes(3);
       // Verify refresh endpoint was called
       expect(mockFetch).toHaveBeenNthCalledWith(2, `${AUTH_API_BASE}/api/auth/v1/refresh`, expect.any(Object));
+    });
+
+    it('should attach CSRF header on state-changing requests', async () => {
+      const mockResponse = { status: 200, ok: true };
+      mockFetch.mockResolvedValueOnce(mockResponse);
+
+      await fetchWithAuthRetry('/test-url', { method: 'POST' });
+
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      const [, requestOptions] = mockFetch.mock.calls[0];
+      const headers = new Headers(requestOptions.headers);
+      expect(headers.get('X-XSRF-TOKEN')).toBe('test-csrf-token');
+    });
+
+    it('should bootstrap CSRF cookie when missing before POST', async () => {
+      document.cookie = 'XSRF-TOKEN=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';
+      mockFetch.mockResolvedValueOnce({ status: 200, ok: true }); // /csrf bootstrap
+      mockFetch.mockResolvedValueOnce({ status: 200, ok: true }); // original request
+
+      await fetchWithAuthRetry('/test-url', { method: 'POST' });
+
+      expect(mockFetch).toHaveBeenNthCalledWith(1, `${AUTH_API_BASE}/api/auth/v1/csrf`, expect.any(Object));
+      expect(mockFetch).toHaveBeenNthCalledWith(2, '/test-url', expect.any(Object));
     });
 
     it('should throw error if refresh also returns 401', async () => {
