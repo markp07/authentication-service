@@ -140,3 +140,4 @@ demonstrate failure handling (expired/invalid tokens, revoked refresh, replay at
   relevant tests.
 
 **Version**: 1.0.0 | **Ratified**: 2026-06-04 | **Last Amended**: 2026-06-04
+
