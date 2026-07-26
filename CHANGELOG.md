@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 
+## [2.0.7] - 2026-07-26
+
+### Changed
+- chore(github-actions)(deps): bump the github-actions group with 2 updates (#167)
+
+
 ## [2.0.6] - 2026-07-12
 
 ### Changed
