@@ -26,16 +26,16 @@
     <lombok-mapstruct-bindings.version>0.2.0</lombok-mapstruct-bindings.version>
     <feign-jackson.version>13.6</feign-jackson.version>
     <jakarta.validation-api.version>3.1.0</jakarta.validation-api.version>
-    <jackson-databind-nullable.version>0.2.11</jackson-databind-nullable.version>
+    <jackson-databind-nullable.version>0.2.12</jackson-databind-nullable.version>
     <springdoc-openapi-webmvc-core.version>3.1.1</springdoc-openapi-webmvc-core.version>
     <jjwt.version>0.13.0</jjwt.version>
-    <postgresql.version>42.7.13</postgresql.version>
+    <postgresql.version>42.7.14</postgresql.version>
     <micrometer-tracing.version>1.7.1</micrometer-tracing.version>
     <micrometer-registry-prometheus.version>1.17.1</micrometer-registry-prometheus.version>
     <zxing.version>3.5.4</zxing.version>
     <otp-java.version>2.2.0</otp-java.version>
-    <webauthn-server-core.version>2.9.0</webauthn-server-core.version>
-    <flyway.version>13.7.0</flyway.version>
+    <webauthn-server-core.version>2.10.1</webauthn-server-core.version>
+    <flyway.version>13.10.3</flyway.version>
     <!-- Plugin versions -->
     <jacoco.version>0.8.15</jacoco.version>
     <fmt-maven-plugin.version>2.27</fmt-maven-plugin.version>
@@ -44,8 +44,8 @@
     <maven-compiler.version>3.16.0</maven-compiler.version>
     <maven-resources.version>3.5.0</maven-resources.version>
     <maven-surefire.version>3.6.0</maven-surefire.version>
-    <openapi-generator-maven-plugin.version>7.25.0</openapi-generator-maven-plugin.version>
-    <versions-maven-plugin.version>2.22.0</versions-maven-plugin.version>
+    <openapi-generator-maven-plugin.version>7.26.0</openapi-generator-maven-plugin.version>
+    <versions-maven-plugin.version>2.23.0</versions-maven-plugin.version>
     <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
     <maven.minimum.version>3.6.3</maven.minimum.version>
   </properties>
