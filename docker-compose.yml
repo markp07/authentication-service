@@ -21,7 +21,7 @@ services:
       start_period: 10s
 
   authentication-postgres:
-    image: postgres:latest
+    image: postgres:18
     container_name: authentication-postgres
     restart: unless-stopped
     environment:
